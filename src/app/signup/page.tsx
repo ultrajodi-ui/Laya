@@ -49,7 +49,7 @@ export default function SignupPage() {
   const [employed, setEmployed] = useState('yes');
   const [occupation, setOccupation] = useState('');
   const [salary, setSalary] = useState('');
-  const [workingPlace, setWorkingPlace] = useState('');
+  const [workingPlace, setWorkingPlace]_useState('');
   const [homeAddress, setHomeAddress] = useState('');
   const [city, setCity] = useState('');
   const [state, setState] = useState('');
@@ -184,7 +184,7 @@ export default function SignupPage() {
   ];
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#feefdb] p-4">
+    <div className="flex min-h-screen items-center justify-center bg-background p-4">
       <Card className="mx-auto max-w-lg w-full">
         {step === 1 && (
           <>
