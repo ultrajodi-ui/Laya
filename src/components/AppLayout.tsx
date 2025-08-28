@@ -99,7 +99,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
   }
 
   return (
-    <SidebarProvider>
+    <SidebarProvider defaultOpen={false}>
       <div className="flex min-h-screen">
         <Sidebar>
           <SidebarHeader>
