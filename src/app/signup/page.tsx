@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
@@ -198,222 +199,252 @@ export default function SignupPage() {
   ];
 
   return (
-    <div 
-        className="flex min-h-screen items-center justify-center p-4"
+     <div className="flex flex-col min-h-screen">
+      <header className="px-4 lg:px-6 h-16 flex items-center bg-transparent">
+        <Link href="/" className="flex items-center justify-center text-primary">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="h-6 w-6"
+          >
+            <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+          </svg>
+          <span className="sr-only">Ultra Jodi</span>
+          <span className="ml-2 font-headline text-xl font-semibold">Ultra Jodi</span>
+        </Link>
+        <nav className="ml-auto flex gap-4 sm:gap-6">
+          <Button variant="ghost" asChild>
+            <Link href="/login">Login</Link>
+          </Button>
+          <Button asChild className="bg-accent hover:bg-accent/90 text-accent-foreground">
+            <Link href="/signup">Sign Up</Link>
+          </Button>
+        </nav>
+      </header>
+      <main
+        className="flex-1 flex items-center justify-center p-4"
         style={{ backgroundImage: "linear-gradient( 100.1deg,  rgba(217,157,38,1) 16.8%, rgba(247,213,110,1) 77.3% )" }}
-    >
-      <Card className="mx-auto max-w-lg w-full">
-        {step === 1 && (
-          <>
-            <CardHeader>
-              <CardTitle className="text-xl font-headline">Create your Account</CardTitle>
-              <CardDescription>
-                Enter your information to start your journey
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSignup} className="grid gap-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="m@example.com"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="password">Password</Label>
-                  <Input 
-                    id="password" 
-                    type="password"
-                    required 
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="confirm-password">Confirm Password</Label>
-                  <Input 
-                    id="confirm-password" 
-                    type="password"
-                    required 
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                  />
-                </div>
-                <Button type="submit" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground" disabled={isLoading}>
-                    {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                     Create an account
-                </Button>
-              </form>
-              <div className="mt-4 text-center text-sm">
-                Already have an account?{" "}
-                <Link href="/login" className="underline">
-                  Log in
-                </Link>
-              </div>
-            </CardContent>
-          </>
-        )}
-        {step === 2 && (
+      >
+        <Card className="mx-auto max-w-lg w-full">
+          {step === 1 && (
             <>
-                <CardHeader>
-                    <CardTitle className="text-xl font-headline">Complete Your Profile</CardTitle>
-                    <CardDescription>
-                        Tell us a bit more about yourself.
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <form onSubmit={handleRegistration} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="grid gap-2">
-                            <Label htmlFor="full-name">Full Name</Label>
-                            <Input id="full-name" placeholder="Anika Sharma" required value={fullName} onChange={(e) => setFullName(e.target.value)} />
-                        </div>
-                         <div className="grid gap-2">
-                            <Label htmlFor="dob">Date of Birth</Label>
-                            <Popover>
-                                <PopoverTrigger asChild>
-                                    <Button
-                                    variant={"outline"}
-                                    className={cn(
-                                        "justify-start text-left font-normal",
-                                        !dob && "text-muted-foreground"
-                                    )}
-                                    >
-                                    <CalendarIcon className="mr-2 h-4 w-4" />
-                                    {dob ? format(dob, "PPP") : <span>Pick a date</span>}
-                                    </Button>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0">
-                                    <Calendar
-                                        mode="single"
-                                        selected={dob}
-                                        onSelect={handleDateSelect}
-                                        captionLayout="dropdown-buttons"
-                                        fromYear={1950}
-                                        toYear={new Date().getFullYear()}
-                                        initialFocus
-                                    />
-                                </PopoverContent>
-                            </Popover>
-                        </div>
-                         <div className="grid gap-2 md:col-span-2">
-                            <Label>Gender</Label>
-                            <RadioGroup value={gender} onValueChange={setGender} className="flex gap-4">
-                                <div className="flex items-center space-x-2">
-                                    <RadioGroupItem value="female" id="female" ref={genderRef} />
-                                    <Label htmlFor="female">Female</Label>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                    <RadioGroupItem value="male" id="male" />
-                                    <Label htmlFor="male">Male</Label>
-                                </div>
-                                 <div className="flex items-center space-x-2">
-                                    <RadioGroupItem value="other" id="other" />
-                                    <Label htmlFor="other">Other</Label>
-                                </div>
-                            </RadioGroup>
-                        </div>
-                        <div className="grid gap-2">
-                            <Label htmlFor="father-name">Father's Name</Label>
-                            <Input id="father-name" required value={fatherName} onChange={(e) => setFatherName(e.target.value)} />
-                        </div>
-                        <div className="grid gap-2">
-                            <Label htmlFor="mother-name">Mother's Name</Label>
-                            <Input id="mother-name" required value={motherName} onChange={(e) => setMotherName(e.target.value)} />
-                        </div>
-                        <div className="grid gap-2">
-                            <Label htmlFor="mobile-no">Mobile No</Label>
-                            <Input id="mobile-no" type="tel" required value={mobileNo} onChange={(e) => setMobileNo(e.target.value)} />
-                        </div>
-                         <div className="grid gap-2">
-                            <Label htmlFor="zodiac-sign">Zodiac Sign (Rashi)</Label>
-                            <Select value={zodiacSign} onValueChange={setZodiacSign}>
-                                <SelectTrigger id="zodiac-sign">
-                                    <SelectValue placeholder="Select zodiac sign" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {zodiacSigns.map(sign => (
-                                        <SelectItem key={sign} value={sign}>{sign}</SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                        </div>
-                         <div className="grid gap-2">
-                            <Label htmlFor="star-sign">Star Sign (Nakshatra)</Label>
-                             <Select value={starSign} onValueChange={setStarSign}>
-                                <SelectTrigger id="star-sign">
-                                    <SelectValue placeholder="Select star sign" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {nakshatras.map(nakshatra => (
-                                        <SelectItem key={nakshatra} value={nakshatra}>{nakshatra}</SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                        </div>
-                        <div className="grid gap-2 md:col-span-2">
-                            <Label>Are you Employed?</Label>
-                            <RadioGroup value={employed} onValueChange={setEmployed} className="flex gap-4">
-                                <div className="flex items-center space-x-2">
-                                    <RadioGroupItem value="yes" id="employed-yes" />
-                                    <Label htmlFor="employed-yes">Yes</Label>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                    <RadioGroupItem value="no" id="employed-no" />
-                                    <Label htmlFor="employed-no">No</Label>
-                                </div>
-                            </RadioGroup>
-                        </div>
-                         <div className="grid gap-2">
-                            <Label htmlFor="occupation">Occupation</Label>
-                            <Input id="occupation" value={occupation} onChange={(e) => setOccupation(e.target.value)} />
-                        </div>
-                        <div className="grid gap-2">
-                             <Label htmlFor="salary">Salary (per annum)</Label>
-                             <Select value={salary} onValueChange={setSalary}>
-                                <SelectTrigger id="salary">
-                                    <SelectValue placeholder="Select range" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="<3LPA">Less than 3 LPA</SelectItem>
-                                    <SelectItem value="3-5LPA">3-5 LPA</SelectItem>
-                                    <SelectItem value="5-10LPA">5-10 LPA</SelectItem>
-                                    <SelectItem value="10-20LPA">10-20 LPA</SelectItem>
-                                    <SelectItem value=">20LPA">More than 20 LPA</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-                         <div className="grid gap-2">
-                            <Label htmlFor="working-place">Working Place</Label>
-                            <Input id="working-place" value={workingPlace} onChange={(e) => setWorkingPlace(e.target.value)} />
-                        </div>
-                        <div className="grid gap-2 md:col-span-2">
-                            <Label htmlFor="home-address">Home Address</Label>
-                            <Input id="home-address" value={homeAddress} onChange={(e) => setHomeAddress(e.target.value)} />
-                        </div>
-                         <div className="grid gap-2">
-                            <Label htmlFor="city">City</Label>
-                            <Input id="city" value={city} onChange={(e) => setCity(e.target.value)} />
-                        </div>
-                         <div className="grid gap-2">
-                            <Label htmlFor="state">State</Label>
-                            <Input id="state" value={state} onChange={(e) => setState(e.target.value)} />
-                        </div>
-                        <div className="md:col-span-2">
-                             <Button type="submit" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground" disabled={isLoading}>
-                                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                Complete Registration
-                            </Button>
-                        </div>
-                    </form>
-                </CardContent>
+              <CardHeader>
+                <CardTitle className="text-xl font-headline">Create your Account</CardTitle>
+                <CardDescription>
+                  Enter your information to start your journey
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleSignup} className="grid gap-4">
+                  <div className="grid gap-2">
+                    <Label htmlFor="email">Email</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="m@example.com"
+                      required
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="password">Password</Label>
+                    <Input 
+                      id="password" 
+                      type="password"
+                      required 
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="confirm-password">Confirm Password</Label>
+                    <Input 
+                      id="confirm-password" 
+                      type="password"
+                      required 
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                    />
+                  </div>
+                  <Button type="submit" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground" disabled={isLoading}>
+                      {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                      Create an account
+                  </Button>
+                </form>
+                <div className="mt-4 text-center text-sm">
+                  Already have an account?{" "}
+                  <Link href="/login" className="underline">
+                    Log in
+                  </Link>
+                </div>
+              </CardContent>
             </>
-        )}
-      </Card>
+          )}
+          {step === 2 && (
+              <>
+                  <CardHeader>
+                      <CardTitle className="text-xl font-headline">Complete Your Profile</CardTitle>
+                      <CardDescription>
+                          Tell us a bit more about yourself.
+                      </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                      <form onSubmit={handleRegistration} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="grid gap-2">
+                              <Label htmlFor="full-name">Full Name</Label>
+                              <Input id="full-name" placeholder="Anika Sharma" required value={fullName} onChange={(e) => setFullName(e.target.value)} />
+                          </div>
+                          <div className="grid gap-2">
+                              <Label htmlFor="dob">Date of Birth</Label>
+                              <Popover>
+                                  <PopoverTrigger asChild>
+                                      <Button
+                                      variant={"outline"}
+                                      className={cn(
+                                          "justify-start text-left font-normal",
+                                          !dob && "text-muted-foreground"
+                                      )}
+                                      >
+                                      <CalendarIcon className="mr-2 h-4 w-4" />
+                                      {dob ? format(dob, "PPP") : <span>Pick a date</span>}
+                                      </Button>
+                                  </PopoverTrigger>
+                                  <PopoverContent className="w-auto p-0">
+                                      <Calendar
+                                          mode="single"
+                                          selected={dob}
+                                          onSelect={handleDateSelect}
+                                          captionLayout="dropdown-buttons"
+                                          fromYear={1950}
+                                          toYear={new Date().getFullYear()}
+                                          initialFocus
+                                      />
+                                  </PopoverContent>
+                              </Popover>
+                          </div>
+                          <div className="grid gap-2 md:col-span-2">
+                              <Label>Gender</Label>
+                              <RadioGroup value={gender} onValueChange={setGender} className="flex gap-4">
+                                  <div className="flex items-center space-x-2">
+                                      <RadioGroupItem value="female" id="female" ref={genderRef} />
+                                      <Label htmlFor="female">Female</Label>
+                                  </div>
+                                  <div className="flex items-center space-x-2">
+                                      <RadioGroupItem value="male" id="male" />
+                                      <Label htmlFor="male">Male</Label>
+                                  </div>
+                                  <div className="flex items-center space-x-2">
+                                      <RadioGroupItem value="other" id="other" />
+                                      <Label htmlFor="other">Other</Label>
+                                  </div>
+                              </RadioGroup>
+                          </div>
+                          <div className="grid gap-2">
+                              <Label htmlFor="father-name">Father's Name</Label>
+                              <Input id="father-name" required value={fatherName} onChange={(e) => setFatherName(e.target.value)} />
+                          </div>
+                          <div className="grid gap-2">
+                              <Label htmlFor="mother-name">Mother's Name</Label>
+                              <Input id="mother-name" required value={motherName} onChange={(e) => setMotherName(e.target.value)} />
+                          </div>
+                          <div className="grid gap-2">
+                              <Label htmlFor="mobile-no">Mobile No</Label>
+                              <Input id="mobile-no" type="tel" required value={mobileNo} onChange={(e) => setMobileNo(e.target.value)} />
+                          </div>
+                          <div className="grid gap-2">
+                              <Label htmlFor="zodiac-sign">Zodiac Sign (Rashi)</Label>
+                              <Select value={zodiacSign} onValueChange={setZodiacSign}>
+                                  <SelectTrigger id="zodiac-sign">
+                                      <SelectValue placeholder="Select zodiac sign" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                      {zodiacSigns.map(sign => (
+                                          <SelectItem key={sign} value={sign}>{sign}</SelectItem>
+                                      ))}
+                                  </SelectContent>
+                              </Select>
+                          </div>
+                          <div className="grid gap-2">
+                              <Label htmlFor="star-sign">Star Sign (Nakshatra)</Label>
+                              <Select value={starSign} onValueChange={setStarSign}>
+                                  <SelectTrigger id="star-sign">
+                                      <SelectValue placeholder="Select star sign" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                      {nakshatras.map(nakshatra => (
+                                          <SelectItem key={nakshatra} value={nakshatra}>{nakshatra}</SelectItem>
+                                      ))}
+                                  </SelectContent>
+                              </Select>
+                          </div>
+                          <div className="grid gap-2 md:col-span-2">
+                              <Label>Are you Employed?</Label>
+                              <RadioGroup value={employed} onValueChange={setEmployed} className="flex gap-4">
+                                  <div className="flex items-center space-x-2">
+                                      <RadioGroupItem value="yes" id="employed-yes" />
+                                      <Label htmlFor="employed-yes">Yes</Label>
+                                  </div>
+                                  <div className="flex items-center space-x-2">
+                                      <RadioGroupItem value="no" id="employed-no" />
+                                      <Label htmlFor="employed-no">No</Label>
+                                  </div>
+                              </RadioGroup>
+                          </div>
+                          <div className="grid gap-2">
+                              <Label htmlFor="occupation">Occupation</Label>
+                              <Input id="occupation" value={occupation} onChange={(e) => setOccupation(e.target.value)} />
+                          </div>
+                          <div className="grid gap-2">
+                              <Label htmlFor="salary">Salary (per annum)</Label>
+                              <Select value={salary} onValueChange={setSalary}>
+                                  <SelectTrigger id="salary">
+                                      <SelectValue placeholder="Select range" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                      <SelectItem value="<3LPA">Less than 3 LPA</SelectItem>
+                                      <SelectItem value="3-5LPA">3-5 LPA</SelectItem>
+                                      <SelectItem value="5-10LPA">5-10 LPA</SelectItem>
+                                      <SelectItem value="10-20LPA">10-20 LPA</SelectItem>
+                                      <SelectItem value=">20LPA">More than 20 LPA</SelectItem>
+                                  </SelectContent>
+                              </Select>
+                          </div>
+                          <div className="grid gap-2">
+                              <Label htmlFor="working-place">Working Place</Label>
+                              <Input id="working-place" value={workingPlace} onChange={(e) => setWorkingPlace(e.target.value)} />
+                          </div>
+                          <div className="grid gap-2 md:col-span-2">
+                              <Label htmlFor="home-address">Home Address</Label>
+                              <Input id="home-address" value={homeAddress} onChange={(e) => setHomeAddress(e.target.value)} />
+                          </div>
+                          <div className="grid gap-2">
+                              <Label htmlFor="city">City</Label>
+                              <Input id="city" value={city} onChange={(e) => setCity(e.target.value)} />
+                          </div>
+                          <div className="grid gap-2">
+                              <Label htmlFor="state">State</Label>
+                              <Input id="state" value={state} onChange={(e) => setState(e.target.value)} />
+                          </div>
+                          <div className="md:col-span-2">
+                              <Button type="submit" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground" disabled={isLoading}>
+                                  {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                  Complete Registration
+                              </Button>
+                          </div>
+                      </form>
+                  </CardContent>
+              </>
+          )}
+        </Card>
+      </main>
     </div>
   )
 }
