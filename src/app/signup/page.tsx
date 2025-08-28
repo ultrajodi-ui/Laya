@@ -125,8 +125,8 @@ export default function SignupPage() {
       const userProfileData = {
         fullName,
         dob,
-        gender,
         age,
+        gender,
         fatherName,
         motherName,
         mobileNo,
@@ -274,7 +274,7 @@ export default function SignupPage() {
                       onChange={(e) => setConfirmPassword(e.target.value)}
                     />
                   </div>
-                  <Button type="submit" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground" disabled={isLoading}>
+                  <Button type="submit" className="w-full bg-[#212121] hover:bg-[#212121]/90 text-white" disabled={isLoading}>
                       {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                       Create an account
                   </Button>
@@ -434,7 +434,7 @@ export default function SignupPage() {
                               <Input id="state" value={state} onChange={(e) => setState(e.target.value)} />
                           </div>
                           <div className="md:col-span-2">
-                              <Button type="submit" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground" disabled={isLoading}>
+                              <Button type="submit" className="w-full bg-[#212121] hover:bg-[#212121]/90 text-white" disabled={isLoading}>
                                   {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                   Complete Registration
                               </Button>
