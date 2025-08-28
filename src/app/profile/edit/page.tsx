@@ -20,6 +20,7 @@ export default function ProfileEditPage() {
     const [profileData, setProfileData] = useState<any | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
+    const [age, setAge] = useState<number | undefined>();
     const auth = getAuth();
 
     useEffect(() => {
@@ -30,9 +31,19 @@ export default function ProfileEditPage() {
                 const docSnap = await getDoc(docRef);
                 if (docSnap.exists()) {
                     const data = docSnap.data();
+                    const dob = data.dob?.toDate();
+                    if (dob) {
+                        const today = new Date();
+                        let calculatedAge = today.getFullYear() - dob.getFullYear();
+                        const m = today.getMonth() - dob.getMonth();
+                        if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+                            calculatedAge--;
+                        }
+                        setAge(calculatedAge);
+                    }
                     setProfileData({
                         ...data,
-                        dob: data.dob?.toDate() // Convert Firestore Timestamp to Date
+                        dob: dob
                     });
                 } else {
                     console.log("No such document!");
@@ -57,8 +68,8 @@ export default function ProfileEditPage() {
         setIsSaving(true);
         try {
             const userDocRef = doc(db, "users", user.uid);
-            // We don't want to save the photo URL to the document, it's just for display
-            const { imageUrl, ...dataToSave } = profileData;
+            // We don't want to save the photo URL or age to the document
+            const { imageUrl, age, ...dataToSave } = profileData;
             await setDoc(userDocRef, dataToSave, { merge: true });
             toast({
                 title: "Profile Updated",
@@ -169,7 +180,7 @@ export default function ProfileEditPage() {
                             </div>
                              <div className="grid gap-2">
                                 <Label htmlFor="age">Age</Label>
-                                <Input id="age" type="number" value={profileData.age || ''} onChange={handleInputChange} readOnly className="bg-muted" />
+                                <Input id="age" type="number" value={age !== undefined ? age : ''} readOnly className="bg-muted" />
                             </div>
                         </div>
 
