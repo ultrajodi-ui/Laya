@@ -198,7 +198,10 @@ export default function SignupPage() {
   ];
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background p-4">
+    <div 
+        className="flex min-h-screen items-center justify-center p-4"
+        style={{ backgroundImage: "linear-gradient( 100.1deg,  rgba(217,157,38,1) 16.8%, rgba(247,213,110,1) 77.3% )" }}
+    >
       <Card className="mx-auto max-w-lg w-full">
         {step === 1 && (
           <>
