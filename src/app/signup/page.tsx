@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from "next/link"
 import { useRouter } from 'next/navigation';
-import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 
 import { Button } from "@/components/ui/button"
@@ -22,7 +22,6 @@ import { Loader2 } from 'lucide-react';
 export default function SignupPage() {
   const router = useRouter();
   const { toast } = useToast();
-  const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -31,10 +30,7 @@ export default function SignupPage() {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      await updateProfile(userCredential.user, {
-        displayName: fullName
-      });
+      await createUserWithEmailAndPassword(auth, email, password);
       toast({
         title: "Account Created",
         description: "Welcome! Let's get your profile set up.",
@@ -63,16 +59,6 @@ export default function SignupPage() {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSignup} className="grid gap-4">
-            <div className="grid gap-2">
-                <Label htmlFor="full-name">Full name</Label>
-                <Input 
-                  id="full-name" 
-                  placeholder="Anika Sharma" 
-                  required 
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                />
-            </div>
             <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
               <Input
