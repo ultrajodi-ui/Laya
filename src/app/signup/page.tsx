@@ -5,7 +5,7 @@ import Link from "next/link"
 import { useRouter } from 'next/navigation';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
-import { doc, setDoc } from 'firebase/firestore';
+import { doc, setDoc, collection, getDocs, query, where,getCountFromServer } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Button } from "@/components/ui/button"
 import {
@@ -99,6 +99,15 @@ export default function SignupPage() {
     setIsLoading(true);
     
     try {
+      // Generate memberid
+      const usersRef = collection(db, "users");
+      const genderQuery = query(usersRef, where("gender", "==", gender));
+      const snapshot = await getCountFromServer(genderQuery);
+      const userCount = snapshot.data().count;
+
+      const memberIdPrefix = gender === 'male' ? 'UJM' : 'UJF';
+      const memberid = `${memberIdPrefix}${userCount + 1}`;
+
       const userProfileData = {
         fullName,
         dob,
@@ -116,6 +125,8 @@ export default function SignupPage() {
         city,
         state,
         email,
+        usertype: 'Basic',
+        memberid,
       };
       
       // Update Firebase Auth profile
@@ -353,3 +364,5 @@ export default function SignupPage() {
     </div>
   )
 }
+
+    
