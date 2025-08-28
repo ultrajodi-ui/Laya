@@ -8,6 +8,25 @@ export type UserProfile = {
   imageUrl: string;
   lookingFor: string;
   compatibilityScore?: number;
+  // Firestore data
+  fullName?: string;
+  dob?: Date;
+  gender?: 'male' | 'female' | 'other';
+  fatherName?: string;
+  motherName?: string;
+  mobileNo?: string;
+  zodiacSign?: string;
+  starSign?: string;
+  employed?: 'yes' | 'no';
+  occupation?: string;
+  salary?: string;
+  workingPlace?: string;
+  homeAddress?: string;
+  city?: string;
+  state?: string;
+  email?: string;
+  usertype?: 'Basic' | 'Premium';
+  memberid?: string;
 };
 
 export type Connection = {
