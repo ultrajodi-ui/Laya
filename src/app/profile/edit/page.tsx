@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -13,6 +14,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { format } from 'date-fns';
 
 export default function ProfileEditPage() {
     const { toast } = useToast();
@@ -178,15 +180,38 @@ export default function ProfileEditPage() {
                                 <Label htmlFor="fullName">Full Name</Label>
                                 <Input id="fullName" value={profileData.fullName || ''} onChange={handleInputChange} />
                             </div>
-                             <div className="grid gap-2">
-                                <Label htmlFor="age">Age</Label>
-                                <Input id="age" type="number" value={age !== undefined ? age : ''} readOnly className="bg-muted" />
+                            <div className="grid gap-2">
+                                <Label htmlFor="dob">Date of Birth</Label>
+                                <Input id="dob" value={profileData.dob ? format(profileData.dob, 'PPP') : ''} readOnly className="bg-muted" />
                             </div>
-                        </div>
-
-                         <div className="grid gap-2">
-                            <Label htmlFor="city">Location</Label>
-                            <Input id="city" value={profileData.city || ''} onChange={handleInputChange} />
+                            <div className="grid gap-2">
+                                <Label htmlFor="fatherName">Father Name</Label>
+                                <Input id="fatherName" value={profileData.fatherName || ''} onChange={handleInputChange} />
+                            </div>
+                             <div className="grid gap-2">
+                                <Label htmlFor="motherName">Mother Name</Label>
+                                <Input id="motherName" value={profileData.motherName || ''} onChange={handleInputChange} />
+                            </div>
+                              <div className="grid gap-2">
+                                <Label htmlFor="occupation">Occupation</Label>
+                                <Input id="occupation" value={profileData.occupation || ''} onChange={handleInputChange} />
+                            </div>
+                             <div className="grid gap-2">
+                                <Label htmlFor="workingPlace">Working Place</Label>
+                                <Input id="workingPlace" value={profileData.workingPlace || ''} onChange={handleInputChange} />
+                            </div>
+                             <div className="grid gap-2">
+                                <Label htmlFor="homeAddress">Address</Label>
+                                <Input id="homeAddress" value={profileData.homeAddress || ''} onChange={handleInputChange} />
+                            </div>
+                             <div className="grid gap-2">
+                                <Label htmlFor="city">City</Label>
+                                <Input id="city" value={profileData.city || ''} onChange={handleInputChange} />
+                            </div>
+                             <div className="grid gap-2 sm:col-span-2">
+                                <Label htmlFor="mobileNo">Mobile No</Label>
+                                <Input id="mobileNo" value={profileData.mobileNo || ''} onChange={handleInputChange} />
+                            </div>
                         </div>
 
                         <div className="grid gap-2">
