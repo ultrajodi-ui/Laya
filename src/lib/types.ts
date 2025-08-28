@@ -1,3 +1,4 @@
+
 export type UserProfile = {
   id: string;
   name: string;
@@ -17,6 +18,9 @@ export type UserProfile = {
   mobileNo?: string;
   zodiacSign?: string;
   starSign?: string;
+  religion?: string;
+  community?: string;
+  subCaste?: string;
   employed?: 'yes' | 'no';
   occupation?: string;
   salary?: string;

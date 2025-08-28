@@ -208,9 +208,21 @@ export default function ProfileEditPage() {
                                 <Label htmlFor="city">City</Label>
                                 <Input id="city" value={profileData.city || ''} onChange={handleInputChange} />
                             </div>
-                             <div className="grid gap-2 sm:col-span-2">
+                             <div className="grid gap-2">
                                 <Label htmlFor="mobileNo">Mobile No</Label>
                                 <Input id="mobileNo" value={profileData.mobileNo || ''} onChange={handleInputChange} />
+                            </div>
+                            <div className="grid gap-2">
+                                <Label htmlFor="religion">Religion</Label>
+                                <Input id="religion" value={profileData.religion || ''} onChange={handleInputChange} />
+                            </div>
+                             <div className="grid gap-2">
+                                <Label htmlFor="community">Community</Label>
+                                <Input id="community" value={profileData.community || ''} onChange={handleInputChange} />
+                            </div>
+                             <div className="grid gap-2">
+                                <Label htmlFor="subCaste">Sub Caste</Label>
+                                <Input id="subCaste" value={profileData.subCaste || ''} onChange={handleInputChange} />
                             </div>
                         </div>
 

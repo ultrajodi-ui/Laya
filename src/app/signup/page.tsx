@@ -47,6 +47,9 @@ export default function SignupPage() {
   const [mobileNo, setMobileNo] = useState('');
   const [zodiacSign, setZodiacSign] = useState('');
   const [starSign, setStarSign] = useState('');
+  const [religion, setReligion] = useState('');
+  const [community, setCommunity] = useState('');
+  const [subCaste, setSubCaste] = useState('');
   const [employed, setEmployed] = useState('yes');
   const [occupation, setOccupation] = useState('');
   const [salary, setSalary] = useState('');
@@ -132,6 +135,9 @@ export default function SignupPage() {
         mobileNo,
         zodiacSign,
         starSign,
+        religion,
+        community,
+        subCaste,
         employed,
         occupation,
         salary,
@@ -384,6 +390,18 @@ export default function SignupPage() {
                                       ))}
                                   </SelectContent>
                               </Select>
+                          </div>
+                          <div className="grid gap-2">
+                              <Label htmlFor="religion">Religion</Label>
+                              <Input id="religion" value={religion} onChange={(e) => setReligion(e.target.value)} />
+                          </div>
+                           <div className="grid gap-2">
+                              <Label htmlFor="community">Community</Label>
+                              <Input id="community" value={community} onChange={(e) => setCommunity(e.target.value)} />
+                          </div>
+                           <div className="grid gap-2 md:col-span-2">
+                              <Label htmlFor="subCaste">Sub Caste</Label>
+                              <Input id="subCaste" value={subCaste} onChange={(e) => setSubCaste(e.target.value)} />
                           </div>
                           <div className="grid gap-2 md:col-span-2">
                               <Label>Are you Employed?</Label>
