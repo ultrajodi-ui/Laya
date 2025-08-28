@@ -34,6 +34,7 @@ import { app } from '@/lib/firebase';
 import React from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from './ui/skeleton';
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from './ui/dropdown-menu';
 
 const auth = getAuth(app);
 
@@ -179,12 +180,30 @@ export function AppLayout({ children }: { children: ReactNode }) {
                         <span className="sr-only">Home</span>
                     </Link>
                 </Button>
-                 <Button variant="ghost" size="icon" className="rounded-full" asChild>
-                    <Link href="/profile/edit">
-                        <User className="h-5 w-5" />
-                        <span className="sr-only">My Profile</span>
-                    </Link>
-                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon" className="rounded-full">
+                       <Avatar className="h-8 w-8">
+                          <AvatarImage src={user?.photoURL || "https://picsum.photos/seed/user-avatar/100/100"} alt={user?.displayName || "User"} />
+                          <AvatarFallback>{user?.displayName?.charAt(0) || 'U'}</AvatarFallback>
+                      </Avatar>
+                      <span className="sr-only">Toggle user menu</span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem asChild>
+                       <Link href="/profile/edit">
+                          <User className="mr-2 h-4 w-4" />
+                          <span>My Profile</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={handleLogout}>
+                      <LogOut className="mr-2 h-4 w-4" />
+                      <span>Logout</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
             </header>
             <main className="flex-1 p-4 sm:p-6">{children}</main>
         </SidebarInset>
