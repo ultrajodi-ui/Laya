@@ -174,6 +174,12 @@ export function AppLayout({ children }: { children: ReactNode }) {
                     <h1 className="font-headline text-lg font-semibold md:text-2xl capitalize">{pathname.split('/').pop()?.replace('-', ' ')}</h1>
                 </div>
                  <Button variant="ghost" size="icon" className="rounded-full" asChild>
+                    <Link href="/browse">
+                        <Home className="h-5 w-5" />
+                        <span className="sr-only">Home</span>
+                    </Link>
+                </Button>
+                 <Button variant="ghost" size="icon" className="rounded-full" asChild>
                     <Link href="/profile/edit">
                         <User className="h-5 w-5" />
                         <span className="sr-only">My Profile</span>
