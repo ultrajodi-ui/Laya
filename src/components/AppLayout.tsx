@@ -1,17 +1,20 @@
 
+
 'use client';
 
 import type { ReactNode } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import {
   Heart,
   Home,
+  LogOut,
   MessageSquare,
   Search,
   Settings,
   User,
 } from 'lucide-react';
+import { getAuth, onAuthStateChanged, signOut, User as FirebaseUser } from 'firebase/auth';
 
 import {
   Sidebar,
@@ -27,6 +30,12 @@ import {
 } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { app } from '@/lib/firebase';
+import React from 'react';
+import { useToast } from '@/hooks/use-toast';
+import { Skeleton } from './ui/skeleton';
+
+const auth = getAuth(app);
 
 const navItems = [
   { href: '/browse', icon: Home, label: 'Browse' },
@@ -42,6 +51,52 @@ const settingsNavItems = [
 
 export function AppLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const { toast } = useToast();
+  const [user, setUser] = React.useState<FirebaseUser | null>(null);
+  const [loading, setLoading] = React.useState(true);
+
+
+  React.useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUser(user);
+      } else {
+        setUser(null);
+        if(!['/login', '/signup', '/'].includes(pathname)) {
+            router.push('/login');
+        }
+      }
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, [router, pathname]);
+
+  const handleLogout = async () => {
+    try {
+        await signOut(auth);
+        toast({
+            title: "Logged Out",
+            description: "You have been successfully logged out.",
+        });
+        router.push('/login');
+    } catch (error) {
+        toast({
+            variant: "destructive",
+            title: "Logout Failed",
+            description: "Something went wrong. Please try again."
+        })
+    }
+  }
+
+  if (loading) {
+    return (
+        <div className="flex items-center justify-center h-screen">
+            <Skeleton className='h-screen w-full' />
+        </div>
+    )
+  }
 
   return (
     <SidebarProvider>
@@ -101,14 +156,12 @@ export function AppLayout({ children }: { children: ReactNode }) {
                 </SidebarMenuItem>
               ))}
                 <SidebarMenuItem>
-                    <SidebarMenuButton asChild tooltip={{children: "Logout"}}>
-                         <Link href="/">
-                             <Avatar className="h-8 w-8">
-                                <AvatarImage src="https://picsum.photos/seed/user-avatar/100/100" alt="User" />
-                                <AvatarFallback>U</AvatarFallback>
-                            </Avatar>
-                            <span>Logout</span>
-                        </Link>
+                    <SidebarMenuButton onClick={handleLogout} tooltip={{children: "Logout"}}>
+                         <Avatar className="h-8 w-8">
+                            <AvatarImage src={user?.photoURL || "https://picsum.photos/seed/user-avatar/100/100"} alt={user?.displayName || "User"} />
+                            <AvatarFallback>{user?.displayName?.charAt(0) || 'U'}</AvatarFallback>
+                        </Avatar>
+                        <span>Logout</span>
                     </SidebarMenuButton>
                 </SidebarMenuItem>
             </SidebarMenu>
@@ -120,9 +173,11 @@ export function AppLayout({ children }: { children: ReactNode }) {
                 <div className="flex-1">
                     <h1 className="font-headline text-lg font-semibold md:text-2xl capitalize">{pathname.split('/').pop()?.replace('-', ' ')}</h1>
                 </div>
-                <Button variant="ghost" size="icon" className="rounded-full">
-                    <User className="h-5 w-5" />
-                    <span className="sr-only">My Profile</span>
+                 <Button variant="ghost" size="icon" className="rounded-full" asChild>
+                    <Link href="/profile/edit">
+                        <User className="h-5 w-5" />
+                        <span className="sr-only">My Profile</span>
+                    </Link>
                 </Button>
             </header>
             <main className="flex-1 p-4 sm:p-6">{children}</main>
