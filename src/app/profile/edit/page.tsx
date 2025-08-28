@@ -133,11 +133,18 @@ export default function ProfileEditPage() {
                     <CardHeader>
                         <CardTitle className="font-headline">My Profile</CardTitle>
                         <CardDescription>Update your personal information and preferences.</CardDescription>
-                        {profileData.memberid && (
-                            <p className="text-sm pt-2 text-muted-foreground">
-                                Member ID: <span className="font-semibold text-primary">{profileData.memberid}</span>
-                            </p>
-                        )}
+                        <div className="pt-2 space-y-1">
+                            {profileData.memberid && (
+                                <p className="text-sm text-muted-foreground">
+                                    Member ID: <span className="font-semibold text-primary">{profileData.memberid}</span>
+                                </p>
+                            )}
+                            {profileData.usertype && (
+                                <p className="text-sm text-muted-foreground">
+                                    User Type: <span className="font-semibold text-primary">{profileData.usertype}</span>
+                                </p>
+                            )}
+                        </div>
                     </CardHeader>
                     <CardContent className="grid gap-6">
                         <div className="flex items-center gap-4">
