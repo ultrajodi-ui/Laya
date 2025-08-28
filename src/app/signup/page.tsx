@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Link from "next/link"
 import { useRouter } from 'next/navigation';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
@@ -49,11 +49,24 @@ export default function SignupPage() {
   const [employed, setEmployed] = useState('yes');
   const [occupation, setOccupation] = useState('');
   const [salary, setSalary] = useState('');
-  const [workingPlace, setWorkingPlace]_useState('');
+  const [workingPlace, setWorkingPlace] = useState('');
   const [homeAddress, setHomeAddress] = useState('');
   const [city, setCity] = useState('');
   const [state, setState] = useState('');
   const [userUid, setUserUid] = useState<string | null>(null);
+  const [age, setAge] = useState<number | undefined>();
+
+  useEffect(() => {
+    if (dob) {
+      const today = new Date();
+      let calculatedAge = today.getFullYear() - dob.getFullYear();
+      const m = today.getMonth() - dob.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+        calculatedAge--;
+      }
+      setAge(calculatedAge);
+    }
+  }, [dob]);
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -112,6 +125,7 @@ export default function SignupPage() {
         fullName,
         dob,
         gender,
+        age,
         fatherName,
         motherName,
         mobileNo,

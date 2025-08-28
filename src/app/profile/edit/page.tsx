@@ -169,7 +169,7 @@ export default function ProfileEditPage() {
                             </div>
                              <div className="grid gap-2">
                                 <Label htmlFor="age">Age</Label>
-                                <Input id="age" type="number" value={profileData.age || ''} onChange={handleInputChange} />
+                                <Input id="age" type="number" value={profileData.age || ''} onChange={handleInputChange} readOnly className="bg-muted" />
                             </div>
                         </div>
 
