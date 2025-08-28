@@ -133,16 +133,21 @@ export default function ProfileEditPage() {
                     <CardHeader>
                         <CardTitle className="font-headline">My Profile</CardTitle>
                         <CardDescription>Update your personal information and preferences.</CardDescription>
-                        <div className="pt-2 space-y-1">
+                        <div className="pt-2 space-y-2">
                             {profileData.memberid && (
                                 <p className="text-sm text-muted-foreground">
                                     Member ID: <span className="font-semibold text-primary">{profileData.memberid}</span>
                                 </p>
                             )}
                             {profileData.usertype && (
-                                <p className="text-sm text-muted-foreground">
-                                    User Type: <span className="font-semibold text-primary">{profileData.usertype}</span>
-                                </p>
+                                <div className="flex items-center gap-2">
+                                    <p className="text-sm text-muted-foreground">
+                                        User Type: <span className="font-semibold text-primary">{profileData.usertype}</span>
+                                    </p>
+                                    {profileData.usertype === 'Basic' && (
+                                        <Button size="sm" variant="outline" className="h-7 text-primary border-primary hover:bg-primary hover:text-primary-foreground">Upgrade</Button>
+                                    )}
+                                </div>
                             )}
                         </div>
                     </CardHeader>
