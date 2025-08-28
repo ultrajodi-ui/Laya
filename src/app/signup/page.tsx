@@ -5,7 +5,7 @@ import Link from "next/link"
 import { useRouter } from 'next/navigation';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
-import { doc, setDoc, collection, getDocs, query, where,getCountFromServer } from 'firebase/firestore';
+import { doc, setDoc, collection, getDocs, query, where, getCountFromServer } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Button } from "@/components/ui/button"
 import {
@@ -164,6 +164,9 @@ export default function SignupPage() {
     }
   };
 
+  const nakshatras = [
+    "Ashwini", "Bharani", "Krittika", "Rohini", "Mrigashira", "Ardra", "Punarvasu", "Pushya", "Ashlesha", "Magha", "Purva Phalguni", "Uttara Phalguni", "Hasta", "Chitra", "Swati", "Vishakha", "Anuradha", "Jyeshtha", "Mula", "Purva Ashadha", "Uttara Ashadha", "Shravana", "Dhanishta", "Shatabhisha", "Purva Bhadrapada", "Uttara Bhadrapada", "Revati"
+  ];
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#feefdb] p-4">
@@ -267,7 +270,7 @@ export default function SignupPage() {
                         </div>
                          <div className="grid gap-2 md:col-span-2">
                             <Label>Gender</Label>
-                            <RadioGroup value={gender} onValueChange={setGender} className="flex gap-4">
+                            <RadioGroup value={gender} onValuechange={setGender} className="flex gap-4">
                                 <div className="flex items-center space-x-2">
                                     <RadioGroupItem value="female" id="female" ref={genderRef} />
                                     <Label htmlFor="female">Female</Label>
@@ -300,11 +303,20 @@ export default function SignupPage() {
                         </div>
                          <div className="grid gap-2">
                             <Label htmlFor="star-sign">Star Sign (Nakshatra)</Label>
-                            <Input id="star-sign" value={starSign} onChange={(e) => setStarSign(e.target.value)} />
+                             <Select value={starSign} onValueChange={setStarSign}>
+                                <SelectTrigger id="star-sign">
+                                    <SelectValue placeholder="Select star sign" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {nakshatras.map(nakshatra => (
+                                        <SelectItem key={nakshatra} value={nakshatra}>{nakshatra}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
                         </div>
                         <div className="grid gap-2 md:col-span-2">
                             <Label>Are you Employed?</Label>
-                            <RadioGroup value={employed} onValueChange={setEmployed} className="flex gap-4">
+                            <RadioGroup value={employed} onValuechange={setEmployed} className="flex gap-4">
                                 <div className="flex items-center space-x-2">
                                     <RadioGroupItem value="yes" id="employed-yes" />
                                     <Label htmlFor="employed-yes">Yes</Label>
@@ -364,5 +376,3 @@ export default function SignupPage() {
     </div>
   )
 }
-
-    
