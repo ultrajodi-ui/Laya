@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import Link from "next/link"
 import { useRouter } from 'next/navigation';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
-
+import { doc, setDoc } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -37,6 +38,23 @@ export default function SignupPage() {
   const [dob, setDob] = useState<Date>();
   const genderRef = useRef<HTMLButtonElement>(null);
 
+  // Additional form fields state
+  const [fullName, setFullName] = useState('');
+  const [gender, setGender] = useState('female');
+  const [fatherName, setFatherName] = useState('');
+  const [motherName, setMotherName] = useState('');
+  const [mobileNo, setMobileNo] = useState('');
+  const [zodiacSign, setZodiacSign] = useState('');
+  const [starSign, setStarSign] = useState('');
+  const [employed, setEmployed] = useState('yes');
+  const [occupation, setOccupation] = useState('');
+  const [salary, setSalary] = useState('');
+  const [workingPlace, setWorkingPlace] = useState('');
+  const [homeAddress, setHomeAddress] = useState('');
+  const [city, setCity] = useState('');
+  const [state, setState] = useState('');
+  const [userUid, setUserUid] = useState<string | null>(null);
+
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     if (password !== confirmPassword) {
@@ -49,12 +67,13 @@ export default function SignupPage() {
     }
     setIsLoading(true);
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      setUserUid(userCredential.user.uid);
       toast({
         title: "Account Created",
         description: "Welcome! Please complete your profile.",
       });
-      setStep(2); // Move to the next step
+      setStep(2); 
     } catch (error: any) {
       toast({
         variant: "destructive",
@@ -66,21 +85,68 @@ export default function SignupPage() {
     }
   };
 
-  const handleRegistration = (e: React.FormEvent) => {
+  const handleRegistration = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you would typically save the data to your database
-    toast({
-        title: "Registration Complete!",
-        description: "Your profile has been created."
-    });
-    router.push('/browse');
+    if (!userUid) {
+        toast({
+            variant: "destructive",
+            title: "Registration Failed",
+            description: "User ID not found. Please try signing up again.",
+        });
+        setStep(1);
+        return;
+    }
+    setIsLoading(true);
+    
+    try {
+      const userProfileData = {
+        fullName,
+        dob,
+        gender,
+        fatherName,
+        motherName,
+        mobileNo,
+        zodiacSign,
+        starSign,
+        employed,
+        occupation,
+        salary,
+        workingPlace,
+        homeAddress,
+        city,
+        state,
+        email,
+      };
+      
+      // Update Firebase Auth profile
+      if(auth.currentUser) {
+        await updateProfile(auth.currentUser, {
+          displayName: fullName,
+        });
+      }
+
+      // Save to Firestore
+      await setDoc(doc(db, "users", userUid), userProfileData);
+
+      toast({
+          title: "Registration Complete!",
+          description: "Your profile has been created."
+      });
+      router.push('/browse');
+    } catch (error: any) {
+         toast({
+            variant: "destructive",
+            title: "Registration Failed",
+            description: error.message,
+        });
+    } finally {
+        setIsLoading(false);
+    }
   }
 
   const handleDateSelect = (date: Date | undefined) => {
     setDob(date);
     if (date) {
-        // We need to close the popover which is done by Radix UI automatically
-        // and then focus the next element. A short delay ensures the popover is closed.
         setTimeout(() => {
             genderRef.current?.focus();
         }, 100);
@@ -158,7 +224,7 @@ export default function SignupPage() {
                     <form onSubmit={handleRegistration} className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="grid gap-2">
                             <Label htmlFor="full-name">Full Name</Label>
-                            <Input id="full-name" placeholder="Anika Sharma" required />
+                            <Input id="full-name" placeholder="Anika Sharma" required value={fullName} onChange={(e) => setFullName(e.target.value)} />
                         </div>
                          <div className="grid gap-2">
                             <Label htmlFor="dob">Date of Birth</Label>
@@ -190,7 +256,7 @@ export default function SignupPage() {
                         </div>
                          <div className="grid gap-2 md:col-span-2">
                             <Label>Gender</Label>
-                            <RadioGroup defaultValue="female" className="flex gap-4">
+                            <RadioGroup value={gender} onValueChange={setGender} className="flex gap-4">
                                 <div className="flex items-center space-x-2">
                                     <RadioGroupItem value="female" id="female" ref={genderRef} />
                                     <Label htmlFor="female">Female</Label>
@@ -207,27 +273,27 @@ export default function SignupPage() {
                         </div>
                         <div className="grid gap-2">
                             <Label htmlFor="father-name">Father's Name</Label>
-                            <Input id="father-name" required />
+                            <Input id="father-name" required value={fatherName} onChange={(e) => setFatherName(e.target.value)} />
                         </div>
                         <div className="grid gap-2">
                             <Label htmlFor="mother-name">Mother's Name</Label>
-                            <Input id="mother-name" required />
+                            <Input id="mother-name" required value={motherName} onChange={(e) => setMotherName(e.target.value)} />
                         </div>
                         <div className="grid gap-2">
                             <Label htmlFor="mobile-no">Mobile No</Label>
-                            <Input id="mobile-no" type="tel" required />
+                            <Input id="mobile-no" type="tel" required value={mobileNo} onChange={(e) => setMobileNo(e.target.value)} />
                         </div>
                          <div className="grid gap-2">
                             <Label htmlFor="zodiac-sign">Zodiac Sign (Rashi)</Label>
-                            <Input id="zodiac-sign" />
+                            <Input id="zodiac-sign" value={zodiacSign} onChange={(e) => setZodiacSign(e.target.value)} />
                         </div>
                          <div className="grid gap-2">
                             <Label htmlFor="star-sign">Star Sign (Nakshatra)</Label>
-                            <Input id="star-sign" />
+                            <Input id="star-sign" value={starSign} onChange={(e) => setStarSign(e.target.value)} />
                         </div>
                         <div className="grid gap-2 md:col-span-2">
                             <Label>Are you Employed?</Label>
-                            <RadioGroup defaultValue="yes" className="flex gap-4">
+                            <RadioGroup value={employed} onValueChange={setEmployed} className="flex gap-4">
                                 <div className="flex items-center space-x-2">
                                     <RadioGroupItem value="yes" id="employed-yes" />
                                     <Label htmlFor="employed-yes">Yes</Label>
@@ -240,11 +306,11 @@ export default function SignupPage() {
                         </div>
                          <div className="grid gap-2">
                             <Label htmlFor="occupation">Occupation</Label>
-                            <Input id="occupation" />
+                            <Input id="occupation" value={occupation} onChange={(e) => setOccupation(e.target.value)} />
                         </div>
                         <div className="grid gap-2">
                              <Label htmlFor="salary">Salary (per annum)</Label>
-                             <Select>
+                             <Select value={salary} onValueChange={setSalary}>
                                 <SelectTrigger id="salary">
                                     <SelectValue placeholder="Select range" />
                                 </SelectTrigger>
@@ -259,19 +325,19 @@ export default function SignupPage() {
                         </div>
                          <div className="grid gap-2">
                             <Label htmlFor="working-place">Working Place</Label>
-                            <Input id="working-place" />
+                            <Input id="working-place" value={workingPlace} onChange={(e) => setWorkingPlace(e.target.value)} />
                         </div>
                         <div className="grid gap-2 md:col-span-2">
                             <Label htmlFor="home-address">Home Address</Label>
-                            <Input id="home-address" />
+                            <Input id="home-address" value={homeAddress} onChange={(e) => setHomeAddress(e.target.value)} />
                         </div>
                          <div className="grid gap-2">
                             <Label htmlFor="city">City</Label>
-                            <Input id="city" />
+                            <Input id="city" value={city} onChange={(e) => setCity(e.target.value)} />
                         </div>
                          <div className="grid gap-2">
                             <Label htmlFor="state">State</Label>
-                            <Input id="state" />
+                            <Input id="state" value={state} onChange={(e) => setState(e.target.value)} />
                         </div>
                         <div className="md:col-span-2">
                              <Button type="submit" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground" disabled={isLoading}>
