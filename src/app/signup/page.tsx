@@ -167,6 +167,21 @@ export default function SignupPage() {
   const nakshatras = [
     "Ashwini", "Bharani", "Krittika", "Rohini", "Mrigashira", "Ardra", "Punarvasu", "Pushya", "Ashlesha", "Magha", "Purva Phalguni", "Uttara Phalguni", "Hasta", "Chitra", "Swati", "Vishakha", "Anuradha", "Jyeshtha", "Mula", "Purva Ashadha", "Uttara Ashadha", "Shravana", "Dhanishta", "Shatabhisha", "Purva Bhadrapada", "Uttara Bhadrapada", "Revati"
   ];
+  
+  const zodiacSigns = [
+    "Mesha (Aries)",
+    "Vrishabha (Taurus)",
+    "Mithuna (Gemini)",
+    "Karka (Cancer)",
+    "Simha (Leo)",
+    "Kanya (Virgo)",
+    "Tula (Libra)",
+    "Vrishchika (Scorpio)",
+    "Dhanu (Sagittarius)",
+    "Makara (Capricorn)",
+    "Kumbha (Aquarius)",
+    "Meena (Pisces)"
+  ];
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#feefdb] p-4">
@@ -299,7 +314,16 @@ export default function SignupPage() {
                         </div>
                          <div className="grid gap-2">
                             <Label htmlFor="zodiac-sign">Zodiac Sign (Rashi)</Label>
-                            <Input id="zodiac-sign" value={zodiacSign} onChange={(e) => setZodiacSign(e.target.value)} />
+                            <Select value={zodiacSign} onValueChange={setZodiacSign}>
+                                <SelectTrigger id="zodiac-sign">
+                                    <SelectValue placeholder="Select zodiac sign" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {zodiacSigns.map(sign => (
+                                        <SelectItem key={sign} value={sign}>{sign}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
                         </div>
                          <div className="grid gap-2">
                             <Label htmlFor="star-sign">Star Sign (Nakshatra)</Label>
