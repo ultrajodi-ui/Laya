@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Link from "next/link"
 import { useRouter } from 'next/navigation';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
@@ -35,6 +35,7 @@ export default function SignupPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [step, setStep] = useState(1);
   const [dob, setDob] = useState<Date>();
+  const genderRef = useRef<HTMLButtonElement>(null);
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -74,6 +75,17 @@ export default function SignupPage() {
     });
     router.push('/browse');
   }
+
+  const handleDateSelect = (date: Date | undefined) => {
+    setDob(date);
+    if (date) {
+        // We need to close the popover which is done by Radix UI automatically
+        // and then focus the next element. A short delay ensures the popover is closed.
+        setTimeout(() => {
+            genderRef.current?.focus();
+        }, 100);
+    }
+  };
 
 
   return (
@@ -167,7 +179,7 @@ export default function SignupPage() {
                                     <Calendar
                                         mode="single"
                                         selected={dob}
-                                        onSelect={setDob}
+                                        onSelect={handleDateSelect}
                                         captionLayout="dropdown-buttons"
                                         fromYear={1950}
                                         toYear={new Date().getFullYear()}
@@ -180,7 +192,7 @@ export default function SignupPage() {
                             <Label>Gender</Label>
                             <RadioGroup defaultValue="female" className="flex gap-4">
                                 <div className="flex items-center space-x-2">
-                                    <RadioGroupItem value="female" id="female" />
+                                    <RadioGroupItem value="female" id="female" ref={genderRef} />
                                     <Label htmlFor="female">Female</Label>
                                 </div>
                                 <div className="flex items-center space-x-2">
