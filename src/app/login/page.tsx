@@ -68,8 +68,8 @@ export default function LoginPage() {
           <span className="ml-2 font-headline text-xl font-semibold">Ultra Jodi Matrimony</span>
         </Link>
         <nav className="ml-auto flex gap-4 sm:gap-6">
-          <Button variant="ghost" asChild>
-            <Link href="/login">Login</Link>
+          <Button variant="ghost" disabled>
+            Login
           </Button>
           <Button asChild className="bg-accent hover:bg-accent/90 text-accent-foreground">
             <Link href="/signup">Sign Up</Link>

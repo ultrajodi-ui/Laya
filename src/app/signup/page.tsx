@@ -229,8 +229,8 @@ export default function SignupPage() {
           <Button variant="ghost" asChild>
             <Link href="/login">Login</Link>
           </Button>
-          <Button asChild className="bg-accent hover:bg-accent/90 text-accent-foreground">
-            <Link href="/signup">Sign Up</Link>
+          <Button disabled className="bg-accent hover:bg-accent/90 text-accent-foreground">
+            Sign Up
           </Button>
         </nav>
       </header>
