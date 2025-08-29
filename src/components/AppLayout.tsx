@@ -15,6 +15,8 @@ import {
   User,
 } from 'lucide-react';
 import { getAuth, onAuthStateChanged, signOut, User as FirebaseUser } from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 
 import {
   Sidebar,
@@ -59,9 +61,19 @@ export function AppLayout({ children }: { children: ReactNode }) {
 
 
   React.useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         setUser(user);
+        // Check for profile completeness
+        const userDocRef = doc(db, 'users', user.uid);
+        const userDoc = await getDoc(userDocRef);
+        if (!userDoc.exists() && pathname !== '/profile/edit') {
+            toast({
+                title: "Profile Incomplete",
+                description: "Please complete your profile to continue.",
+            });
+            router.push('/profile/edit');
+        }
       } else {
         setUser(null);
         if(!['/login', '/signup', '/'].includes(pathname)) {
@@ -72,7 +84,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
     });
 
     return () => unsubscribe();
-  }, [router, pathname]);
+  }, [router, pathname, toast]);
 
   const handleLogout = async () => {
     try {
