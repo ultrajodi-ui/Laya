@@ -3,7 +3,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 
 export const metadata: Metadata = {
-  title: 'Ultra Jodi',
+  title: 'Ultra Jodi Matrimony',
   description: 'Find your perfect match with AI-powered matchmaking.',
 };
 

@@ -21,8 +21,8 @@ export default function Home() {
           >
             <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
           </svg>
-          <span className="sr-only">Ultra Jodi</span>
-          <span className="ml-2 font-headline text-xl font-semibold">Ultra Jodi</span>
+          <span className="sr-only">Ultra Jodi Matrimony</span>
+          <span className="ml-2 font-headline text-xl font-semibold">Ultra Jodi Matrimony</span>
         </Link>
         <nav className="ml-auto flex gap-4 sm:gap-6">
           <Button variant="ghost" asChild>
@@ -85,7 +85,7 @@ export default function Home() {
         </section>
       </main>
       <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 md:px-6 border-t">
-        <p className="text-xs text-muted-foreground">&copy; 2024 Ultra Jodi. All rights reserved.</p>
+        <p className="text-xs text-muted-foreground">&copy; 2024 Ultra Jodi Matrimony. All rights reserved.</p>
         <nav className="sm:ml-auto flex gap-4 sm:gap-6">
           <Link href="#" className="text-xs hover:underline underline-offset-4" prefetch={false}>
             Terms of Service
