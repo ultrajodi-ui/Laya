@@ -106,26 +106,24 @@ export default function ProfileViewPage() {
         <AppLayout>
             <div className="mx-auto grid max-w-4xl gap-6">
                  <Card>
-                    <CardHeader>
-                        <div className="flex items-center justify-between">
-                            <CardTitle className="font-headline">My Profile</CardTitle>
-                             <Button variant="outline" onClick={() => router.push('/profile/edit')}>
-                                <Pencil className="mr-2 h-4 w-4" />
-                                Edit Profile
-                            </Button>
-                        </div>
+                    <CardHeader className="items-center text-center">
+                        <CardTitle className="font-headline">My Profile</CardTitle>
                         <CardDescription>This is how your profile appears to others. Keep it updated!</CardDescription>
+                         <Button variant="outline" onClick={() => router.push('/profile/edit')}>
+                            <Pencil className="mr-2 h-4 w-4" />
+                            Edit Profile
+                        </Button>
                     </CardHeader>
                     <CardContent className="grid gap-6">
-                         <div className="flex items-center gap-4">
+                         <div className="flex flex-col items-center gap-4">
                             <span className="relative flex h-24 w-24 shrink-0 overflow-hidden rounded-full">
                                 <img className="aspect-square h-full w-full" alt={profileData.fullName || 'User'} src={profileData.imageUrl || `https://picsum.photos/seed/${user?.uid}/100/100`} />
                             </span>
-                             <div className="grid gap-1.5">
+                             <div className="grid gap-1.5 text-center">
                                  <h2 className="text-2xl font-bold">{profileData.fullName}</h2>
                                  <p className="text-sm text-muted-foreground">{profileData.email}</p>
                                  {profileData.usertype && (
-                                     <Badge variant="secondary" className="w-fit">{profileData.usertype}</Badge>
+                                     <Badge variant="secondary" className="w-fit justify-self-center">{profileData.usertype}</Badge>
                                  )}
                              </div>
                         </div>
