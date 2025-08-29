@@ -2,7 +2,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { getAuth, onAuthStateChanged, User, updateProfile } from 'firebase/auth';
 import { doc, getDoc, setDoc, getCountFromServer, collection, where, query } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
@@ -31,6 +31,8 @@ export default function ProfileEditPage() {
     const [profileData, setProfileData] = useState<any>({ gender: 'female', employed: 'yes' });
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
+    const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+    const fatherNameRef = useRef<HTMLInputElement>(null);
     const auth = getAuth();
 
     useEffect(() => {
@@ -70,6 +72,8 @@ export default function ProfileEditPage() {
     }
      const handleDateSelect = (date: Date | undefined) => {
         setProfileData((prevData: any) => ({ ...prevData, dob: date }));
+        setIsCalendarOpen(false);
+        fatherNameRef.current?.focus();
     };
 
     const handleSaveChanges = async () => {
@@ -219,7 +223,7 @@ export default function ProfileEditPage() {
                             </div>
                             <div className="grid gap-2">
                                 <Label htmlFor="dob">Date of Birth</Label>
-                                 <Popover>
+                                 <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
                                   <PopoverTrigger asChild>
                                       <Button
                                       variant={"outline"}
@@ -264,7 +268,7 @@ export default function ProfileEditPage() {
                           </div>
                             <div className="grid gap-2">
                                 <Label htmlFor="fatherName">Father Name</Label>
-                                <Input id="fatherName" value={profileData.fatherName || ''} onChange={handleInputChange} />
+                                <Input id="fatherName" ref={fatherNameRef} value={profileData.fatherName || ''} onChange={handleInputChange} />
                             </div>
                              <div className="grid gap-2">
                                 <Label htmlFor="motherName">Mother Name</Label>
