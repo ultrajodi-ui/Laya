@@ -82,12 +82,9 @@ export default function ProfileEditPage() {
         try {
             // Generate memberid if it doesn't exist
             if (!profileData.memberid) {
-                const usersRef = collection(db, "users");
-                const genderQuery = query(usersRef, where("gender", "==", profileData.gender));
-                const snapshot = await getCountFromServer(genderQuery);
-                const userCount = snapshot.data().count;
                 const memberIdPrefix = profileData.gender === 'male' ? 'UJM' : 'UJF';
-                profileData.memberid = `${memberIdPrefix}${userCount + 1}`;
+                const uniqueId = Date.now().toString().slice(-6);
+                profileData.memberid = `${memberIdPrefix}${uniqueId}`;
             }
 
             if (auth.currentUser && auth.currentUser.displayName !== profileData.fullName) {
