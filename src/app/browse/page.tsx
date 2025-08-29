@@ -10,13 +10,14 @@ import { Input } from "@/components/ui/input";
 import { Heart, ListFilter, MapPin } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
-import { collection, doc, getDoc, getDocs, query, where } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, query, where, writeBatch, deleteDoc, setDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import type { UserProfile } from "@/lib/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast";
 
 export default function BrowsePage() {
     const [users, setUsers] = useState<UserProfile[]>([]);
@@ -24,11 +25,23 @@ export default function BrowsePage() {
     const [loading, setLoading] = useState(true);
     const [interestedUsers, setInterestedUsers] = useState<Set<string>>(new Set());
     const auth = getAuth();
+    const { toast } = useToast();
+
+    const fetchInterests = useCallback(async (userId: string) => {
+        const interestsRef = collection(db, 'users', userId, 'interests');
+        const querySnapshot = await getDocs(interestsRef);
+        const interestedIds = new Set<string>();
+        querySnapshot.forEach((doc) => {
+            interestedIds.add(doc.id);
+        });
+        setInterestedUsers(interestedIds);
+    }, []);
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
             if (user) {
                 setCurrentUser(user);
+                await fetchInterests(user.uid);
                 const userDocRef = doc(db, 'users', user.uid);
                 const userDoc = await getDoc(userDocRef);
                 if (userDoc.exists()) {
@@ -41,18 +54,23 @@ export default function BrowsePage() {
                     
                     const fetchedUsers: UserProfile[] = [];
                     querySnapshot.forEach((doc) => {
-                        fetchedUsers.push({ id: doc.id, ...doc.data() } as UserProfile);
+                        // Exclude the current user from the list
+                        if (doc.id !== user.uid) {
+                           fetchedUsers.push({ id: doc.id, ...doc.data() } as UserProfile);
+                        }
                     });
                     setUsers(fetchedUsers);
                 }
             } else {
                 setCurrentUser(null);
+                setUsers([]);
+                setInterestedUsers(new Set());
             }
             setLoading(false);
         });
 
         return () => unsubscribe();
-    }, [auth]);
+    }, [auth, fetchInterests]);
 
     const calculateAge = (dob: any) => {
         if (!dob) return 0;
@@ -66,17 +84,48 @@ export default function BrowsePage() {
         return age;
     }
 
-    const handleInterestClick = (userId: string) => {
-        setInterestedUsers(prev => {
-            const newSet = new Set(prev);
-            if (newSet.has(userId)) {
-                newSet.delete(userId);
+    const handleInterestClick = async (targetUserId: string) => {
+        if (!currentUser) {
+            toast({
+                variant: 'destructive',
+                title: 'Not logged in',
+                description: 'You must be logged in to express interest.',
+            });
+            return;
+        }
+
+        const currentUserId = currentUser.uid;
+        const interestDocRef = doc(db, 'users', currentUserId, 'interests', targetUserId);
+
+        const newInterestedUsers = new Set(interestedUsers);
+        
+        try {
+            if (newInterestedUsers.has(targetUserId)) {
+                // User is currently interested, so we unlike
+                await deleteDoc(interestDocRef);
+                newInterestedUsers.delete(targetUserId);
+                 toast({
+                    title: 'Interest Removed',
+                    description: 'You have removed your interest from this profile.',
+                });
             } else {
-                newSet.add(userId);
+                // User is not interested, so we like
+                await setDoc(interestDocRef, { interestedAt: new Date() });
+                newInterestedUsers.add(targetUserId);
+                toast({
+                    title: 'Interest Expressed!',
+                    description: 'Your interest has been noted.',
+                });
             }
-            return newSet;
-        });
-        // In a real app, you'd also update this in your backend/database
+            setInterestedUsers(newInterestedUsers);
+        } catch (error) {
+            console.error("Failed to update interest:", error);
+            toast({
+                variant: 'destructive',
+                title: 'Update Failed',
+                description: 'Could not update your interest. Please try again.',
+            });
+        }
     };
 
 

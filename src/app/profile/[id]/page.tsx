@@ -2,8 +2,8 @@
 
 'use client';
 
-import { useState, useEffect, use } from 'react';
-import { doc, getDoc } from 'firebase/firestore';
+import { useState, useEffect, use, useCallback } from 'react';
+import { collection, doc, getDoc, setDoc, deleteDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { AppLayout } from "@/components/AppLayout";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -17,6 +17,8 @@ import type { UserProfile } from '@/lib/types';
 import { format, differenceInYears } from 'date-fns';
 import { usePageTitle } from '@/hooks/use-page-title';
 import { cn } from '@/lib/utils';
+import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
+import { useToast } from '@/hooks/use-toast';
 
 const calculateAge = (dob: any) => {
     if (!dob) return 0;
@@ -29,10 +31,65 @@ function ProfileContent({ id }: { id: string }) {
     const [loading, setLoading] = useState(true);
     const { setPageTitle } = usePageTitle();
     const [isInterested, setIsInterested] = useState(false);
+    const [currentUser, setCurrentUser] = useState<User | null>(null);
+    const auth = getAuth();
+    const { toast } = useToast();
 
-    const handleInterestClick = () => {
-        setIsInterested(prev => !prev);
-        // In a real app, you would also update this in your backend/database
+    const checkInterest = useCallback(async (currentUserId: string, targetUserId: string) => {
+        const interestDocRef = doc(db, 'users', currentUserId, 'interests', targetUserId);
+        const docSnap = await getDoc(interestDocRef);
+        setIsInterested(docSnap.exists());
+    }, []);
+
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            setCurrentUser(user);
+            if(user) {
+                checkInterest(user.uid, id);
+            }
+        });
+        return () => unsubscribe();
+    }, [auth, id, checkInterest]);
+
+
+    const handleInterestClick = async () => {
+        if (!currentUser) {
+            toast({
+                variant: 'destructive',
+                title: 'Not logged in',
+                description: 'You must be logged in to express interest.',
+            });
+            return;
+        }
+
+        const currentUserId = currentUser.uid;
+        const targetUserId = id;
+        const interestDocRef = doc(db, 'users', currentUserId, 'interests', targetUserId);
+
+        try {
+            if (isInterested) {
+                await deleteDoc(interestDocRef);
+                setIsInterested(false);
+                toast({
+                    title: 'Interest Removed',
+                    description: 'You have removed your interest from this profile.',
+                });
+            } else {
+                await setDoc(interestDocRef, { interestedAt: new Date() });
+                setIsInterested(true);
+                 toast({
+                    title: 'Interest Expressed!',
+                    description: 'Your interest has been noted.',
+                });
+            }
+        } catch (error) {
+            console.error("Failed to update interest:", error);
+            toast({
+                variant: 'destructive',
+                title: 'Update Failed',
+                description: 'Could not update your interest. Please try again.',
+            });
+        }
     };
 
 
