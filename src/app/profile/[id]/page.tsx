@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, use } from 'react';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { AppLayout } from "@/components/AppLayout";
@@ -25,10 +25,12 @@ export default function ProfileDetailPage({ params }: { params: { id: string } }
     const [user, setUser] = useState<UserProfile | null>(null);
     const [loading, setLoading] = useState(true);
 
+    const { id } = params;
+
     useEffect(() => {
         const fetchUser = async () => {
-            if (params.id) {
-                const userDocRef = doc(db, 'users', params.id);
+            if (id) {
+                const userDocRef = doc(db, 'users', id);
                 const userDoc = await getDoc(userDocRef);
                 if (userDoc.exists()) {
                     setUser({ id: userDoc.id, ...userDoc.data() } as UserProfile);
@@ -38,7 +40,7 @@ export default function ProfileDetailPage({ params }: { params: { id: string } }
         };
 
         fetchUser();
-    }, [params.id]);
+    }, [id]);
 
     if (loading) {
         return (
