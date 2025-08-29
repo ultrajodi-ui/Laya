@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -16,9 +17,11 @@ import { Loader2 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { format } from 'date-fns';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
+import { useRouter } from 'next/navigation';
 
 export default function ProfileEditPage() {
     const { toast } = useToast();
+    const router = useRouter();
     const [user, setUser] = useState<User | null>(null);
     const [profileData, setProfileData] = useState<any | null>(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -71,6 +74,7 @@ export default function ProfileEditPage() {
                 title: "Profile Updated",
                 description: "Your changes have been saved successfully.",
             });
+            router.push('/profile/view');
         } catch (error: any) {
             toast({
                 variant: "destructive",
@@ -234,10 +238,15 @@ export default function ProfileEditPage() {
                             <Textarea id="lookingFor" rows={3} value={profileData.lookingFor || ''} onChange={handleInputChange}/>
                         </div>
 
-                         <Button onClick={handleSaveChanges} className="w-full sm:w-auto justify-self-start bg-primary hover:bg-primary/90" disabled={isSaving}>
-                            {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            {isSaving ? 'Saving...' : 'Save Changes'}
-                         </Button>
+                         <div className="flex gap-2 justify-self-start">
+                            <Button onClick={handleSaveChanges} className="bg-primary hover:bg-primary/90" disabled={isSaving}>
+                                {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                {isSaving ? 'Saving...' : 'Save Changes'}
+                            </Button>
+                            <Button variant="outline" onClick={() => router.push('/profile/view')} disabled={isSaving}>
+                                Cancel
+                            </Button>
+                        </div>
                     </CardContent>
                 </Card>
             </div>
