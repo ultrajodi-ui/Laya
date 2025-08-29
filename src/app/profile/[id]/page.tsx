@@ -25,9 +25,9 @@ const calculateAge = (dob: any) => {
 export default function ProfileDetailPage({ params }: { params: { id: string } }) {
     const [user, setUser] = useState<UserProfile | null>(null);
     const [loading, setLoading] = useState(true);
+    const { id } = params;
 
     useEffect(() => {
-        const { id } = params;
         const fetchUser = async () => {
             if (id) {
                 const userDocRef = doc(db, 'users', id as string);
@@ -40,7 +40,7 @@ export default function ProfileDetailPage({ params }: { params: { id: string } }
         };
 
         fetchUser();
-    }, [params]);
+    }, [id]);
 
     if (loading) {
         return (
