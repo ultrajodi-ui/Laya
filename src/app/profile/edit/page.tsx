@@ -13,11 +13,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from '@/hooks/use-toast';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Zap } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { format } from 'date-fns';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { useRouter } from 'next/navigation';
+import { Badge } from '@/components/ui/badge';
 
 export default function ProfileEditPage() {
     const { toast } = useToast();
@@ -153,6 +154,17 @@ export default function ProfileEditPage() {
                             <div className="grid gap-1.5">
                                 <Button>Change Photo</Button>
                                 <p className="text-sm text-muted-foreground">JPG, GIF or PNG. 1MB max.</p>
+                            </div>
+                        </div>
+
+                         <div className="grid gap-2 p-4 border rounded-lg">
+                            <Label>Account Type</Label>
+                            <div className="flex items-center justify-between">
+                                <Badge variant="secondary" className="text-base">{profileData.usertype || 'Basic'}</Badge>
+                                <Button className="bg-accent text-accent-foreground hover:bg-accent/90">
+                                    <Zap className="mr-2 h-4 w-4" />
+                                    Upgrade to Premium
+                                </Button>
                             </div>
                         </div>
 
