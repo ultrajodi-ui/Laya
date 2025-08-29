@@ -122,6 +122,13 @@ export function AppLayout({ children }: { children: ReactNode }) {
         </div>
     )
   }
+  
+  const getPageTitle = () => {
+    if (pathname.startsWith('/profile/')) {
+        return "Bride Profile";
+    }
+    return pathname.split('/').pop()?.replace('-', ' ') || '';
+  }
 
 
   return (
@@ -197,7 +204,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
             <header className="flex h-14 items-center gap-4 border-b bg-background/95 backdrop-blur-sm px-4 lg:h-[60px] lg:px-6 sticky top-0 z-30">
                 <SidebarTrigger className="md:hidden"/>
                 <div className="flex-1">
-                    <h1 className="font-headline text-lg font-semibold md:text-2xl capitalize">{pathname.split('/').pop()?.replace('-', ' ')}</h1>
+                    <h1 className="font-headline text-lg font-semibold md:text-2xl capitalize">{getPageTitle()}</h1>
                 </div>
                  <Button variant="ghost" size="icon" className="rounded-full" asChild>
                     <Link href="/browse">
