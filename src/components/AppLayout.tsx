@@ -64,15 +64,14 @@ export function AppLayout({ children }: { children: ReactNode }) {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         setUser(user);
-        // Check for profile completeness
         const userDocRef = doc(db, 'users', user.uid);
         const userDoc = await getDoc(userDocRef);
-        if (!userDoc.exists() && !['/signup', '/profile/edit'].includes(pathname)) {
+        if (!userDoc.exists() && pathname !== '/signup' && pathname !== '/profile/edit') {
             toast({
                 title: "Profile Incomplete",
                 description: "Please complete your profile to continue.",
             });
-            router.push('/profile/edit');
+            router.push('/signup'); // or '/profile/edit', but signup handles the full flow
         }
       } else {
         setUser(null);
@@ -110,6 +109,20 @@ export function AppLayout({ children }: { children: ReactNode }) {
         </div>
     )
   }
+
+  // Render children without layout for auth pages
+  if (['/login', '/signup', '/'].includes(pathname) && !user) {
+    return <>{children}</>;
+  }
+  
+  if (user && !['/login', '/signup', '/'].includes(pathname) && loading) {
+     return (
+        <div className="flex items-center justify-center h-screen">
+            <Skeleton className='h-screen w-full' />
+        </div>
+    )
+  }
+
 
   return (
     <SidebarProvider defaultOpen={false}>
