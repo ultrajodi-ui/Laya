@@ -48,7 +48,7 @@ const navItems = [
 ];
 
 const settingsNavItems = [
-    { href: '/profile/edit', icon: User, label: 'My Profile' },
+    { href: '/profile', icon: User, label: 'My Profile' },
     { href: '/settings', icon: Settings, label: 'Settings' },
 ]
 
@@ -67,7 +67,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
         // Check for profile completeness
         const userDocRef = doc(db, 'users', user.uid);
         const userDoc = await getDoc(userDocRef);
-        if (!userDoc.exists() && pathname !== '/profile/edit' && pathname !== '/signup') {
+        if (!userDoc.exists() && pathname !== '/signup') {
             toast({
                 title: "Profile Incomplete",
                 description: "Please complete your profile to continue.",
@@ -204,7 +204,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem asChild>
-                       <Link href="/profile/edit">
+                       <Link href="/profile">
                           <User className="mr-2 h-4 w-4" />
                           <span>My Profile</span>
                       </Link>

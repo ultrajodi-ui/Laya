@@ -23,7 +23,6 @@ export default function ProfileEditPage() {
     const [profileData, setProfileData] = useState<any | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
-    const [age, setAge] = useState<number | undefined>();
     const auth = getAuth();
 
     useEffect(() => {
@@ -35,15 +34,6 @@ export default function ProfileEditPage() {
                 if (docSnap.exists()) {
                     const data = docSnap.data();
                     const dob = data.dob?.toDate();
-                    if (dob) {
-                        const today = new Date();
-                        let calculatedAge = today.getFullYear() - dob.getFullYear();
-                        const m = today.getMonth() - dob.getMonth();
-                        if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
-                            calculatedAge--;
-                        }
-                        setAge(calculatedAge);
-                    }
                     setProfileData({
                         ...data,
                         dob: dob
@@ -75,8 +65,7 @@ export default function ProfileEditPage() {
         setIsSaving(true);
         try {
             const userDocRef = doc(db, "users", user.uid);
-            // We don't want to save the photo URL or age to the document
-            const { imageUrl, age, ...dataToSave } = profileData;
+            const { imageUrl, ...dataToSave } = profileData;
             await setDoc(userDocRef, dataToSave, { merge: true });
             toast({
                 title: "Profile Updated",
@@ -149,25 +138,8 @@ export default function ProfileEditPage() {
             <div className="mx-auto grid max-w-4xl gap-6">
                  <Card>
                     <CardHeader>
-                        <CardTitle className="font-headline">My Profile</CardTitle>
+                        <CardTitle className="font-headline">Edit Profile</CardTitle>
                         <CardDescription>Update your personal information and preferences.</CardDescription>
-                        <div className="pt-2 space-y-2">
-                            {profileData.memberid && (
-                                <p className="text-sm text-muted-foreground">
-                                    Member ID: <span className="font-semibold text-primary">{profileData.memberid}</span>
-                                </p>
-                            )}
-                            {profileData.usertype && (
-                                <div className="flex items-center gap-2">
-                                    <p className="text-sm text-muted-foreground">
-                                        User Type: <span className="font-semibold text-primary">{profileData.usertype}</span>
-                                    </p>
-                                    {profileData.usertype === 'Basic' && (
-                                        <Button size="sm" variant="outline" className="h-7 text-primary border-primary hover:bg-primary hover:text-primary-foreground">Upgrade</Button>
-                                    )}
-                                </div>
-                            )}
-                        </div>
                     </CardHeader>
                     <CardContent className="grid gap-6">
                         <div className="flex items-center gap-4">
@@ -187,7 +159,7 @@ export default function ProfileEditPage() {
                             </div>
                             <div className="grid gap-2">
                                 <Label htmlFor="dob">Date of Birth</Label>
-                                <Input id="dob" value={profileData.dob ? format(profileData.dob, 'PPP') : ''} readOnly className="bg-muted" />
+                                <Input id="dob" value={profileData.dob ? format(new Date(profileData.dob), 'PPP') : ''} readOnly className="bg-muted" />
                             </div>
                             <div className="grid gap-2">
                                 <Label htmlFor="fatherName">Father Name</Label>

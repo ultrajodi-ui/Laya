@@ -8,7 +8,7 @@ export default function ProfilePage() {
   const router = useRouter();
 
   useEffect(() => {
-    router.replace('/profile/edit');
+    router.replace('/profile/view');
   }, [router]);
 
   return null; // or a loading spinner
