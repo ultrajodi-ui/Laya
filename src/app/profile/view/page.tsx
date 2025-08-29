@@ -13,6 +13,7 @@ import { Loader2, Pencil } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { format } from 'date-fns';
 import { useRouter } from 'next/navigation';
+import { Badge } from '@/components/ui/badge';
 
 export default function ProfileViewPage() {
     const { toast } = useToast();
@@ -122,12 +123,14 @@ export default function ProfileViewPage() {
                              <div className="grid gap-1.5">
                                  <h2 className="text-2xl font-bold">{profileData.fullName}</h2>
                                  <p className="text-sm text-muted-foreground">{profileData.email}</p>
+                                 {profileData.usertype && (
+                                     <Badge variant="secondary" className="w-fit">{profileData.usertype}</Badge>
+                                 )}
                              </div>
                         </div>
 
                         <div className="grid sm:grid-cols-2 gap-6">
                             <ProfileDetail label="Member ID" value={profileData.memberid} />
-                            <ProfileDetail label="User Type" value={profileData.usertype} />
                             <ProfileDetail label="Full Name" value={profileData.fullName} />
                             <ProfileDetail label="Date of Birth" value={profileData.dob ? format(profileData.dob, 'PPP') : '-'} />
                             <ProfileDetail label="Father Name" value={profileData.fatherName} />
@@ -152,5 +155,6 @@ export default function ProfileViewPage() {
         </AppLayout>
     );
 }
+
 
 
