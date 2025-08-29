@@ -33,10 +33,11 @@ import {
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { app } from '@/lib/firebase';
-import React from 'react';
+import React, { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from './ui/skeleton';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from './ui/dropdown-menu';
+import { PageTitleProvider, usePageTitle } from '@/hooks/use-page-title';
 
 const auth = getAuth(app);
 
@@ -52,12 +53,13 @@ const settingsNavItems = [
     { href: '/settings', icon: Settings, label: 'Settings' },
 ]
 
-export function AppLayout({ children }: { children: ReactNode }) {
+function AppLayoutContent({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const { toast } = useToast();
   const [user, setUser] = React.useState<FirebaseUser | null>(null);
   const [loading, setLoading] = React.useState(true);
+  const { pageTitle, setPageTitle } = usePageTitle();
 
 
   React.useEffect(() => {
@@ -84,6 +86,18 @@ export function AppLayout({ children }: { children: ReactNode }) {
 
     return () => unsubscribe();
   }, [router, pathname, toast]);
+  
+  React.useEffect(() => {
+    if (pathname.startsWith('/profile/edit')) {
+      setPageTitle('Edit Profile');
+    } else if (pathname.startsWith('/profile/view')) {
+      setPageTitle('My Profile');
+    } else if (!pathname.startsWith('/profile/')) {
+       const title = pathname.split('/').pop()?.replace('-', ' ') || '';
+       setPageTitle(title);
+    }
+  }, [pathname, setPageTitle]);
+
 
   const handleLogout = async () => {
     try {
@@ -122,14 +136,6 @@ export function AppLayout({ children }: { children: ReactNode }) {
         </div>
     )
   }
-  
-  const getPageTitle = () => {
-    if (pathname.startsWith('/profile/')) {
-        return "Bride Profile";
-    }
-    return pathname.split('/').pop()?.replace('-', ' ') || '';
-  }
-
 
   return (
     <SidebarProvider defaultOpen={false}>
@@ -204,7 +210,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
             <header className="flex h-14 items-center gap-4 border-b bg-background/95 backdrop-blur-sm px-4 lg:h-[60px] lg:px-6 sticky top-0 z-30">
                 <SidebarTrigger className="md:hidden"/>
                 <div className="flex-1">
-                    <h1 className="font-headline text-lg font-semibold md:text-2xl capitalize">{getPageTitle()}</h1>
+                    <h1 className="font-headline text-lg font-semibold md:text-2xl capitalize">{pageTitle}</h1>
                 </div>
                  <Button variant="ghost" size="icon" className="rounded-full" asChild>
                     <Link href="/browse">
@@ -242,4 +248,13 @@ export function AppLayout({ children }: { children: ReactNode }) {
       </div>
     </SidebarProvider>
   );
+}
+
+
+export function AppLayout({ children }: { children: ReactNode }) {
+  return (
+    <PageTitleProvider>
+      <AppLayoutContent>{children}</AppLayoutContent>
+    </PageTitleProvider>
+  )
 }

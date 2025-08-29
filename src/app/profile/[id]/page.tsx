@@ -15,6 +15,7 @@ import Image from "next/image";
 import { Skeleton } from '@/components/ui/skeleton';
 import type { UserProfile } from '@/lib/types';
 import { format, differenceInYears } from 'date-fns';
+import { usePageTitle } from '@/hooks/use-page-title';
 
 const calculateAge = (dob: any) => {
     if (!dob) return 0;
@@ -26,6 +27,7 @@ export default function ProfileDetailPage({ params }: { params: { id: string } }
     const [user, setUser] = useState<UserProfile | null>(null);
     const [loading, setLoading] = useState(true);
     const { id } = use(params);
+    const { setPageTitle } = usePageTitle();
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -33,14 +35,20 @@ export default function ProfileDetailPage({ params }: { params: { id: string } }
                 const userDocRef = doc(db, 'users', id as string);
                 const userDoc = await getDoc(userDocRef);
                 if (userDoc.exists()) {
-                    setUser({ id: userDoc.id, ...userDoc.data() } as UserProfile);
+                    const userData = { id: userDoc.id, ...userDoc.data() } as UserProfile
+                    setUser(userData);
+                    if (userData.gender === 'female') {
+                        setPageTitle('Bride Profile');
+                    } else {
+                        setPageTitle('Groom Profile');
+                    }
                 }
             }
             setLoading(false);
         };
 
         fetchUser();
-    }, [id]);
+    }, [id, setPageTitle]);
 
     if (loading) {
         return (

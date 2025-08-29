@@ -1,4 +1,5 @@
 
+
 export type UserProfile = {
   id: string;
   name: string;
@@ -11,7 +12,7 @@ export type UserProfile = {
   compatibilityScore?: number;
   // Firestore data
   fullName?: string;
-  dob?: Date;
+  dob?: any;
   gender?: 'male' | 'female' | 'other';
   fatherName?: string;
   motherName?: string;
@@ -31,6 +32,8 @@ export type UserProfile = {
   email?: string;
   usertype?: 'Basic' | 'Premium';
   memberid?: string;
+  coverUrl?: string;
+  createdAt?: any;
 };
 
 export type Connection = {
