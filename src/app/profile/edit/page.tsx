@@ -15,6 +15,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { format } from 'date-fns';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 
 export default function ProfileEditPage() {
     const { toast } = useToast();
@@ -64,6 +65,10 @@ export default function ProfileEditPage() {
         const { id, value } = e.target;
         setProfileData((prevData: any) => ({ ...prevData, [id]: value }));
     };
+    
+    const handleSelectChange = (id: string, value: string) => {
+        setProfileData((prevData: any) => ({ ...prevData, [id]: value }));
+    }
 
     const handleSaveChanges = async () => {
         if (!user) return;
@@ -192,9 +197,24 @@ export default function ProfileEditPage() {
                                 <Label htmlFor="motherName">Mother Name</Label>
                                 <Input id="motherName" value={profileData.motherName || ''} onChange={handleInputChange} />
                             </div>
-                              <div className="grid gap-2">
+                            <div className="grid gap-2">
                                 <Label htmlFor="occupation">Occupation</Label>
                                 <Input id="occupation" value={profileData.occupation || ''} onChange={handleInputChange} />
+                            </div>
+                             <div className="grid gap-2">
+                                <Label htmlFor="salary">Salary (per annum)</Label>
+                                <Select value={profileData.salary || ''} onValueChange={(value) => handleSelectChange('salary', value)}>
+                                    <SelectTrigger id="salary">
+                                        <SelectValue placeholder="Select range" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="<3LPA">Less than 3 LPA</SelectItem>
+                                        <SelectItem value="3-5LPA">3-5 LPA</SelectItem>
+                                        <SelectItem value="5-10LPA">5-10 LPA</SelectItem>
+                                        <SelectItem value="10-20LPA">10-20 LPA</SelectItem>
+                                        <SelectItem value=">20LPA">More than 20 LPA</SelectItem>
+                                    </SelectContent>
+                                </Select>
                             </div>
                              <div className="grid gap-2">
                                 <Label htmlFor="workingPlace">Working Place</Label>

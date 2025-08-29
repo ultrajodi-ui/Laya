@@ -420,7 +420,7 @@ export default function SignupPage() {
                               <Label htmlFor="occupation">Occupation</Label>
                               <Input id="occupation" value={occupation} onChange={(e) => setOccupation(e.target.value)} />
                           </div>
-                          <div className="grid gap-2">
+                           <div className="grid gap-2">
                               <Label htmlFor="salary">Salary (per annum)</Label>
                               <Select value={salary} onValueChange={setSalary}>
                                   <SelectTrigger id="salary">
@@ -435,7 +435,7 @@ export default function SignupPage() {
                                   </SelectContent>
                               </Select>
                           </div>
-                          <div className="grid gap-2">
+                          <div className="grid gap-2 md:col-span-2">
                               <Label htmlFor="working-place">Working Place</Label>
                               <Input id="working-place" value={workingPlace} onChange={(e) => setWorkingPlace(e.target.value)} />
                           </div>
