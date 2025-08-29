@@ -16,11 +16,13 @@ import { collection, doc, getDoc, getDocs, query, where } from 'firebase/firesto
 import { db } from '@/lib/firebase';
 import type { UserProfile } from "@/lib/types";
 import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
 
 export default function BrowsePage() {
     const [users, setUsers] = useState<UserProfile[]>([]);
     const [currentUser, setCurrentUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
+    const [interestedUsers, setInterestedUsers] = useState<Set<string>>(new Set());
     const auth = getAuth();
 
     useEffect(() => {
@@ -63,6 +65,20 @@ export default function BrowsePage() {
         }
         return age;
     }
+
+    const handleInterestClick = (userId: string) => {
+        setInterestedUsers(prev => {
+            const newSet = new Set(prev);
+            if (newSet.has(userId)) {
+                newSet.delete(userId);
+            } else {
+                newSet.add(userId);
+            }
+            return newSet;
+        });
+        // In a real app, you'd also update this in your backend/database
+    };
+
 
     return (
         <AppLayout>
@@ -112,7 +128,9 @@ export default function BrowsePage() {
                      </div>
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                        {users.map(user => (
+                        {users.map(user => {
+                            const isInterested = interestedUsers.has(user.id);
+                            return (
                             <Card key={user.id} className="overflow-hidden transition-transform transform hover:scale-105 hover:shadow-lg duration-300 ease-in-out">
                                  <CardHeader className="p-0">
                                     <Link href={`/profile/${user.id}`}>
@@ -145,12 +163,12 @@ export default function BrowsePage() {
                                     </div>
                                 </CardContent>
                                 <CardFooter className="p-4 pt-0">
-                                     <Button className="w-full bg-accent text-accent-foreground hover:bg-accent/90">
-                                        <Heart className="mr-2 h-4 w-4" /> Interest
+                                     <Button className="w-full bg-accent text-accent-foreground hover:bg-accent/90" onClick={() => handleInterestClick(user.id)}>
+                                        <Heart className={cn("mr-2 h-4 w-4", isInterested && "fill-red-500 text-red-500")} /> Interest
                                     </Button>
                                 </CardFooter>
                             </Card>
-                        ))}
+                        )})}
                     </div>
                 )}
 

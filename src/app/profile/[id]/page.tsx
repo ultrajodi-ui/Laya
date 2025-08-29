@@ -16,6 +16,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import type { UserProfile } from '@/lib/types';
 import { format, differenceInYears } from 'date-fns';
 import { usePageTitle } from '@/hooks/use-page-title';
+import { cn } from '@/lib/utils';
 
 const calculateAge = (dob: any) => {
     if (!dob) return 0;
@@ -27,6 +28,13 @@ function ProfileContent({ id }: { id: string }) {
     const [user, setUser] = useState<UserProfile | null>(null);
     const [loading, setLoading] = useState(true);
     const { setPageTitle } = usePageTitle();
+    const [isInterested, setIsInterested] = useState(false);
+
+    const handleInterestClick = () => {
+        setIsInterested(prev => !prev);
+        // In a real app, you would also update this in your backend/database
+    };
+
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -107,8 +115,8 @@ function ProfileContent({ id }: { id: string }) {
                 </div>
                 <CardHeader className="pt-20 md:pt-24 relative">
                     <div className="absolute top-4 right-4">
-                        <Button className="bg-accent text-accent-foreground hover:bg-accent/90">
-                            <Heart className="mr-2 h-4 w-4" /> Interest
+                        <Button className="bg-accent text-accent-foreground hover:bg-accent/90" onClick={handleInterestClick}>
+                            <Heart className={cn("mr-2 h-4 w-4", isInterested && "fill-red-500 text-red-500")} /> Interest
                         </Button>
                     </div>
                     <CardTitle className="text-3xl font-headline">{user.fullName}, {calculateAge(user.dob)}</CardTitle>
