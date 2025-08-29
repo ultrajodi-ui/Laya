@@ -67,7 +67,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
         // Check for profile completeness
         const userDocRef = doc(db, 'users', user.uid);
         const userDoc = await getDoc(userDocRef);
-        if (!userDoc.exists() && pathname !== '/signup') {
+        if (!userDoc.exists() && !['/signup', '/profile/edit'].includes(pathname)) {
             toast({
                 title: "Profile Incomplete",
                 description: "Please complete your profile to continue.",
