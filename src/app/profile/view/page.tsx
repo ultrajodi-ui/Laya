@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -143,11 +144,9 @@ export default function ProfileViewPage() {
                             <ProfileDetail label="Religion" value={profileData.religion} />
                             <ProfileDetail label="Community" value={profileData.community} />
                             <ProfileDetail label="Sub Caste" value={profileData.subCaste} />
+                            <ProfileDetail label="Zodiac Sign" value={profileData.zodiacSign} />
+                            <ProfileDetail label="Star Sign (Nakshatra)" value={profileData.starSign} />
                              <ProfileDetail label="Salary" value={profileData.salary} />
-                        </div>
-                         <div className="grid gap-1">
-                            <p className="text-sm font-medium text-muted-foreground">Bio</p>
-                             <p className="text-base">{profileData.bio || '-'}</p>
                         </div>
                     </CardContent>
                 </Card>
@@ -155,6 +154,3 @@ export default function ProfileViewPage() {
         </AppLayout>
     );
 }
-
-
-

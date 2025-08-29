@@ -86,6 +86,25 @@ export default function ProfileEditPage() {
             setIsSaving(false);
         }
     };
+
+      const nakshatras = [
+    "Ashwini", "Bharani", "Krittika", "Rohini", "Mrigashira", "Ardra", "Punarvasu", "Pushya", "Ashlesha", "Magha", "Purva Phalguni", "Uttara Phalguni", "Hasta", "Chitra", "Swati", "Vishakha", "Anuradha", "Jyeshtha", "Mula", "Purva Ashadha", "Uttara Ashadha", "Shravana", "Dhanishta", "Shatabhisha", "Purva Bhadrapada", "Uttara Bhadrapada", "Revati"
+  ];
+  
+  const zodiacSigns = [
+    "Mesha (Aries)",
+    "Vrishabha (Taurus)",
+    "Mithuna (Gemini)",
+    "Karka (Cancer)",
+    "Simha (Leo)",
+    "Kanya (Virgo)",
+    "Tula (Libra)",
+    "Vrishchika (Scorpio)",
+    "Dhanu (Sagittarius)",
+    "Makara (Capricorn)",
+    "Kumbha (Aquarius)",
+    "Meena (Pisces)"
+  ];
     
     if (isLoading) {
         return (
@@ -232,11 +251,32 @@ export default function ProfileEditPage() {
                                 <Label htmlFor="subCaste">Sub Caste</Label>
                                 <Input id="subCaste" value={profileData.subCaste || ''} onChange={handleInputChange} />
                             </div>
-                        </div>
-
-                        <div className="grid gap-2">
-                            <Label htmlFor="bio">Bio</Label>
-                            <Textarea id="bio" rows={4} value={profileData.bio || ''} onChange={handleInputChange} />
+                             <div className="grid gap-2">
+                              <Label htmlFor="zodiac-sign">Zodiac Sign (Rashi)</Label>
+                              <Select value={profileData.zodiacSign} onValueChange={(value) => handleSelectChange('zodiacSign', value)}>
+                                  <SelectTrigger id="zodiac-sign">
+                                      <SelectValue placeholder="Select zodiac sign" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                      {zodiacSigns.map(sign => (
+                                          <SelectItem key={sign} value={sign}>{sign}</SelectItem>
+                                      ))}
+                                  </SelectContent>
+                              </Select>
+                          </div>
+                          <div className="grid gap-2">
+                              <Label htmlFor="star-sign">Star Sign (Nakshatra)</Label>
+                              <Select value={profileData.starSign} onValueChange={(value) => handleSelectChange('starSign', value)}>
+                                  <SelectTrigger id="star-sign">
+                                      <SelectValue placeholder="Select star sign" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                      {nakshatras.map(nakshatra => (
+                                          <SelectItem key={nakshatra} value={nakshatra}>{nakshatra}</SelectItem>
+                                      ))}
+                                  </SelectContent>
+                              </Select>
+                          </div>
                         </div>
                         
                         <div className="grid gap-2">
