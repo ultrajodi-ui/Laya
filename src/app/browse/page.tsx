@@ -146,7 +146,7 @@ export default function BrowsePage() {
                                 </CardContent>
                                 <CardFooter className="p-4 pt-0">
                                      <Button className="w-full bg-accent text-accent-foreground hover:bg-accent/90">
-                                        <Heart className="mr-2 h-4 w-4" /> Connect
+                                        <Heart className="mr-2 h-4 w-4" /> Interest
                                     </Button>
                                 </CardFooter>
                             </Card>

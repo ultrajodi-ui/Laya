@@ -108,7 +108,7 @@ function ProfileContent({ id }: { id: string }) {
                 <CardHeader className="pt-20 md:pt-24 relative">
                     <div className="absolute top-4 right-4">
                         <Button className="bg-accent text-accent-foreground hover:bg-accent/90">
-                            <Heart className="mr-2 h-4 w-4" /> Connect
+                            <Heart className="mr-2 h-4 w-4" /> Interest
                         </Button>
                     </div>
                     <CardTitle className="text-3xl font-headline">{user.fullName}, {calculateAge(user.dob)}</CardTitle>
