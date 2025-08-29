@@ -126,6 +126,8 @@ export default function ProfileViewPage() {
                         </div>
 
                         <div className="grid sm:grid-cols-2 gap-6">
+                            <ProfileDetail label="Member ID" value={profileData.memberid} />
+                            <ProfileDetail label="User Type" value={profileData.usertype} />
                             <ProfileDetail label="Full Name" value={profileData.fullName} />
                             <ProfileDetail label="Date of Birth" value={profileData.dob ? format(profileData.dob, 'PPP') : '-'} />
                             <ProfileDetail label="Father Name" value={profileData.fatherName} />
@@ -150,4 +152,5 @@ export default function ProfileViewPage() {
         </AppLayout>
     );
 }
+
 
