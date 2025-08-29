@@ -66,12 +66,12 @@ export function AppLayout({ children }: { children: ReactNode }) {
         setUser(user);
         const userDocRef = doc(db, 'users', user.uid);
         const userDoc = await getDoc(userDocRef);
-        if (!userDoc.exists() && pathname !== '/signup' && pathname !== '/profile/edit') {
+        if (!userDoc.exists() && pathname !== '/profile/edit') {
             toast({
                 title: "Profile Incomplete",
                 description: "Please complete your profile to continue.",
             });
-            router.push('/signup'); // or '/profile/edit', but signup handles the full flow
+            router.push('/profile/edit');
         }
       } else {
         setUser(null);

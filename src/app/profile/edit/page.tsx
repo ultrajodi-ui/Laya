@@ -3,8 +3,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { getAuth, onAuthStateChanged, User, updateProfile } from 'firebase/auth';
+import { doc, getDoc, setDoc, getCountFromServer, collection, where, query } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
@@ -13,18 +13,22 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Zap } from 'lucide-react';
+import { Loader2, Zap, CalendarIcon } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { format } from 'date-fns';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { useRouter } from 'next/navigation';
 import { Badge } from '@/components/ui/badge';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
+import { cn } from '@/lib/utils';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 export default function ProfileEditPage() {
     const { toast } = useToast();
     const router = useRouter();
     const [user, setUser] = useState<User | null>(null);
-    const [profileData, setProfileData] = useState<any | null>(null);
+    const [profileData, setProfileData] = useState<any>({ gender: 'female', employed: 'yes' });
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
     const auth = getAuth();
@@ -43,7 +47,8 @@ export default function ProfileEditPage() {
                         dob: dob
                     });
                 } else {
-                    console.log("No such document!");
+                    // New user, pre-fill email
+                    setProfileData((prev: any) => ({ ...prev, email: currentUser.email }));
                 }
             } else {
                 setUser(null);
@@ -63,14 +68,34 @@ export default function ProfileEditPage() {
     const handleSelectChange = (id: string, value: string) => {
         setProfileData((prevData: any) => ({ ...prevData, [id]: value }));
     }
+     const handleDateSelect = (date: Date | undefined) => {
+        setProfileData((prevData: any) => ({ ...prevData, dob: date }));
+    };
 
     const handleSaveChanges = async () => {
         if (!user) return;
         setIsSaving(true);
         try {
+            // Generate memberid if it doesn't exist
+            if (!profileData.memberid) {
+                const usersRef = collection(db, "users");
+                const genderQuery = query(usersRef, where("gender", "==", profileData.gender));
+                const snapshot = await getCountFromServer(genderQuery);
+                const userCount = snapshot.data().count;
+                const memberIdPrefix = profileData.gender === 'male' ? 'UJM' : 'UJF';
+                profileData.memberid = `${memberIdPrefix}${userCount + 1}`;
+            }
+
+            if (auth.currentUser && auth.currentUser.displayName !== profileData.fullName) {
+                await updateProfile(auth.currentUser, {
+                    displayName: profileData.fullName,
+                });
+            }
+
             const userDocRef = doc(db, "users", user.uid);
             const { imageUrl, ...dataToSave } = profileData;
-            await setDoc(userDocRef, dataToSave, { merge: true });
+            await setDoc(userDocRef, { ...dataToSave, usertype: dataToSave.usertype || 'Basic' }, { merge: true });
+            
             toast({
                 title: "Profile Updated",
                 description: "Your changes have been saved successfully.",
@@ -151,7 +176,7 @@ export default function ProfileEditPage() {
     if (!profileData) {
         return (
             <AppLayout>
-                <div className="text-center">No profile data found. Please complete your profile.</div>
+                <div className="text-center">Loading profile... If this takes too long, please try logging in again.</div>
             </AppLayout>
         );
     }
@@ -162,7 +187,7 @@ export default function ProfileEditPage() {
             <div className="mx-auto grid max-w-4xl gap-6">
                  <Card>
                     <CardHeader>
-                        <CardTitle className="font-headline">Edit Profile</CardTitle>
+                        <CardTitle className="font-headline">Edit Your Profile</CardTitle>
                         <CardDescription>Update your personal information and preferences.</CardDescription>
                     </CardHeader>
                     <CardContent className="grid gap-6">
@@ -194,8 +219,49 @@ export default function ProfileEditPage() {
                             </div>
                             <div className="grid gap-2">
                                 <Label htmlFor="dob">Date of Birth</Label>
-                                <Input id="dob" value={profileData.dob ? format(new Date(profileData.dob), 'PPP') : ''} readOnly className="bg-muted" />
+                                 <Popover>
+                                  <PopoverTrigger asChild>
+                                      <Button
+                                      variant={"outline"}
+                                      className={cn(
+                                          "justify-start text-left font-normal",
+                                          !profileData.dob && "text-muted-foreground"
+                                      )}
+                                      >
+                                      <CalendarIcon className="mr-2 h-4 w-4" />
+                                      {profileData.dob ? format(profileData.dob, "PPP") : <span>Pick a date</span>}
+                                      </Button>
+                                  </PopoverTrigger>
+                                  <PopoverContent className="w-auto p-0">
+                                      <Calendar
+                                          mode="single"
+                                          selected={profileData.dob}
+                                          onSelect={handleDateSelect}
+                                          captionLayout="dropdown-buttons"
+                                          fromYear={1950}
+                                          toYear={new Date().getFullYear()}
+                                          initialFocus
+                                      />
+                                  </PopoverContent>
+                              </Popover>
                             </div>
+                              <div className="grid gap-2 md:col-span-2">
+                              <Label>Gender</Label>
+                              <RadioGroup value={profileData.gender} onValueChange={(value) => handleSelectChange('gender', value)} className="flex gap-4">
+                                  <div className="flex items-center space-x-2">
+                                      <RadioGroupItem value="female" id="female" />
+                                      <Label htmlFor="female">Female</Label>
+                                  </div>
+                                  <div className="flex items-center space-x-2">
+                                      <RadioGroupItem value="male" id="male" />
+                                      <Label htmlFor="male">Male</Label>
+                                  </div>
+                                  <div className="flex items-center space-x-2">
+                                      <RadioGroupItem value="other" id="other" />
+                                      <Label htmlFor="other">Other</Label>
+                                  </div>
+                              </RadioGroup>
+                          </div>
                             <div className="grid gap-2">
                                 <Label htmlFor="fatherName">Father Name</Label>
                                 <Input id="fatherName" value={profileData.fatherName || ''} onChange={handleInputChange} />
