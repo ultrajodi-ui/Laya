@@ -1,3 +1,4 @@
+
 'use client';
 
 import { AppLayout } from "@/components/AppLayout";
@@ -126,10 +127,11 @@ export default function BrowsePage() {
                                     </Link>
                                 </CardHeader>
                                 <CardContent className="p-4 space-y-2">
-                                    <div className="flex items-baseline justify-between">
+                                    <div>
                                         <Link href={`/profile/${user.id}`}>
                                             <h3 className="text-xl font-headline font-semibold">{user.fullName}, {calculateAge(user.dob)}</h3>
                                         </Link>
+                                        <p className="text-sm text-muted-foreground">ID: {user.memberid}</p>
                                     </div>
                                     <div className="flex items-center text-sm text-muted-foreground">
                                         <MapPin className="w-4 h-4 mr-1" />
