@@ -33,6 +33,7 @@ export default function ProfileEditPage() {
     const [isSaving, setIsSaving] = useState(false);
     const [isCalendarOpen, setIsCalendarOpen] = useState(false);
     const fatherNameRef = useRef<HTMLInputElement>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
     const auth = getAuth();
 
     useEffect(() => {
@@ -75,6 +76,25 @@ export default function ProfileEditPage() {
         setIsCalendarOpen(false);
         fatherNameRef.current?.focus();
     };
+    
+    const handlePhotoChangeClick = () => {
+        fileInputRef.current?.click();
+    };
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            const file = e.target.files[0];
+            // Here you would typically upload the file to a storage service (like Firebase Storage)
+            // and then update the profileData with the new imageUrl.
+            // For now, we can just log it.
+            console.log('Selected file:', file);
+            toast({
+                title: 'File Selected',
+                description: 'In a real app, this would be uploaded.',
+            });
+        }
+    };
+
 
     const handleSaveChanges = async () => {
         if (!user) return;
@@ -197,7 +217,14 @@ export default function ProfileEditPage() {
                                 <img className="aspect-square h-full w-full" alt={profileData.fullName || 'User'} src={profileData.imageUrl || `https://picsum.photos/seed/${user?.uid}/100/100`} />
                             </span>
                             <div className="grid gap-1.5">
-                                <Button>Change Photo</Button>
+                                <Button onClick={handlePhotoChangeClick}>Change Photo</Button>
+                                <input
+                                    type="file"
+                                    ref={fileInputRef}
+                                    onChange={handleFileChange}
+                                    className="hidden"
+                                    accept="image/png, image/jpeg, image/gif"
+                                />
                                 <p className="text-sm text-muted-foreground">JPG, GIF or PNG. 1MB max.</p>
                             </div>
                         </div>
