@@ -235,6 +235,12 @@ function AppLayoutContent({ children }: { children: ReactNode }) {
                           <span>My Profile</span>
                       </Link>
                     </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                       <Link href="/likes-received">
+                          <Heart className="mr-2 h-4 w-4" />
+                          <span>Like Received</span>
+                      </Link>
+                    </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={handleLogout}>
                       <LogOut className="mr-2 h-4 w-4" />
