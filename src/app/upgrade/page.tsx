@@ -46,7 +46,7 @@ const plans = [
     },
     {
         name: "Diamond",
-        price: "₹4,999",
+        price: "₹3500",
         duration: "/ 12 months",
         features: [
             "All Gold benefits",
