@@ -34,7 +34,7 @@ const plans = [
     },
     {
         name: "Gold",
-        price: "₹2,499",
+        price: "₹1500",
         duration: "/ 6 months",
         features: [
             "All Silver benefits",
