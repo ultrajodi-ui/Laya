@@ -89,7 +89,7 @@ export default function BrowsePage() {
             toast({
                 variant: 'destructive',
                 title: 'Not logged in',
-                description: 'You must be logged in to express interest.',
+                description: 'You must be logged in to like profiles.',
             });
             return;
         }
@@ -105,16 +105,16 @@ export default function BrowsePage() {
                 await deleteDoc(interestDocRef);
                 newInterestedUsers.delete(targetUserId);
                  toast({
-                    title: 'Interest Removed',
-                    description: 'You have removed your interest from this profile.',
+                    title: 'Like Removed',
+                    description: 'You have unliked this profile.',
                 });
             } else {
                 // User is not interested, so we like
                 await setDoc(interestDocRef, { interestedAt: new Date() });
                 newInterestedUsers.add(targetUserId);
                 toast({
-                    title: 'Interest Expressed!',
-                    description: 'Your interest has been noted.',
+                    title: 'Liked!',
+                    description: 'Your like has been noted.',
                 });
             }
             setInterestedUsers(newInterestedUsers);
@@ -123,7 +123,7 @@ export default function BrowsePage() {
             toast({
                 variant: 'destructive',
                 title: 'Update Failed',
-                description: 'Could not update your interest. Please try again.',
+                description: 'Could not update your like. Please try again.',
             });
         }
     };
@@ -213,7 +213,7 @@ export default function BrowsePage() {
                                 </CardContent>
                                 <CardFooter className="p-4 pt-0">
                                      <Button className="w-full bg-accent text-accent-foreground hover:bg-accent/90" onClick={() => handleInterestClick(user.id)}>
-                                        <Heart className={cn("mr-2 h-4 w-4", isInterested && "fill-red-500 text-red-500")} /> Interest
+                                        <Heart className={cn("mr-2 h-4 w-4", isInterested && "fill-red-500 text-red-500")} /> Like
                                     </Button>
                                 </CardFooter>
                             </Card>

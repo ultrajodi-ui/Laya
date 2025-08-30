@@ -57,7 +57,7 @@ function ProfileContent({ id }: { id: string }) {
             toast({
                 variant: 'destructive',
                 title: 'Not logged in',
-                description: 'You must be logged in to express interest.',
+                description: 'You must be logged in to like profiles.',
             });
             return;
         }
@@ -71,15 +71,15 @@ function ProfileContent({ id }: { id: string }) {
                 await deleteDoc(interestDocRef);
                 setIsInterested(false);
                 toast({
-                    title: 'Interest Removed',
-                    description: 'You have removed your interest from this profile.',
+                    title: 'Like Removed',
+                    description: 'You have unliked this profile.',
                 });
             } else {
                 await setDoc(interestDocRef, { interestedAt: new Date() });
                 setIsInterested(true);
                  toast({
-                    title: 'Interest Expressed!',
-                    description: 'Your interest has been noted.',
+                    title: 'Liked!',
+                    description: 'Your like has been noted.',
                 });
             }
         } catch (error) {
@@ -87,7 +87,7 @@ function ProfileContent({ id }: { id: string }) {
             toast({
                 variant: 'destructive',
                 title: 'Update Failed',
-                description: 'Could not update your interest. Please try again.',
+                description: 'Could not update your like. Please try again.',
             });
         }
     };
@@ -173,7 +173,7 @@ function ProfileContent({ id }: { id: string }) {
                 <CardHeader className="pt-20 md:pt-24 relative">
                     <div className="absolute top-4 right-4">
                         <Button className="bg-accent text-accent-foreground hover:bg-accent/90" onClick={handleInterestClick}>
-                            <Heart className={cn("mr-2 h-4 w-4", isInterested && "fill-red-500 text-red-500")} /> Interest
+                            <Heart className={cn("mr-2 h-4 w-4", isInterested && "fill-red-500 text-red-500")} /> Like
                         </Button>
                     </div>
                     <CardTitle className="text-3xl font-headline">{user.fullName}, {calculateAge(user.dob)}</CardTitle>
