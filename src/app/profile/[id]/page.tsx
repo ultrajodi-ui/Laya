@@ -232,7 +232,7 @@ function ProfileContent({ id }: { id: string }) {
 }
 
 export default function ProfileDetailPage({ params }: { params: { id: string } }) {
-    const id = use(params.id);
+    const { id } = use(params);
 
     if (!id) {
         return (
