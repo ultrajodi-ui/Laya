@@ -7,23 +7,31 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import { Heart, ListFilter, MapPin } from "lucide-react";
+import { Heart, ListFilter, MapPin, Search as SearchIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
-import { collection, doc, getDoc, getDocs, query, where, arrayUnion, arrayRemove, updateDoc, onSnapshot } from 'firebase/firestore';
+import { collection, doc, getDocs, query, where, arrayUnion, arrayRemove, updateDoc, onSnapshot } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import type { UserProfile } from "@/lib/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { useToast } from '@/hooks/use-toast';
 
+// Mock data for filters
+const allInterests = ["Cooking", "Hiking", "Reading", "Technology", "Art", "Music", "Films", "Cycling", "Fitness", "Business", "Nutrition", "Dogs", "Brunch", "Mysteries", "Philosophy", "Concerts"];
+const allLocations = ["Mumbai, India", "Delhi, India", "Bangalore, India", "Pune, India", "Hyderabad, India", "Chennai, India"];
+
+
 export default function BrowsePage() {
     const [users, setUsers] = useState<UserProfile[]>([]);
     const [currentUser, setCurrentUser] = useState<User | null>(null);
     const [currentUserProfile, setCurrentUserProfile] = useState<UserProfile | null>(null);
     const [loading, setLoading] = useState(true);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
+    const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
     const auth = getAuth();
     const { toast } = useToast();
 
@@ -128,6 +136,35 @@ export default function BrowsePage() {
             });
         }
     };
+    
+    const handleFilterChange = (filterType: 'interest' | 'location', value: string, checked: boolean) => {
+        if (filterType === 'interest') {
+            setSelectedInterests(prev => checked ? [...prev, value] : prev.filter(i => i !== value));
+        } else if (filterType === 'location') {
+            setSelectedLocations(prev => checked ? [...prev, value] : prev.filter(l => l !== value));
+        }
+    };
+
+    const filteredUsers = useMemo(() => {
+        return users
+            .filter(user => {
+                // Search query filter
+                const searchLower = searchQuery.toLowerCase();
+                const nameMatch = user.fullName?.toLowerCase().includes(searchLower);
+                const interestMatch = user.interests?.some(interest => interest.toLowerCase().includes(searchLower));
+                return nameMatch || interestMatch;
+            })
+            .filter(user => {
+                // Interest filter
+                if (selectedInterests.length === 0) return true;
+                return selectedInterests.every(interest => user.interests?.includes(interest));
+            })
+            .filter(user => {
+                // Location filter
+                if (selectedLocations.length === 0) return true;
+                return user.city && selectedLocations.includes(user.city);
+            });
+    }, [users, searchQuery, selectedInterests, selectedLocations]);
 
 
     return (
@@ -135,9 +172,14 @@ export default function BrowsePage() {
             <div className="flex flex-col gap-4">
                 <div className="flex items-center gap-4">
                     <div className="relative flex-1">
-                        <Input placeholder="Search by name or interest..." className="pl-8" />
+                        <Input 
+                            placeholder="Search by name or interest..." 
+                            className="pl-8" 
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                        />
                         <span className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground">
-                            <Heart className="h-4 w-4" />
+                            <SearchIcon className="h-4 w-4" />
                         </span>
                     </div>
                      <DropdownMenu>
@@ -147,16 +189,30 @@ export default function BrowsePage() {
                                 <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">Filter</span>
                             </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>Filter by</DropdownMenuLabel>
+                        <DropdownMenuContent align="end" className="w-56">
+                            <DropdownMenuLabel>Filter by Location</DropdownMenuLabel>
                             <DropdownMenuSeparator />
-                            <DropdownMenuCheckboxItem checked>
-                                Age Range
-                            </DropdownMenuCheckboxItem>
-                            <DropdownMenuCheckboxItem>Location</DropdownMenuCheckboxItem>
-                            <DropdownMenuCheckboxItem>
-                                Interests
-                            </DropdownMenuCheckboxItem>
+                             {allLocations.slice(0, 5).map(location => (
+                                <DropdownMenuCheckboxItem 
+                                    key={location}
+                                    checked={selectedLocations.includes(location)}
+                                    onCheckedChange={(checked) => handleFilterChange('location', location, !!checked)}
+                                >
+                                    {location}
+                                </DropdownMenuCheckboxItem>
+                            ))}
+                            <DropdownMenuSeparator />
+                            <DropdownMenuLabel>Filter by Interest</DropdownMenuLabel>
+                             <DropdownMenuSeparator />
+                            {allInterests.slice(0, 5).map(interest => (
+                                <DropdownMenuCheckboxItem 
+                                    key={interest}
+                                    checked={selectedInterests.includes(interest)}
+                                    onCheckedChange={(checked) => handleFilterChange('interest', interest, !!checked)}
+                                >
+                                    {interest}
+                                </DropdownMenuCheckboxItem>
+                            ))}
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </div>
@@ -178,7 +234,7 @@ export default function BrowsePage() {
                      </div>
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                        {users.map(user => {
+                        {filteredUsers.map(user => {
                             const isLiked = currentUserProfile?.likes?.includes(user.memberid!);
                             return (
                             <Card key={user.id} className="overflow-hidden transition-transform transform hover:scale-105 hover:shadow-lg duration-300 ease-in-out">
@@ -222,9 +278,9 @@ export default function BrowsePage() {
                     </div>
                 )}
 
-                {!loading && users.length === 0 && (
+                {!loading && filteredUsers.length === 0 && (
                     <div className="text-center col-span-full py-16">
-                        <p className="text-muted-foreground">No profiles found. Check back later!</p>
+                        <p className="text-muted-foreground">No profiles found. Try adjusting your search or filters.</p>
                     </div>
                 )}
             </div>
