@@ -17,6 +17,7 @@ const plans = [
             "Create profile",
             "Browse matches",
             "Send limited interests",
+            "View 3 Contacts Only"
         ],
         isCurrent: true,
     },
