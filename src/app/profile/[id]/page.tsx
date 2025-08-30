@@ -2,8 +2,8 @@
 
 'use client';
 
-import { useState, useEffect, use, useCallback } from 'react';
-import { collection, doc, getDoc, updateDoc, arrayUnion, arrayRemove, onSnapshot } from 'firebase/firestore';
+import { useState, useEffect, use } from 'react';
+import { collection, doc, getDoc, updateDoc, arrayUnion, arrayRemove, onSnapshot, writeBatch } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { AppLayout } from "@/components/AppLayout";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -56,7 +56,7 @@ function ProfileContent({ id }: { id: string }) {
 
 
     const handleLikeClick = async () => {
-        if (!currentUser || !user || !user.memberid) {
+        if (!currentUser || !currentUserProfile?.memberid || !user?.memberid) {
             toast({
                 variant: 'destructive',
                 title: 'Not logged in',
@@ -66,23 +66,48 @@ function ProfileContent({ id }: { id: string }) {
         }
 
         const currentUserId = currentUser.uid;
-        const userDocRef = doc(db, 'users', currentUserId);
+        const currentUserMemberId = currentUserProfile.memberid;
+        const targetUserMemberId = user.memberid;
 
-        const isLiked = currentUserProfile?.likes?.includes(user.memberid);
+        const userDocRef = doc(db, 'users', currentUserId);
+        const isLiked = currentUserProfile?.likes?.includes(targetUserMemberId);
 
         try {
+            const batch = writeBatch(db);
+
             if (isLiked) {
-                 await updateDoc(userDocRef, {
-                    likes: arrayRemove(user.memberid)
+                // Remove like from current user's profile
+                batch.update(userDocRef, {
+                    likes: arrayRemove(targetUserMemberId)
                 });
+
+                // Delete from likesReceived collection
+                const likeReceivedDocId = `${currentUserMemberId}_likes_${targetUserMemberId}`;
+                const likeReceivedDocRef = doc(db, 'likesReceived', likeReceivedDocId);
+                batch.delete(likeReceivedDocRef);
+
+                await batch.commit();
                 toast({
                     title: 'Like Removed',
                     description: 'You have unliked this profile.',
                 });
             } else {
-                 await updateDoc(userDocRef, {
-                    likes: arrayUnion(user.memberid)
+                // Add like to current user's profile
+                batch.update(userDocRef, {
+                    likes: arrayUnion(targetUserMemberId)
                 });
+
+                 // Add to likesReceived collection
+                const likeReceivedDocId = `${currentUserMemberId}_likes_${targetUserMemberId}`;
+                const likeReceivedDocRef = doc(db, 'likesReceived', likeReceivedDocId);
+                batch.set(likeReceivedDocRef, {
+                    likedBy: currentUserMemberId,
+                    likedUser: targetUserMemberId,
+                    timestamp: new Date()
+                });
+                
+                await batch.commit();
+
                  toast({
                     title: 'Liked!',
                     description: 'Your like has been noted.',
@@ -251,3 +276,5 @@ export default function ProfileDetailPage({ params }: { params: { id: string } }
         </AppLayout>
     );
 }
+
+    
