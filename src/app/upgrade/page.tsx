@@ -26,7 +26,7 @@ const plans = [
         price: "₹1,499",
         duration: "/ 3 months",
         features: [
-            "View contact details",
+            "View 10 Contacts Details",
             "Send unlimited interests",
             "Chat with matches",
             "Get better visibility",
