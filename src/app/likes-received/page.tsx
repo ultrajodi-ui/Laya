@@ -18,7 +18,7 @@ import { cn } from "@/lib/utils";
 import { useToast } from '@/hooks/use-toast';
 import { usePageTitle } from "@/hooks/use-page-title";
 
-export default function LikesReceivedPage() {
+function LikesReceivedContent() {
     const [likedByUsers, setLikedByUsers] = useState<UserProfile[]>([]);
     const [currentUser, setCurrentUser] = useState<User | null>(null);
     const [currentUserProfile, setCurrentUserProfile] = useState<UserProfile | null>(null);
@@ -69,6 +69,9 @@ export default function LikesReceivedPage() {
                     const usersSnapshot = await getDocs(usersQuery);
                     const fetchedUsers = usersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as UserProfile));
                     setLikedByUsers(fetchedUsers);
+                } else {
+                    // It's not an error if nobody has liked the user yet.
+                    setLikedByUsers([]);
                 }
             } catch (error) {
                 console.error("Error fetching liked by users:", error);
@@ -163,79 +166,84 @@ export default function LikesReceivedPage() {
         }
     };
 
+    return (
+        <div className="flex flex-col gap-4">
+            <h1 className="text-2xl font-headline font-bold">Who Liked You</h1>
+            {loading ? (
+                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    {[...Array(4)].map((_, i) => (
+                         <Card key={i} className="overflow-hidden">
+                             <Skeleton className="w-full h-64" />
+                            <CardContent className="p-4 space-y-2">
+                                 <Skeleton className="h-6 w-3/4" />
+                                 <Skeleton className="h-4 w-1/2" />
+                                 <Skeleton className="h-10 w-full" />
+                            </CardContent>
+                            <CardFooter className="p-4 pt-0">
+                                <Skeleton className="h-10 w-full" />
+                            </CardFooter>
+                         </Card>
+                    ))}
+                 </div>
+            ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    {likedByUsers.map(user => {
+                        const isLiked = currentUserProfile?.likes?.includes(user.memberid!);
+                        return (
+                        <Card key={user.id} className="overflow-hidden transition-transform transform hover:scale-105 hover:shadow-lg duration-300 ease-in-out">
+                             <CardHeader className="p-0">
+                                <Link href={`/profile/${user.id}`}>
+                                    <Image
+                                        src={user.imageUrl || `https://picsum.photos/seed/${user.id}/400/400`}
+                                        alt={user.fullName || 'User'}
+                                        width={400}
+                                        height={400}
+                                        data-ai-hint="person portrait"
+                                        className="w-full h-64 object-cover"
+                                    />
+                                </Link>
+                            </CardHeader>
+                            <CardContent className="p-4 space-y-2">
+                                <div>
+                                    <Link href={`/profile/${user.id}`}>
+                                        <h3 className="text-xl font-headline font-semibold">{user.fullName}, {calculateAge(user.dob)}</h3>
+                                    </Link>
+                                    <p className="text-sm text-muted-foreground">ID: {user.memberid}</p>
+                                </div>
+                                <div className="flex items-center text-sm text-muted-foreground">
+                                    <MapPin className="w-4 h-4 mr-1" />
+                                    <span>{user.city}</span>
+                                </div>
+                                <p className="text-sm text-muted-foreground line-clamp-2 h-10">{user.occupation}</p>
+                                <div className="flex flex-wrap gap-1 pt-1">
+                                    {user.interests?.slice(0, 3).map(interest => (
+                                        <Badge key={interest} variant="secondary">{interest}</Badge>
+                                    ))}
+                                </div>
+                            </CardContent>
+                            <CardFooter className="p-4 pt-0">
+                                 <Button className="w-full bg-accent text-accent-foreground hover:bg-accent/90" onClick={() => handleLikeClick(user)}>
+                                    <Heart className={cn("mr-2 h-4 w-4", isLiked && "fill-red-500 text-red-500")} /> {isLiked ? 'Liked Back' : 'Like'}
+                                </Button>
+                            </CardFooter>
+                        </Card>
+                    )})}
+                </div>
+            )}
 
+            {!loading && likedByUsers.length === 0 && (
+                <div className="text-center col-span-full py-16">
+                    <p className="text-muted-foreground">No one has liked your profile yet. Keep exploring!</p>
+                </div>
+            )}
+        </div>
+    );
+}
+
+export default function LikesReceivedPage() {
     return (
         <AppLayout>
-            <div className="flex flex-col gap-4">
-                <h1 className="text-2xl font-headline font-bold">Who Liked You</h1>
-                {loading ? (
-                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                        {[...Array(4)].map((_, i) => (
-                             <Card key={i} className="overflow-hidden">
-                                 <Skeleton className="w-full h-64" />
-                                <CardContent className="p-4 space-y-2">
-                                     <Skeleton className="h-6 w-3/4" />
-                                     <Skeleton className="h-4 w-1/2" />
-                                     <Skeleton className="h-10 w-full" />
-                                </CardContent>
-                                <CardFooter className="p-4 pt-0">
-                                    <Skeleton className="h-10 w-full" />
-                                </CardFooter>
-                             </Card>
-                        ))}
-                     </div>
-                ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                        {likedByUsers.map(user => {
-                            const isLiked = currentUserProfile?.likes?.includes(user.memberid!);
-                            return (
-                            <Card key={user.id} className="overflow-hidden transition-transform transform hover:scale-105 hover:shadow-lg duration-300 ease-in-out">
-                                 <CardHeader className="p-0">
-                                    <Link href={`/profile/${user.id}`}>
-                                        <Image
-                                            src={user.imageUrl || `https://picsum.photos/seed/${user.id}/400/400`}
-                                            alt={user.fullName || 'User'}
-                                            width={400}
-                                            height={400}
-                                            data-ai-hint="person portrait"
-                                            className="w-full h-64 object-cover"
-                                        />
-                                    </Link>
-                                </CardHeader>
-                                <CardContent className="p-4 space-y-2">
-                                    <div>
-                                        <Link href={`/profile/${user.id}`}>
-                                            <h3 className="text-xl font-headline font-semibold">{user.fullName}, {calculateAge(user.dob)}</h3>
-                                        </Link>
-                                        <p className="text-sm text-muted-foreground">ID: {user.memberid}</p>
-                                    </div>
-                                    <div className="flex items-center text-sm text-muted-foreground">
-                                        <MapPin className="w-4 h-4 mr-1" />
-                                        <span>{user.city}</span>
-                                    </div>
-                                    <p className="text-sm text-muted-foreground line-clamp-2 h-10">{user.occupation}</p>
-                                    <div className="flex flex-wrap gap-1 pt-1">
-                                        {user.interests?.slice(0, 3).map(interest => (
-                                            <Badge key={interest} variant="secondary">{interest}</Badge>
-                                        ))}
-                                    </div>
-                                </CardContent>
-                                <CardFooter className="p-4 pt-0">
-                                     <Button className="w-full bg-accent text-accent-foreground hover:bg-accent/90" onClick={() => handleLikeClick(user)}>
-                                        <Heart className={cn("mr-2 h-4 w-4", isLiked && "fill-red-500 text-red-500")} /> {isLiked ? 'Liked Back' : 'Like'}
-                                    </Button>
-                                </CardFooter>
-                            </Card>
-                        )})}
-                    </div>
-                )}
-
-                {!loading && likedByUsers.length === 0 && (
-                    <div className="text-center col-span-full py-16">
-                        <p className="text-muted-foreground">No one has liked your profile yet. Keep exploring!</p>
-                    </div>
-                )}
-            </div>
+            <LikesReceivedContent />
         </AppLayout>
     );
 }
