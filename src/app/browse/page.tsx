@@ -200,7 +200,7 @@ export default function BrowsePage() {
                 <SelectValue placeholder={placeholder} />
             </SelectTrigger>
             <SelectContent>
-                <SelectItem value="">All</SelectItem>
+                <SelectItem value="all">All</SelectItem>
                 {options.map(option => <SelectItem key={option} value={option}>{option}</SelectItem>)}
             </SelectContent>
         </Select>
@@ -256,11 +256,11 @@ export default function BrowsePage() {
                     </DropdownMenu>
                 </div>
                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                    <FilterDropdown placeholder="Religion" options={religions} value={selectedReligion} onChange={setSelectedReligion} />
-                    <FilterDropdown placeholder="Community" options={communities} value={selectedCommunity} onChange={setSelectedCommunity} />
-                    <FilterDropdown placeholder="Sub-Caste" options={subCastes} value={selectedSubCaste} onChange={setSelectedSubCaste} />
-                    <FilterDropdown placeholder="Age Range" options={ageRanges} value={selectedAgeRange} onChange={setSelectedAgeRange} />
-                    <FilterDropdown placeholder="Salary" options={salaryRanges} value={selectedSalary} onChange={setSelectedSalary} />
+                    <FilterDropdown placeholder="Religion" options={religions} value={selectedReligion} onChange={(v) => setSelectedReligion(v === 'all' ? '' : v)} />
+                    <FilterDropdown placeholder="Community" options={communities} value={selectedCommunity} onChange={(v) => setSelectedCommunity(v === 'all' ? '' : v)} />
+                    <FilterDropdown placeholder="Sub-Caste" options={subCastes} value={selectedSubCaste} onChange={(v) => setSelectedSubCaste(v === 'all' ? '' : v)} />
+                    <FilterDropdown placeholder="Age Range" options={ageRanges} value={selectedAgeRange} onChange={(v) => setSelectedAgeRange(v === 'all' ? '' : v)} />
+                    <FilterDropdown placeholder="Salary" options={salaryRanges} value={selectedSalary} onChange={(v) => setSelectedSalary(v === 'all' ? '' : v)} />
                 </div>
                 {loading ? (
                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -333,5 +333,7 @@ export default function BrowsePage() {
         </AppLayout>
     );
 }
+
+    
 
     
