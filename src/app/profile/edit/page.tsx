@@ -28,7 +28,7 @@ export default function ProfileEditPage() {
     const { toast } = useToast();
     const router = useRouter();
     const [user, setUser] = useState<User | null>(null);
-    const [profileData, setProfileData] = useState<any>({ gender: 'female', employed: 'yes' });
+    const [profileData, setProfileData] = useState<any>({ gender: 'female', employed: 'yes', photoVisibility: 'Public' });
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
     const [isCalendarOpen, setIsCalendarOpen] = useState(false);
@@ -47,7 +47,8 @@ export default function ProfileEditPage() {
                     const dob = data.dob?.toDate();
                     setProfileData({
                         ...data,
-                        dob: dob
+                        dob: dob,
+                        photoVisibility: data.photoVisibility || 'Public',
                     });
                 } else {
                     // New user, pre-fill email
@@ -228,6 +229,20 @@ export default function ProfileEditPage() {
                                 <p className="text-sm text-muted-foreground">JPG, GIF or PNG. 1MB max.</p>
                             </div>
                         </div>
+                        
+                         <div className="grid gap-2">
+                            <Label htmlFor="photo-visibility">Profile Photo is</Label>
+                            <Select value={profileData.photoVisibility} onValueChange={(value) => handleSelectChange('photoVisibility', value)}>
+                                <SelectTrigger id="photo-visibility">
+                                    <SelectValue placeholder="Select visibility" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="Public">Public</SelectItem>
+                                    <SelectItem value="Private">Private</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+
 
                          <div className="grid gap-2 p-4 border rounded-lg">
                             <Label>Account Type</Label>
