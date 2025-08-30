@@ -34,6 +34,7 @@ export type UserProfile = {
   memberid?: string;
   coverUrl?: string;
   createdAt?: any;
+  likes?: string[];
 };
 
 export type Connection = {

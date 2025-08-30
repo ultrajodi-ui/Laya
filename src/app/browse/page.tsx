@@ -12,65 +12,67 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState, useCallback } from "react";
 import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
-import { collection, doc, getDoc, getDocs, query, where, writeBatch, deleteDoc, setDoc } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, query, where, arrayUnion, arrayRemove, updateDoc, onSnapshot } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import type { UserProfile } from "@/lib/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from '@/hooks/use-toast';
 
 export default function BrowsePage() {
     const [users, setUsers] = useState<UserProfile[]>([]);
     const [currentUser, setCurrentUser] = useState<User | null>(null);
+    const [currentUserProfile, setCurrentUserProfile] = useState<UserProfile | null>(null);
     const [loading, setLoading] = useState(true);
-    const [interestedUsers, setInterestedUsers] = useState<Set<string>>(new Set());
     const auth = getAuth();
     const { toast } = useToast();
 
-    const fetchInterests = useCallback(async (userId: string) => {
-        const interestsRef = collection(db, 'users', userId, 'interests');
-        const querySnapshot = await getDocs(interestsRef);
-        const interestedIds = new Set<string>();
-        querySnapshot.forEach((doc) => {
-            interestedIds.add(doc.id);
-        });
-        setInterestedUsers(interestedIds);
-    }, []);
-
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, async (user) => {
+        const unsubscribeAuth = onAuthStateChanged(auth, async (user) => {
             if (user) {
                 setCurrentUser(user);
-                await fetchInterests(user.uid);
                 const userDocRef = doc(db, 'users', user.uid);
-                const userDoc = await getDoc(userDocRef);
-                if (userDoc.exists()) {
-                    const currentUserData = userDoc.data();
-                    const genderToFetch = currentUserData.gender === 'male' ? 'female' : 'male';
-                    
-                    const usersRef = collection(db, "users");
-                    const q = query(usersRef, where("gender", "==", genderToFetch));
-                    const querySnapshot = await getDocs(q);
-                    
-                    const fetchedUsers: UserProfile[] = [];
-                    querySnapshot.forEach((doc) => {
-                        // Exclude the current user from the list
-                        if (doc.id !== user.uid) {
-                           fetchedUsers.push({ id: doc.id, ...doc.data() } as UserProfile);
-                        }
-                    });
-                    setUsers(fetchedUsers);
-                }
+                
+                const unsubscribeSnapshot = onSnapshot(userDocRef, (doc) => {
+                    if (doc.exists()) {
+                        const userData = doc.data() as UserProfile;
+                        setCurrentUserProfile(userData);
+                        fetchUsers(userData.gender, user.uid);
+                    } else {
+                         setLoading(false);
+                    }
+                });
+
+                return () => unsubscribeSnapshot();
             } else {
                 setCurrentUser(null);
+                setCurrentUserProfile(null);
                 setUsers([]);
-                setInterestedUsers(new Set());
+                setLoading(false);
             }
-            setLoading(false);
         });
 
-        return () => unsubscribe();
-    }, [auth, fetchInterests]);
+        const fetchUsers = async (gender: string | undefined, currentUserId: string) => {
+             if (gender) {
+                const genderToFetch = gender === 'male' ? 'female' : 'male';
+                const usersRef = collection(db, "users");
+                const q = query(usersRef, where("gender", "==", genderToFetch));
+                const querySnapshot = await getDocs(q);
+                
+                const fetchedUsers: UserProfile[] = [];
+                querySnapshot.forEach((doc) => {
+                    if (doc.id !== currentUserId) {
+                       fetchedUsers.push({ id: doc.id, ...doc.data() } as UserProfile);
+                    }
+                });
+                setUsers(fetchedUsers);
+             }
+             setLoading(false);
+        };
+
+
+        return () => unsubscribeAuth();
+    }, [auth]);
 
     const calculateAge = (dob: any) => {
         if (!dob) return 0;
@@ -84,8 +86,8 @@ export default function BrowsePage() {
         return age;
     }
 
-    const handleInterestClick = async (targetUserId: string) => {
-        if (!currentUser) {
+    const handleLikeClick = async (targetUser: UserProfile) => {
+        if (!currentUser || !targetUser.memberid) {
             toast({
                 variant: 'destructive',
                 title: 'Not logged in',
@@ -95,31 +97,30 @@ export default function BrowsePage() {
         }
 
         const currentUserId = currentUser.uid;
-        const interestDocRef = doc(db, 'users', currentUserId, 'interests', targetUserId);
+        const userDocRef = doc(db, 'users', currentUserId);
 
-        const newInterestedUsers = new Set(interestedUsers);
-        
+        const isLiked = currentUserProfile?.likes?.includes(targetUser.memberid);
+
         try {
-            if (newInterestedUsers.has(targetUserId)) {
-                // User is currently interested, so we unlike
-                await deleteDoc(interestDocRef);
-                newInterestedUsers.delete(targetUserId);
+            if (isLiked) {
+                await updateDoc(userDocRef, {
+                    likes: arrayRemove(targetUser.memberid)
+                });
                  toast({
                     title: 'Like Removed',
                     description: 'You have unliked this profile.',
                 });
             } else {
-                // User is not interested, so we like
-                await setDoc(interestDocRef, { interestedAt: new Date() });
-                newInterestedUsers.add(targetUserId);
+                await updateDoc(userDocRef, {
+                    likes: arrayUnion(targetUser.memberid)
+                });
                 toast({
                     title: 'Liked!',
                     description: 'Your like has been noted.',
                 });
             }
-            setInterestedUsers(newInterestedUsers);
         } catch (error) {
-            console.error("Failed to update interest:", error);
+            console.error("Failed to update like:", error);
             toast({
                 variant: 'destructive',
                 title: 'Update Failed',
@@ -178,7 +179,7 @@ export default function BrowsePage() {
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                         {users.map(user => {
-                            const isInterested = interestedUsers.has(user.id);
+                            const isLiked = currentUserProfile?.likes?.includes(user.memberid!);
                             return (
                             <Card key={user.id} className="overflow-hidden transition-transform transform hover:scale-105 hover:shadow-lg duration-300 ease-in-out">
                                  <CardHeader className="p-0">
@@ -212,8 +213,8 @@ export default function BrowsePage() {
                                     </div>
                                 </CardContent>
                                 <CardFooter className="p-4 pt-0">
-                                     <Button className="w-full bg-accent text-accent-foreground hover:bg-accent/90" onClick={() => handleInterestClick(user.id)}>
-                                        <Heart className={cn("mr-2 h-4 w-4", isInterested && "fill-red-500 text-red-500")} /> Like
+                                     <Button className="w-full bg-accent text-accent-foreground hover:bg-accent/90" onClick={() => handleLikeClick(user)}>
+                                        <Heart className={cn("mr-2 h-4 w-4", isLiked && "fill-red-500 text-red-500")} /> Like
                                     </Button>
                                 </CardFooter>
                             </Card>

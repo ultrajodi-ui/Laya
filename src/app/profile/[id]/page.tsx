@@ -3,7 +3,7 @@
 'use client';
 
 import { useState, useEffect, use, useCallback } from 'react';
-import { collection, doc, getDoc, setDoc, deleteDoc } from 'firebase/firestore';
+import { collection, doc, getDoc, updateDoc, arrayUnion, arrayRemove, onSnapshot } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { AppLayout } from "@/components/AppLayout";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -30,30 +30,33 @@ function ProfileContent({ id }: { id: string }) {
     const [user, setUser] = useState<UserProfile | null>(null);
     const [loading, setLoading] = useState(true);
     const { setPageTitle } = usePageTitle();
-    const [isInterested, setIsInterested] = useState(false);
     const [currentUser, setCurrentUser] = useState<User | null>(null);
+    const [currentUserProfile, setCurrentUserProfile] = useState<UserProfile | null>(null);
     const auth = getAuth();
     const { toast } = useToast();
 
-    const checkInterest = useCallback(async (currentUserId: string, targetUserId: string) => {
-        const interestDocRef = doc(db, 'users', currentUserId, 'interests', targetUserId);
-        const docSnap = await getDoc(interestDocRef);
-        setIsInterested(docSnap.exists());
-    }, []);
-
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (user) => {
-            setCurrentUser(user);
+        const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
             if(user) {
-                checkInterest(user.uid, id);
+                setCurrentUser(user);
+                const userDocRef = doc(db, 'users', user.uid);
+                const unsubscribeSnapshot = onSnapshot(userDocRef, (doc) => {
+                    if (doc.exists()) {
+                        setCurrentUserProfile({ id: doc.id, ...doc.data() } as UserProfile);
+                    }
+                });
+                return () => unsubscribeSnapshot();
+            } else {
+                setCurrentUser(null);
+                setCurrentUserProfile(null);
             }
         });
-        return () => unsubscribe();
-    }, [auth, id, checkInterest]);
+        return () => unsubscribeAuth();
+    }, [auth]);
 
 
-    const handleInterestClick = async () => {
-        if (!currentUser) {
+    const handleLikeClick = async () => {
+        if (!currentUser || !user || !user.memberid) {
             toast({
                 variant: 'destructive',
                 title: 'Not logged in',
@@ -63,27 +66,30 @@ function ProfileContent({ id }: { id: string }) {
         }
 
         const currentUserId = currentUser.uid;
-        const targetUserId = id;
-        const interestDocRef = doc(db, 'users', currentUserId, 'interests', targetUserId);
+        const userDocRef = doc(db, 'users', currentUserId);
+
+        const isLiked = currentUserProfile?.likes?.includes(user.memberid);
 
         try {
-            if (isInterested) {
-                await deleteDoc(interestDocRef);
-                setIsInterested(false);
+            if (isLiked) {
+                 await updateDoc(userDocRef, {
+                    likes: arrayRemove(user.memberid)
+                });
                 toast({
                     title: 'Like Removed',
                     description: 'You have unliked this profile.',
                 });
             } else {
-                await setDoc(interestDocRef, { interestedAt: new Date() });
-                setIsInterested(true);
+                 await updateDoc(userDocRef, {
+                    likes: arrayUnion(user.memberid)
+                });
                  toast({
                     title: 'Liked!',
                     description: 'Your like has been noted.',
                 });
             }
         } catch (error) {
-            console.error("Failed to update interest:", error);
+            console.error("Failed to update like:", error);
             toast({
                 variant: 'destructive',
                 title: 'Update Failed',
@@ -157,6 +163,8 @@ function ProfileContent({ id }: { id: string }) {
         );
     }
     
+    const isLiked = user.memberid ? currentUserProfile?.likes?.includes(user.memberid) : false;
+
     return (
         <div className="max-w-4xl mx-auto space-y-6">
             <Card className="overflow-hidden">
@@ -172,8 +180,8 @@ function ProfileContent({ id }: { id: string }) {
                 </div>
                 <CardHeader className="pt-20 md:pt-24 relative">
                     <div className="absolute top-4 right-4">
-                        <Button className="bg-accent text-accent-foreground hover:bg-accent/90" onClick={handleInterestClick}>
-                            <Heart className={cn("mr-2 h-4 w-4", isInterested && "fill-red-500 text-red-500")} /> Like
+                        <Button className="bg-accent text-accent-foreground hover:bg-accent/90" onClick={handleLikeClick}>
+                            <Heart className={cn("mr-2 h-4 w-4", isLiked && "fill-red-500 text-red-500")} /> Like
                         </Button>
                     </div>
                     <CardTitle className="text-3xl font-headline">{user.fullName}, {calculateAge(user.dob)}</CardTitle>
@@ -224,7 +232,7 @@ function ProfileContent({ id }: { id: string }) {
 }
 
 export default function ProfileDetailPage({ params }: { params: { id: string } }) {
-    const { id } = use(params);
+    const id = use(params.id);
 
     if (!id) {
         return (
