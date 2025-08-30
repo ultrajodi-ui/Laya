@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Heart, ListFilter, MapPin, Search as SearchIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -23,6 +24,13 @@ import { useToast } from '@/hooks/use-toast';
 const allInterests = ["Cooking", "Hiking", "Reading", "Technology", "Art", "Music", "Films", "Cycling", "Fitness", "Business", "Nutrition", "Dogs", "Brunch", "Mysteries", "Philosophy", "Concerts"];
 const allLocations = ["Mumbai, India", "Delhi, India", "Bangalore, India", "Pune, India", "Hyderabad, India", "Chennai, India"];
 
+// Data for new dropdowns
+const religions = ["Hindu", "Muslim", "Christian", "Sikh", "Jain", "Buddhist", "Others"];
+const communities = ["FC", "MBC", "BC", "SC", "ST", "Other"];
+const subCastes = ["Vanniyar", "Settiyar", "Readdy", "Yadavar", "Braminar", "Adi Dravidar", "Mudaliyar"];
+const ageRanges = ["18 to 22", "23 to 26", "27 to 30", "31 to 35", "Above 35"];
+const salaryRanges = ["<3LPA", "3-5LPA", "5-10LPA", "10-20LPA", ">20LPA"];
+
 
 export default function BrowsePage() {
     const [users, setUsers] = useState<UserProfile[]>([]);
@@ -32,6 +40,14 @@ export default function BrowsePage() {
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
     const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
+    
+    // State for new filters
+    const [selectedReligion, setSelectedReligion] = useState('');
+    const [selectedCommunity, setSelectedCommunity] = useState('');
+    const [selectedSubCaste, setSelectedSubCaste] = useState('');
+    const [selectedAgeRange, setSelectedAgeRange] = useState('');
+    const [selectedSalary, setSelectedSalary] = useState('');
+
     const auth = getAuth();
     const { toast } = useToast();
 
@@ -148,24 +164,47 @@ export default function BrowsePage() {
     const filteredUsers = useMemo(() => {
         return users
             .filter(user => {
-                // Search query filter
                 const searchLower = searchQuery.toLowerCase();
                 const nameMatch = user.fullName?.toLowerCase().includes(searchLower);
                 const interestMatch = user.interests?.some(interest => interest.toLowerCase().includes(searchLower));
                 return nameMatch || interestMatch;
             })
             .filter(user => {
-                // Interest filter
                 if (selectedInterests.length === 0) return true;
                 return selectedInterests.every(interest => user.interests?.includes(interest));
             })
             .filter(user => {
-                // Location filter
                 if (selectedLocations.length === 0) return true;
                 return user.city && selectedLocations.includes(user.city);
+            })
+            .filter(user => !selectedReligion || user.religion === selectedReligion)
+            .filter(user => !selectedCommunity || user.community === selectedCommunity)
+            .filter(user => !selectedSubCaste || user.subCaste === selectedSubCaste)
+            .filter(user => !selectedSalary || user.salary === selectedSalary)
+            .filter(user => {
+                if (!selectedAgeRange) return true;
+                const age = calculateAge(user.dob);
+                if (selectedAgeRange === "18 to 22") return age >= 18 && age <= 22;
+                if (selectedAgeRange === "23 to 26") return age >= 23 && age <= 26;
+                if (selectedAgeRange === "27 to 30") return age >= 27 && age <= 30;
+                if (selectedAgeRange === "31 to 35") return age >= 31 && age <= 35;
+                if (selectedAgeRange === "Above 35") return age > 35;
+                return true;
             });
-    }, [users, searchQuery, selectedInterests, selectedLocations]);
+    }, [users, searchQuery, selectedInterests, selectedLocations, selectedReligion, selectedCommunity, selectedSubCaste, selectedAgeRange, selectedSalary]);
 
+
+    const FilterDropdown = ({ placeholder, options, value, onChange }: { placeholder: string, options: string[], value: string, onChange: (value: string) => void }) => (
+        <Select value={value} onValueChange={onChange}>
+            <SelectTrigger className="w-full sm:w-[180px]">
+                <SelectValue placeholder={placeholder} />
+            </SelectTrigger>
+            <SelectContent>
+                <SelectItem value="">All</SelectItem>
+                {options.map(option => <SelectItem key={option} value={option}>{option}</SelectItem>)}
+            </SelectContent>
+        </Select>
+    );
 
     return (
         <AppLayout>
@@ -215,6 +254,13 @@ export default function BrowsePage() {
                             ))}
                         </DropdownMenuContent>
                     </DropdownMenu>
+                </div>
+                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                    <FilterDropdown placeholder="Religion" options={religions} value={selectedReligion} onChange={setSelectedReligion} />
+                    <FilterDropdown placeholder="Community" options={communities} value={selectedCommunity} onChange={setSelectedCommunity} />
+                    <FilterDropdown placeholder="Sub-Caste" options={subCastes} value={selectedSubCaste} onChange={setSelectedSubCaste} />
+                    <FilterDropdown placeholder="Age Range" options={ageRanges} value={selectedAgeRange} onChange={setSelectedAgeRange} />
+                    <FilterDropdown placeholder="Salary" options={salaryRanges} value={selectedSalary} onChange={setSelectedSalary} />
                 </div>
                 {loading ? (
                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -287,3 +333,5 @@ export default function BrowsePage() {
         </AppLayout>
     );
 }
+
+    
