@@ -23,7 +23,7 @@ const plans = [
     },
     {
         name: "Silver",
-        price: "₹1,499",
+        price: "₹500",
         duration: "/ 3 months",
         features: [
             "View 10 Contacts Details",
