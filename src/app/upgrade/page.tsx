@@ -90,7 +90,7 @@ function PricingCard({ plan }: { plan: typeof plans[0] }) {
     );
 }
 
-export default function UpgradePage() {
+function UpgradePageContent() {
     const { setPageTitle } = usePageTitle();
 
     useEffect(() => {
@@ -98,7 +98,7 @@ export default function UpgradePage() {
     }, [setPageTitle]);
 
     return (
-        <AppLayout>
+        <>
             <div className="flex flex-col items-center gap-4 text-center">
                 <h1 className="text-3xl font-headline font-bold">Find the Perfect Plan</h1>
                 <p className="max-w-2xl text-muted-foreground">Unlock premium features to find your perfect match faster. Choose the plan that works best for you.</p>
@@ -108,6 +108,15 @@ export default function UpgradePage() {
                     <PricingCard key={plan.name} plan={plan} />
                 ))}
             </div>
+        </>
+    );
+}
+
+
+export default function UpgradePage() {
+    return (
+        <AppLayout>
+            <UpgradePageContent />
         </AppLayout>
     );
 }
