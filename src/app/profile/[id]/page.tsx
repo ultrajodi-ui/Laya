@@ -189,6 +189,9 @@ function ProfileContent({ id }: { id: string }) {
     }
     
     const isLiked = user.memberid ? currentUserProfile?.likes?.includes(user.memberid) : false;
+    const profileImageUrl = user.photoVisibility === 'Private' 
+        ? `https://picsum.photos/seed/default-avatar/100/100`
+        : user.imageUrl || `https://picsum.photos/seed/${user.id}/100/100`;
 
     return (
         <div className="max-w-4xl mx-auto space-y-6">
@@ -198,7 +201,7 @@ function ProfileContent({ id }: { id: string }) {
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                     <div className="absolute bottom-4 left-6">
                         <Avatar className="w-24 h-24 md:w-32 md:h-32 border-4 border-background">
-                            <AvatarImage src={user.imageUrl} alt={user.fullName} />
+                            <AvatarImage src={profileImageUrl} alt={user.fullName} />
                             <AvatarFallback>{user.fullName?.charAt(0)}</AvatarFallback>
                         </Avatar>
                     </div>

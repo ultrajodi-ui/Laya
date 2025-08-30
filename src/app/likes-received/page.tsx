@@ -189,12 +189,15 @@ function LikesReceivedContent() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     {likedByUsers.map(user => {
                         const isLiked = currentUserProfile?.likes?.includes(user.memberid!);
+                        const profileImageUrl = user.photoVisibility === 'Private' 
+                            ? `https://picsum.photos/seed/default-avatar/400/400`
+                            : user.imageUrl || `https://picsum.photos/seed/${user.id}/400/400`;
                         return (
                         <Card key={user.id} className="overflow-hidden transition-transform transform hover:scale-105 hover:shadow-lg duration-300 ease-in-out">
                              <CardHeader className="p-0">
                                 <Link href={`/profile/${user.id}`}>
                                     <Image
-                                        src={user.imageUrl || `https://picsum.photos/seed/${user.id}/400/400`}
+                                        src={profileImageUrl}
                                         alt={user.fullName || 'User'}
                                         width={400}
                                         height={400}

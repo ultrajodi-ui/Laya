@@ -35,6 +35,7 @@ export type UserProfile = {
   coverUrl?: string;
   createdAt?: any;
   likes?: string[];
+  photoVisibility?: 'Public' | 'Private';
 };
 
 export type Connection = {
