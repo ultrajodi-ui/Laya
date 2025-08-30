@@ -23,6 +23,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import Link from 'next/link';
 
 export default function ProfileEditPage() {
     const { toast } = useToast();
@@ -248,9 +249,11 @@ export default function ProfileEditPage() {
                             <Label>Account Type</Label>
                             <div className="flex items-center justify-between">
                                 <Badge variant="secondary" className="text-base">{profileData.usertype || 'Basic'}</Badge>
-                                <Button className="bg-accent text-accent-foreground hover:bg-accent/90">
-                                    <Zap className="mr-2 h-4 w-4" />
-                                    Upgrade to Premium
+                                <Button asChild className="bg-accent text-accent-foreground hover:bg-accent/90">
+                                    <Link href="/upgrade">
+                                        <Zap className="mr-2 h-4 w-4" />
+                                        Upgrade to Premium
+                                    </Link>
                                 </Button>
                             </div>
                         </div>
