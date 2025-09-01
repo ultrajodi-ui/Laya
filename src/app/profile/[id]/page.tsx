@@ -262,6 +262,9 @@ function ProfileContent({ id }: { id: string }) {
                             </Button>
                         </div>
                         <CardTitle className="text-3xl font-headline">{user.fullName}, {calculateAge(user.dob)}</CardTitle>
+                        <CardDescription className="!mt-1 text-base text-muted-foreground">
+                            ID: {user.memberid}
+                        </CardDescription>
                         <CardDescription className="flex items-center gap-4 text-base">
                              <span className="flex items-center gap-1"><MapPin className="w-4 h-4" /> {user.city}</span>
                              {user.createdAt && <span className="flex items-center gap-1"><Calendar className="w-4 h-4" /> Joined {format(user.createdAt.toDate(), "MMMM yyyy")}</span>}
