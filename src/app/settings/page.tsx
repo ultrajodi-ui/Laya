@@ -134,7 +134,7 @@ export default function SettingsPage() {
                                 </AlertDialogTrigger>
                                 <AlertDialogContent>
                                     <AlertDialogHeader>
-                                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                    <AlertDialogTitle>Are you sure you want to Delete your Account permanently?</AlertDialogTitle>
                                     <AlertDialogDescription>
                                         This action cannot be undone. This will permanently delete your
                                         account and remove your data from our servers.
