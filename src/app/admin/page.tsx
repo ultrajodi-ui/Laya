@@ -87,7 +87,7 @@ export default function AdminDashboardPage() {
              <AppLayout>
                  <div className="flex flex-col gap-4">
                      <h1 className="text-3xl font-headline font-bold"><Skeleton className="h-8 w-1/4" /></h1>
-                     <p className="text-muted-foreground"><Skeleton className="h-4 w-1/2" /></p>
+                     <div className="text-muted-foreground"><Skeleton className="h-4 w-1/2" /></div>
                 </div>
                  <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mt-4">
                      <Skeleton className="h-24 w-full" />
