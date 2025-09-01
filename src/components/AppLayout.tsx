@@ -13,6 +13,7 @@ import {
   Search,
   Settings,
   User,
+  Shield,
 } from 'lucide-react';
 import { getAuth, onAuthStateChanged, signOut, User as FirebaseUser } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
@@ -29,6 +30,7 @@ import {
   SidebarFooter,
   SidebarTrigger,
   SidebarInset,
+  SidebarSeparator,
 } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -92,6 +94,8 @@ function AppLayoutContent({ children }: { children: ReactNode }) {
       setPageTitle('Edit Profile');
     } else if (pathname.startsWith('/profile/view')) {
       setPageTitle('My Profile');
+    } else if (pathname.startsWith('/admin')) {
+      setPageTitle('Admin Dashboard');
     } else if (!pathname.startsWith('/profile/')) {
        const title = pathname.split('/').pop()?.replace('-', ' ') || '';
        setPageTitle(title);
@@ -176,6 +180,15 @@ function AppLayoutContent({ children }: { children: ReactNode }) {
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
+               <SidebarSeparator />
+                 <SidebarMenuItem>
+                    <SidebarMenuButton asChild isActive={pathname.startsWith('/admin')} tooltip={{children: "Admin"}}>
+                        <Link href="/admin">
+                            <Shield />
+                            <span>Admin</span>
+                        </Link>
+                    </SidebarMenuButton>
+                </SidebarMenuItem>
             </SidebarMenu>
           </SidebarContent>
           <SidebarFooter>
