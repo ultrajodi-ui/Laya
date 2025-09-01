@@ -14,6 +14,7 @@ import {
   Settings,
   User,
   Shield,
+  Star,
 } from 'lucide-react';
 import { getAuth, onAuthStateChanged, signOut, User as FirebaseUser } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
@@ -48,6 +49,7 @@ const auth = getAuth(app);
 const navItems = [
   { href: '/browse', icon: Home, label: 'Browse' },
   { href: '/matches', icon: Search, label: 'AI Matches' },
+   { href: '/likes-received', icon: Star, label: 'Likes Received' },
   { href: '/connections', icon: Heart, label: 'Connections' },
   { href: '/messages', icon: MessageSquare, label: 'Messages' },
 ];
@@ -146,8 +148,9 @@ function AppLayoutContent({ children }: { children: ReactNode }) {
   if (['/login', '/signup', '/'].includes(pathname) && !user) {
     return <>{children}</>;
   }
-  
-  if (user && !['/login', '/signup', '/'].includes(pathname) && loading) {
+
+  // If we are still loading but have a user (for protected routes), show skeleton.
+  if (!user && !['/login', '/signup', '/'].includes(pathname)) {
      return (
         <div className="flex items-center justify-center h-screen">
             <Skeleton className='h-screen w-full' />
@@ -265,9 +268,9 @@ function AppLayoutContent({ children }: { children: ReactNode }) {
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                       <Link href="/likes-received">
-                          <Heart className="mr-2 h-4 w-4" />
-                          <span>Like Received</span>
+                       <Link href="/upgrade">
+                          <Star className="mr-2 h-4 w-4" />
+                          <span>Upgrade Plan</span>
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
