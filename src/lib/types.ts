@@ -37,6 +37,7 @@ export type UserProfile = {
   likes?: string[];
   photoVisibility?: 'Public' | 'Private';
   contactLimit?: number;
+  viewedContacts?: string[];
 };
 
 export type Connection = {

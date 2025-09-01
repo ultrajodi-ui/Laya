@@ -48,7 +48,8 @@ function ProfileContent({ id }: { id: string }) {
                 const userDocRef = doc(db, 'users', user.uid);
                 const unsubscribeSnapshot = onSnapshot(userDocRef, (doc) => {
                     if (doc.exists()) {
-                        setCurrentUserProfile({ id: doc.id, ...doc.data() } as UserProfile);
+                        const profile = { id: doc.id, ...doc.data() } as UserProfile;
+                        setCurrentUserProfile(profile);
                     }
                 });
                 return () => unsubscribeSnapshot();
@@ -59,6 +60,15 @@ function ProfileContent({ id }: { id: string }) {
         });
         return () => unsubscribeAuth();
     }, [auth]);
+
+    useEffect(() => {
+        if (currentUserProfile && user) {
+            const hasViewed = currentUserProfile.viewedContacts?.includes(user.memberid!);
+            if (hasViewed) {
+                setIsContactVisible(true);
+            }
+        }
+    }, [currentUserProfile, user]);
 
 
     const handleLikeClick = async () => {
@@ -130,19 +140,25 @@ function ProfileContent({ id }: { id: string }) {
     };
     
     const handleViewContact = async () => {
-        if (!currentUser || !currentUserProfile) {
+        if (!currentUser || !currentUserProfile || !user?.memberid) {
             toast({ variant: 'destructive', title: 'Please log in to view contact details.' });
             return;
         }
 
-        // Initialize contactLimit if it doesn't exist
+        const hasViewed = currentUserProfile.viewedContacts?.includes(user.memberid);
+        if (hasViewed) {
+             setIsContactVisible(true);
+             return;
+        }
+
         const contactLimit = currentUserProfile.contactLimit ?? 0;
 
         if (contactLimit > 0) {
             const userDocRef = doc(db, 'users', currentUser.uid);
             try {
                 await updateDoc(userDocRef, {
-                    contactLimit: increment(-1)
+                    contactLimit: increment(-1),
+                    viewedContacts: arrayUnion(user.memberid)
                 });
                 setIsContactVisible(true);
                 toast({ title: 'Contact revealed', description: `You have ${contactLimit - 1} views remaining.` });
