@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { db } from "@/lib/firebase";
 import { UserProfile } from "@/lib/types";
-import { collection, getDocs, limit, orderBy, query, where, doc, getDoc } from "firebase/firestore";
+import { collection, getDocs, limit, orderBy, query, doc, getDoc } from "firebase/firestore";
 import { Users, Heart, Star, ShieldAlert } from "lucide-react";
 import { useEffect, useState, useCallback } from "react";
 import { format } from 'date-fns';
@@ -32,33 +32,42 @@ export default function AdminDashboardPage() {
 
     const fetchUsers = useCallback(async () => {
         setLoading(true);
-        const usersCollection = collection(db, "users");
-        const usersQuery = showAll 
-            ? query(usersCollection, orderBy("createdAt", "desc"))
-            : query(usersCollection, orderBy("createdAt", "desc"), limit(5));
-        
-        const usersSnapshot = await getDocs(usersQuery);
-        const fetchedUsers = usersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as UserProfile));
-        setUsers(fetchedUsers);
-        setLoading(false);
+        try {
+            const usersCollection = collection(db, "users");
+            const usersQuery = showAll 
+                ? query(usersCollection, orderBy("createdAt", "desc"))
+                : query(usersCollection, orderBy("createdAt", "desc"), limit(5));
+            
+            const usersSnapshot = await getDocs(usersQuery);
+            const fetchedUsers = usersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as UserProfile));
+            setUsers(fetchedUsers);
+        } catch (error) {
+            console.error("Error fetching users:", error);
+        } finally {
+            setLoading(false);
+        }
     }, [showAll]);
 
     const fetchStats = async () => {
-        // Fetch Users for stats
-        const usersCollection = collection(db, "users");
-        const userSnapshot = await getDocs(usersCollection);
-        const totalUsers = userSnapshot.size;
-        const usersData = userSnapshot.docs.map(doc => doc.data() as UserProfile);
+        try {
+            // Fetch Users for stats
+            const usersCollection = collection(db, "users");
+            const userSnapshot = await getDocs(usersCollection);
+            const totalUsers = userSnapshot.size;
+            const usersData = userSnapshot.docs.map(doc => doc.data() as UserProfile);
 
-        // Fetch Likes
-        const likesCollection = collection(db, "likesReceived");
-        const likesSnapshot = await getDocs(likesCollection);
-        const totalLikes = likesSnapshot.size;
+            // Fetch Likes
+            const likesCollection = collection(db, "likesReceived");
+            const likesSnapshot = await getDocs(likesCollection);
+            const totalLikes = likesSnapshot.size;
 
-        // Calculate Premium Users
-        const premiumUsers = usersData.filter(u => u.usertype && u.usertype !== 'Basic').length;
+            // Calculate Premium Users
+            const premiumUsers = usersData.filter(u => u.usertype && u.usertype !== 'Basic').length;
 
-        setStats({ totalUsers, totalLikes, premiumUsers });
+            setStats({ totalUsers, totalLikes, premiumUsers });
+        } catch (error) {
+            console.error("Error fetching stats:", error);
+        }
     }
 
     useEffect(() => {
@@ -68,25 +77,25 @@ export default function AdminDashboardPage() {
                 const userDoc = await getDoc(userDocRef);
                 if (userDoc.exists() && userDoc.data().role === 'admin') {
                     setIsAdmin(true);
+                    await Promise.all([fetchStats(), fetchUsers()]);
                 } else {
                     setIsAdmin(false);
-                    setLoading(false);
                 }
             } else {
                 router.push('/login');
             }
+             setLoading(false);
         });
         return () => unsubscribe();
-    }, [auth, router]);
+    }, [auth, router, fetchUsers]);
 
     useEffect(() => {
         if (isAdmin) {
-            fetchStats();
             fetchUsers();
         }
-    }, [isAdmin, fetchUsers]);
+    }, [isAdmin, showAll, fetchUsers]);
     
-    if (loading && users.length === 0) {
+    if (loading) {
          return (
              <AppLayout>
                  <div className="flex flex-col gap-4">
@@ -181,7 +190,7 @@ export default function AdminDashboardPage() {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {loading ? (
+                                {loading && users.length === 0 ? (
                                     [...Array(5)].map((_, i) => (
                                         <TableRow key={i}>
                                             <TableCell><Skeleton className="h-5 w-24" /></TableCell>
