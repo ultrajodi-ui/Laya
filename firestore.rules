@@ -1,20 +1,32 @@
-
 rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-
-    // Users can read all profiles, but only write to their own.
-    match /users/{userId} {
-      allow get, list: if request.auth != null;
-      allow create: if request.auth != null && request.auth.uid == userId;
-      allow update, delete: if request.auth != null && request.auth.uid == userId;
+    // Default deny all access
+    match /{document=**} {
+      allow read, write: if false;
     }
 
-    // Users can read, create, and delete likes. 
-    // App logic ensures they can only manage their own.
+    // Rules for the 'users' collection
+    match /users/{userId} {
+      // Allow reading a single user profile if authenticated
+      allow get: if request.auth != null;
+      
+      // Allow listing/querying users if authenticated
+      allow list: if request.auth != null;
+      
+      // Allow creating a user document only for the user themselves
+      allow create: if request.auth.uid == userId;
+      
+      // Allow updating a user document only for the user themselves
+      allow update: if request.auth.uid == userId;
+    }
+
+    // Rules for the 'likesReceived' collection
     match /likesReceived/{likeId} {
-      allow read, create, delete: if request.auth != null;
+        // Allow authenticated users to read, create, and delete like documents.
+        // The application logic ensures users can only manage their own likes.
+        allow read, write: if request.auth != null;
     }
   }
 }
