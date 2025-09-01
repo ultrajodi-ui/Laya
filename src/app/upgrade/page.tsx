@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { usePageTitle } from "@/hooks/use-page-title";
 import { cn } from "@/lib/utils";
 import { Check, Star } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 const plans = [
@@ -58,6 +59,13 @@ const plans = [
 ]
 
 function PricingCard({ plan }: { plan: typeof plans[0] }) {
+    const router = useRouter();
+
+    const handleChoosePlan = () => {
+        if (plan.isCurrent) return;
+        router.push(`/payment?plan=${encodeURIComponent(plan.name)}&price=${encodeURIComponent(plan.price)}`);
+    }
+
     return (
         <Card className={cn("flex flex-col", plan.isPopular && "border-primary shadow-lg")}>
             {plan.isPopular && (
@@ -83,7 +91,7 @@ function PricingCard({ plan }: { plan: typeof plans[0] }) {
                 </ul>
             </CardContent>
             <div className="p-6 pt-0">
-                <Button className="w-full" disabled={plan.isCurrent}>
+                <Button className="w-full" disabled={plan.isCurrent} onClick={handleChoosePlan}>
                     {plan.isCurrent ? "Current Plan" : "Choose Plan"}
                 </Button>
             </div>
