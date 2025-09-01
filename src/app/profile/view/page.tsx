@@ -121,6 +121,7 @@ export default function ProfileViewPage() {
                             </span>
                              <div className="grid gap-1.5 text-center">
                                  <h2 className="text-2xl font-bold">{profileData.fullName}</h2>
+                                 {profileData.memberid && <p className="text-sm text-muted-foreground">Member ID: {profileData.memberid}</p>}
                                  <p className="text-sm text-muted-foreground">{profileData.email}</p>
                                  {profileData.usertype && (
                                      <Badge variant="secondary" className="w-fit justify-self-center">{profileData.usertype}</Badge>
@@ -130,7 +131,6 @@ export default function ProfileViewPage() {
 
                         <div className="grid sm:grid-cols-2 gap-6">
                             <ProfileDetail label="Full Name" value={profileData.fullName} />
-                            <ProfileDetail label="Member ID" value={profileData.memberid} />
                             <ProfileDetail label="Date of Birth" value={profileData.dob ? format(profileData.dob, 'PPP') : '-'} />
                             <ProfileDetail label="Father Name" value={profileData.fatherName} />
                             <ProfileDetail label="Mother Name" value={profileData.motherName} />
