@@ -3,7 +3,7 @@
 'use client';
 
 import { useState, useEffect, use } from 'react';
-import { collection, doc, getDoc, updateDoc, arrayUnion, arrayRemove, onSnapshot, writeBatch } from 'firebase/firestore';
+import { collection, doc, getDoc, updateDoc, arrayUnion, arrayRemove, onSnapshot, writeBatch, increment } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { AppLayout } from "@/components/AppLayout";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -19,6 +19,8 @@ import { usePageTitle } from '@/hooks/use-page-title';
 import { cn } from '@/lib/utils';
 import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
+import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { useRouter } from 'next/navigation';
 
 const calculateAge = (dob: any) => {
     if (!dob) return 0;
@@ -34,6 +36,10 @@ function ProfileContent({ id }: { id: string }) {
     const [currentUserProfile, setCurrentUserProfile] = useState<UserProfile | null>(null);
     const auth = getAuth();
     const { toast } = useToast();
+    const router = useRouter();
+    const [isContactVisible, setIsContactVisible] = useState(false);
+    const [showUpgradeAlert, setShowUpgradeAlert] = useState(false);
+
 
     useEffect(() => {
         const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
@@ -122,6 +128,32 @@ function ProfileContent({ id }: { id: string }) {
             });
         }
     };
+    
+    const handleViewContact = async () => {
+        if (!currentUser || !currentUserProfile) {
+            toast({ variant: 'destructive', title: 'Please log in to view contact details.' });
+            return;
+        }
+
+        // Initialize contactLimit if it doesn't exist
+        const contactLimit = currentUserProfile.contactLimit ?? 0;
+
+        if (contactLimit > 0) {
+            const userDocRef = doc(db, 'users', currentUser.uid);
+            try {
+                await updateDoc(userDocRef, {
+                    contactLimit: increment(-1)
+                });
+                setIsContactVisible(true);
+                toast({ title: 'Contact revealed', description: `You have ${contactLimit - 1} views remaining.` });
+            } catch (error) {
+                console.error("Error updating contact limit:", error);
+                toast({ variant: 'destructive', title: 'Could not update contact limit.' });
+            }
+        } else {
+             setShowUpgradeAlert(true);
+        }
+    };
 
 
     useEffect(() => {
@@ -194,85 +226,101 @@ function ProfileContent({ id }: { id: string }) {
         : user.imageUrl || `https://picsum.photos/seed/${user.id}/100/100`;
 
     return (
-        <div className="max-w-4xl mx-auto space-y-6">
-            <Card className="overflow-hidden">
-                <div className="relative h-48 md:h-64 bg-muted">
-                    <Image src={user.coverUrl || `https://picsum.photos/seed/${user.id}-cover/1200/400`} alt={`${user.fullName}'s cover photo`} fill style={{objectFit: "cover"}} data-ai-hint="romantic landscape" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                    <div className="absolute bottom-4 left-6">
-                        <Avatar className="w-24 h-24 md:w-32 md:h-32 border-4 border-background">
-                            <AvatarImage src={profileImageUrl} alt={user.fullName} />
-                            <AvatarFallback>{user.fullName?.charAt(0)}</AvatarFallback>
-                        </Avatar>
-                    </div>
-                </div>
-                <CardHeader className="pt-20 md:pt-24 relative">
-                    <div className="absolute top-4 right-4">
-                        <Button className="bg-accent text-accent-foreground hover:bg-accent/90" onClick={handleLikeClick}>
-                            <Heart className={cn("mr-2 h-4 w-4", isLiked && "fill-red-500 text-red-500")} /> Like
-                        </Button>
-                    </div>
-                    <CardTitle className="text-3xl font-headline">{user.fullName}, {calculateAge(user.dob)}</CardTitle>
-                    <CardDescription className="flex items-center gap-4 text-base">
-                         <span className="flex items-center gap-1"><MapPin className="w-4 h-4" /> {user.city}</span>
-                         {user.createdAt && <span className="flex items-center gap-1"><Calendar className="w-4 h-4" /> Joined {format(user.createdAt.toDate(), "MMMM yyyy")}</span>}
-                    </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                    <div>
-                        <h3 className="text-lg font-semibold font-headline mb-2">About Me</h3>
-                         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 text-muted-foreground">
-                            <p><span className="font-semibold text-foreground">Father:</span> {user.fatherName}</p>
-                            <p><span className="font-semibold text-foreground">Mother:</span> {user.motherName}</p>
-                            <p><span className="font-semibold text-foreground">Occupation:</span> {user.occupation}</p>
-                            <p><span className="font-semibold text-foreground">Salary:</span> {user.salary}</p>
-                            <p><span className="font-semibold text-foreground">Location:</span> {user.workingPlace}</p>
-                            <p><span className="font-semibold text-foreground">Religion:</span> {user.religion}</p>
-                            <p><span className="font-semibold text-foreground">Community:</span> {user.community}</p>
-                            <p><span className="font-semibold text-foreground">Sub-caste:</span> {user.subCaste}</p>
-                            <p><span className="font-semibold text-foreground">Zodiac Sign:</span> {user.zodiacSign}</p>
-                            <p><span className="font-semibold text-foreground">Star Sign:</span> {user.starSign}</p>
+         <AlertDialog open={showUpgradeAlert} onOpenChange={setShowUpgradeAlert}>
+            <div className="max-w-4xl mx-auto space-y-6">
+                <Card className="overflow-hidden">
+                    <div className="relative h-48 md:h-64 bg-muted">
+                        <Image src={user.coverUrl || `https://picsum.photos/seed/${user.id}-cover/1200/400`} alt={`${user.fullName}'s cover photo`} fill style={{objectFit: "cover"}} data-ai-hint="romantic landscape" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                        <div className="absolute bottom-4 left-6">
+                            <Avatar className="w-24 h-24 md:w-32 md:h-32 border-4 border-background">
+                                <AvatarImage src={profileImageUrl} alt={user.fullName} />
+                                <AvatarFallback>{user.fullName?.charAt(0)}</AvatarFallback>
+                            </Avatar>
                         </div>
                     </div>
-
-                    {user.mobileNo && (
+                    <CardHeader className="pt-20 md:pt-24 relative">
+                        <div className="absolute top-4 right-4">
+                            <Button className="bg-accent text-accent-foreground hover:bg-accent/90" onClick={handleLikeClick}>
+                                <Heart className={cn("mr-2 h-4 w-4", isLiked && "fill-red-500 text-red-500")} /> Like
+                            </Button>
+                        </div>
+                        <CardTitle className="text-3xl font-headline">{user.fullName}, {calculateAge(user.dob)}</CardTitle>
+                        <CardDescription className="flex items-center gap-4 text-base">
+                             <span className="flex items-center gap-1"><MapPin className="w-4 h-4" /> {user.city}</span>
+                             {user.createdAt && <span className="flex items-center gap-1"><Calendar className="w-4 h-4" /> Joined {format(user.createdAt.toDate(), "MMMM yyyy")}</span>}
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
                         <div>
-                            <h3 className="text-lg font-semibold font-headline mb-2">Contact Details</h3>
-                            <div className="flex items-center gap-2 p-4 border rounded-lg bg-secondary/50">
-                                <span className="text-muted-foreground">Contact Number:</span>
-                                <span className="font-mono filter blur-sm select-none">
-                                    {user.mobileNo}
-                                </span>
-                                <Button variant="outline" size="sm" className="ml-auto bg-background">
-                                    <Eye className="mr-2 h-4 w-4" /> View
-                                </Button>
+                            <h3 className="text-lg font-semibold font-headline mb-2">About Me</h3>
+                             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 text-muted-foreground">
+                                <p><span className="font-semibold text-foreground">Father:</span> {user.fatherName}</p>
+                                <p><span className="font-semibold text-foreground">Mother:</span> {user.motherName}</p>
+                                <p><span className="font-semibold text-foreground">Occupation:</span> {user.occupation}</p>
+                                <p><span className="font-semibold text-foreground">Salary:</span> {user.salary}</p>
+                                <p><span className="font-semibold text-foreground">Location:</span> {user.workingPlace}</p>
+                                <p><span className="font-semibold text-foreground">Religion:</span> {user.religion}</p>
+                                <p><span className="font-semibold text-foreground">Community:</span> {user.community}</p>
+                                <p><span className="font-semibold text-foreground">Sub-caste:</span> {user.subCaste}</p>
+                                <p><span className="font-semibold text-foreground">Zodiac Sign:</span> {user.zodiacSign}</p>
+                                <p><span className="font-semibold text-foreground">Star Sign:</span> {user.starSign}</p>
                             </div>
                         </div>
-                    )}
 
-
-                     {user.interests && user.interests.length > 0 && (
-                        <div>
-                            <h3 className="text-lg font-semibold font-headline mb-2">Interests</h3>
-                            <div className="flex flex-wrap gap-2">
-                                {user.interests.map(interest => (
-                                    <Badge key={interest} variant="secondary" className="text-sm px-3 py-1">{interest}</Badge>
-                                ))}
+                        {user.mobileNo && (
+                            <div>
+                                <h3 className="text-lg font-semibold font-headline mb-2">Contact Details</h3>
+                                <div className="flex items-center gap-2 p-4 border rounded-lg bg-secondary/50">
+                                    <span className="text-muted-foreground">Contact Number:</span>
+                                    <span className={cn("font-mono", !isContactVisible && "filter blur-sm select-none")}>
+                                        {user.mobileNo}
+                                    </span>
+                                    {!isContactVisible && (
+                                        <Button variant="outline" size="sm" className="ml-auto bg-background" onClick={handleViewContact}>
+                                            <Eye className="mr-2 h-4 w-4" /> View
+                                        </Button>
+                                    )}
+                                </div>
                             </div>
-                        </div>
-                    )}
-                     {user.lookingFor && (
-                         <div>
-                            <h3 className="text-lg font-semibold font-headline mb-2 flex items-center gap-2">
-                                <Sparkles className="w-5 h-5 text-primary" />
-                                What I'm Looking For
-                            </h3>
-                            <p className="text-muted-foreground italic">"{user.lookingFor}"</p>
-                        </div>
-                     )}
-                </CardContent>
-            </Card>
-        </div>
+                        )}
+
+
+                         {user.interests && user.interests.length > 0 && (
+                            <div>
+                                <h3 className="text-lg font-semibold font-headline mb-2">Interests</h3>
+                                <div className="flex flex-wrap gap-2">
+                                    {user.interests.map(interest => (
+                                        <Badge key={interest} variant="secondary" className="text-sm px-3 py-1">{interest}</Badge>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                         {user.lookingFor && (
+                             <div>
+                                <h3 className="text-lg font-semibold font-headline mb-2 flex items-center gap-2">
+                                    <Sparkles className="w-5 h-5 text-primary" />
+                                    What I'm Looking For
+                                </h3>
+                                <p className="text-muted-foreground italic">"{user.lookingFor}"</p>
+                            </div>
+                         )}
+                    </CardContent>
+                </Card>
+            </div>
+            <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle>Contact Limit Reached</AlertDialogTitle>
+                    <AlertDialogDescription>
+                        Your contact view limit is over. Please upgrade your plan to view more contacts and enjoy other premium benefits.
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                     <Button variant="outline" onClick={() => setShowUpgradeAlert(false)}>Cancel</Button>
+                     <Button onClick={() => router.push('/upgrade')}>Upgrade Now</Button>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
     );
 }
 
