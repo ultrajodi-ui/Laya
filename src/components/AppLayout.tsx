@@ -50,7 +50,6 @@ const navItems = [
   { href: '/browse', icon: Home, label: 'Browse' },
   { href: '/matches', icon: Search, label: 'AI Matches' },
    { href: '/likes-received', icon: Star, label: 'Likes Received' },
-  { href: '/messages', icon: MessageSquare, label: 'Messages' },
 ];
 
 const settingsNavItems = [
