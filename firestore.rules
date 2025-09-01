@@ -1,23 +1,29 @@
 rules_version = '2';
+
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Deny all reads and writes by default.
+
+    // Helper function to check for admin role
+    function isAdmin() {
+      return request.auth != null && request.auth.token.role == 'admin';
+    }
+
+    // Default deny all reads/writes
     match /{document=**} {
       allow read, write: if false;
     }
 
-    // Allow authenticated users to read any user profile,
-    // but only write to their own. This is needed for browsing, viewing profiles,
-    // and the admin dashboard.
     match /users/{userId} {
-      allow get, list: if request.auth != null;
-      allow create, update, delete: if request.auth.uid == userId;
+      // Allow read access for any authenticated user or an admin
+      allow read: if request.auth != null || isAdmin();
+      
+      // Allow create, update, delete access only for the user themselves or an admin
+      allow write: if (request.auth != null && request.auth.uid == userId) || isAdmin();
     }
-    
-    // Allow authenticated users to manage likes.
-    // The application logic ensures users can only create/delete their own likes.
+
     match /likesReceived/{likeId} {
-        allow read, create, delete: if request.auth != null;
+      // Allow read and write for any authenticated user
+      allow read, write: if request.auth != null || isAdmin();
     }
   }
 }
