@@ -102,22 +102,25 @@ export default function ProfileEditPage() {
         if (!user) return;
         setIsSaving(true);
         try {
-            // Generate memberid if it doesn't exist
-            if (!profileData.memberid) {
-                const memberIdPrefix = profileData.gender === 'male' ? 'UJM' : 'UJF';
+            const dataToSave = { ...profileData };
+
+            // Generate memberid and set contact limit if it's a new user
+            if (!dataToSave.memberid) {
+                const memberIdPrefix = dataToSave.gender === 'male' ? 'UJM' : 'UJF';
                 const uniqueId = Date.now().toString().slice(-6);
-                profileData.memberid = `${memberIdPrefix}${uniqueId}`;
+                dataToSave.memberid = `${memberIdPrefix}${uniqueId}`;
+                dataToSave.contactLimit = 3; // Set default contact limit
             }
 
-            if (auth.currentUser && auth.currentUser.displayName !== profileData.fullName) {
+            if (auth.currentUser && auth.currentUser.displayName !== dataToSave.fullName) {
                 await updateProfile(auth.currentUser, {
-                    displayName: profileData.fullName,
+                    displayName: dataToSave.fullName,
                 });
             }
 
             const userDocRef = doc(db, "users", user.uid);
-            const { imageUrl, ...dataToSave } = profileData;
-            await setDoc(userDocRef, { ...dataToSave, usertype: dataToSave.usertype || 'Basic' }, { merge: true });
+            const { imageUrl, ...finalData } = dataToSave;
+            await setDoc(userDocRef, { ...finalData, usertype: finalData.usertype || 'Basic' }, { merge: true });
             
             toast({
                 title: "Profile Updated",
