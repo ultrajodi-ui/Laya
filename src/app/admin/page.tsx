@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { db } from "@/lib/firebase";
 import { UserProfile } from "@/lib/types";
-import { collection, getDocs, limit, orderBy, query, where, doc } from "firebase/firestore";
+import { collection, getDocs, limit, orderBy, query, where, doc, getDoc } from "firebase/firestore";
 import { Users, Heart, Star, ShieldAlert } from "lucide-react";
 import { useEffect, useState } from "react";
 import { format } from 'date-fns';
