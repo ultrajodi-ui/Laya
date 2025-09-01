@@ -265,7 +265,7 @@ function AppLayoutContent({ children }: { children: ReactNode }) {
                           <span>My Profile</span>
                       </Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
+                    <DropdownMenuItem asChild disabled={userProfile?.usertype === 'Diamond'}>
                        <Link href="/upgrade">
                           <Star className="mr-2 h-4 w-4" />
                           <span>Upgrade Plan</span>
