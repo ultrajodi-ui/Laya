@@ -24,7 +24,7 @@ export default function AdminDashboardPage() {
     });
     const [recentUsers, setRecentUsers] = useState<UserProfile[]>([]);
     const [loading, setLoading] = useState(true);
-    const [isAdmin, setIsAdmin] = useState(false);
+    const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
     const auth = getAuth();
     const router = useRouter();
 
@@ -50,7 +50,7 @@ export default function AdminDashboardPage() {
     }, [auth, router]);
 
     const fetchData = async () => {
-        setLoading(true);
+        // No need to set loading to true here again
         try {
             // Fetch Users
             const usersCollection = collection(db, "users");
@@ -85,7 +85,16 @@ export default function AdminDashboardPage() {
     if (loading) {
          return (
              <AppLayout>
-                 <div className="flex items-center justify-center h-full">
+                 <div className="flex flex-col gap-4">
+                     <h1 className="text-3xl font-headline font-bold"><Skeleton className="h-8 w-1/4" /></h1>
+                     <p className="text-muted-foreground"><Skeleton className="h-4 w-1/2" /></p>
+                </div>
+                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mt-4">
+                     <Skeleton className="h-24 w-full" />
+                     <Skeleton className="h-24 w-full" />
+                     <Skeleton className="h-24 w-full" />
+                 </div>
+                 <div className="mt-8">
                      <Skeleton className="h-64 w-full" />
                  </div>
              </AppLayout>
