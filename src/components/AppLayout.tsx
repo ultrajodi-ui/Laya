@@ -40,6 +40,8 @@ import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from './ui/skeleton';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from './ui/dropdown-menu';
 import { PageTitleProvider, usePageTitle } from '@/hooks/use-page-title';
+import type { UserProfile } from '@/lib/types';
+
 
 const auth = getAuth(app);
 
@@ -60,6 +62,7 @@ function AppLayoutContent({ children }: { children: ReactNode }) {
   const router = useRouter();
   const { toast } = useToast();
   const [user, setUser] = React.useState<FirebaseUser | null>(null);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = React.useState(true);
   const { pageTitle, setPageTitle } = usePageTitle();
 
@@ -70,7 +73,17 @@ function AppLayoutContent({ children }: { children: ReactNode }) {
         setUser(user);
         const userDocRef = doc(db, 'users', user.uid);
         const userDoc = await getDoc(userDocRef);
-        if (!userDoc.exists() && pathname !== '/profile/edit') {
+        if (userDoc.exists()) {
+            const profile = userDoc.data() as UserProfile;
+            setUserProfile(profile);
+            if (Object.keys(profile).length < 5 && pathname !== '/profile/edit') { // Rough check for incomplete profile
+                 toast({
+                    title: "Profile Incomplete",
+                    description: "Please complete your profile to continue.",
+                });
+                router.push('/profile/edit');
+            }
+        } else if (pathname !== '/profile/edit') {
             toast({
                 title: "Profile Incomplete",
                 description: "Please complete your profile to continue.",
@@ -79,6 +92,7 @@ function AppLayoutContent({ children }: { children: ReactNode }) {
         }
       } else {
         setUser(null);
+        setUserProfile(null);
         if(!['/login', '/signup', '/'].includes(pathname)) {
             router.push('/login');
         }
@@ -181,14 +195,16 @@ function AppLayoutContent({ children }: { children: ReactNode }) {
                 </SidebarMenuItem>
               ))}
                <SidebarSeparator />
-                 <SidebarMenuItem>
-                    <SidebarMenuButton asChild isActive={pathname.startsWith('/admin')} tooltip={{children: "Admin"}}>
-                        <Link href="/admin">
-                            <Shield />
-                            <span>Admin</span>
-                        </Link>
-                    </SidebarMenuButton>
-                </SidebarMenuItem>
+                {userProfile?.role === 'admin' && (
+                    <SidebarMenuItem>
+                        <SidebarMenuButton asChild isActive={pathname.startsWith('/admin')} tooltip={{children: "Admin"}}>
+                            <Link href="/admin">
+                                <Shield />
+                                <span>Admin</span>
+                            </Link>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                )}
             </SidebarMenu>
           </SidebarContent>
           <SidebarFooter>

@@ -38,6 +38,7 @@ export type UserProfile = {
   photoVisibility?: 'Public' | 'Private';
   contactLimit?: number;
   viewedContacts?: string[];
+  role?: 'admin' | 'user';
 };
 
 export type Connection = {
