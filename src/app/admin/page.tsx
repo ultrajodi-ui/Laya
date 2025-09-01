@@ -9,11 +9,12 @@ import { db } from "@/lib/firebase";
 import { UserProfile } from "@/lib/types";
 import { collection, getDocs, limit, orderBy, query, where, doc, getDoc } from "firebase/firestore";
 import { Users, Heart, Star, ShieldAlert } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { format } from 'date-fns';
 import { Skeleton } from "@/components/ui/skeleton";
 import { getAuth, onAuthStateChanged, User } from "firebase/auth";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
 
 
 export default function AdminDashboardPage() {
@@ -22,12 +23,43 @@ export default function AdminDashboardPage() {
         totalLikes: 0,
         premiumUsers: 0,
     });
-    const [recentUsers, setRecentUsers] = useState<UserProfile[]>([]);
+    const [users, setUsers] = useState<UserProfile[]>([]);
     const [loading, setLoading] = useState(true);
     const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
+    const [showAll, setShowAll] = useState(false);
     const auth = getAuth();
     const router = useRouter();
 
+    const fetchUsers = useCallback(async () => {
+        setLoading(true);
+        const usersCollection = collection(db, "users");
+        const usersQuery = showAll 
+            ? query(usersCollection, orderBy("createdAt", "desc"))
+            : query(usersCollection, orderBy("createdAt", "desc"), limit(5));
+        
+        const usersSnapshot = await getDocs(usersQuery);
+        const fetchedUsers = usersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as UserProfile));
+        setUsers(fetchedUsers);
+        setLoading(false);
+    }, [showAll]);
+
+    const fetchStats = async () => {
+        // Fetch Users for stats
+        const usersCollection = collection(db, "users");
+        const userSnapshot = await getDocs(usersCollection);
+        const totalUsers = userSnapshot.size;
+        const usersData = userSnapshot.docs.map(doc => doc.data() as UserProfile);
+
+        // Fetch Likes
+        const likesCollection = collection(db, "likesReceived");
+        const likesSnapshot = await getDocs(likesCollection);
+        const totalLikes = likesSnapshot.size;
+
+        // Calculate Premium Users
+        const premiumUsers = usersData.filter(u => u.usertype && u.usertype !== 'Basic').length;
+
+        setStats({ totalUsers, totalLikes, premiumUsers });
+    }
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -36,7 +68,6 @@ export default function AdminDashboardPage() {
                 const userDoc = await getDoc(userDocRef);
                 if (userDoc.exists() && userDoc.data().role === 'admin') {
                     setIsAdmin(true);
-                    fetchData();
                 } else {
                     setIsAdmin(false);
                     setLoading(false);
@@ -46,43 +77,16 @@ export default function AdminDashboardPage() {
             }
         });
         return () => unsubscribe();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [auth, router]);
 
-    const fetchData = async () => {
-        // No need to set loading to true here again
-        try {
-            // Fetch Users
-            const usersCollection = collection(db, "users");
-            const userSnapshot = await getDocs(usersCollection);
-            const totalUsers = userSnapshot.size;
-            const usersData = userSnapshot.docs.map(doc => doc.data() as UserProfile);
-
-            // Fetch Likes
-            const likesCollection = collection(db, "likesReceived");
-            const likesSnapshot = await getDocs(likesCollection);
-            const totalLikes = likesSnapshot.size;
-
-            // Calculate Premium Users
-            const premiumUsers = usersData.filter(u => u.usertype && u.usertype !== 'Basic').length;
-
-            setStats({ totalUsers, totalLikes, premiumUsers });
-
-            // Fetch Recent Users
-            const recentUsersQuery = query(usersCollection, orderBy("createdAt", "desc"), limit(5));
-            const recentUsersSnapshot = await getDocs(recentUsersQuery);
-            const fetchedRecentUsers = recentUsersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as UserProfile));
-            setRecentUsers(fetchedRecentUsers);
-
-        } catch (error) {
-            console.error("Error fetching admin data:", error);
-            // Handle error, e.g., show a toast message
-        } finally {
-            setLoading(false);
+    useEffect(() => {
+        if (isAdmin) {
+            fetchStats();
+            fetchUsers();
         }
-    };
+    }, [isAdmin, fetchUsers]);
     
-    if (loading) {
+    if (loading && users.length === 0) {
          return (
              <AppLayout>
                  <div className="flex flex-col gap-4">
@@ -156,8 +160,15 @@ export default function AdminDashboardPage() {
                 
                 <Card>
                     <CardHeader>
-                        <CardTitle>Recent Registrations</CardTitle>
-                        <CardDescription>The last 5 users who signed up.</CardDescription>
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <CardTitle>{showAll ? 'All Users' : 'Recent Registrations'}</CardTitle>
+                                <CardDescription>{showAll ? 'A list of all users.' : 'The last 5 users who signed up.'}</CardDescription>
+                            </div>
+                            <Button onClick={() => setShowAll(!showAll)} variant="outline">
+                                {showAll ? 'Show Recent' : 'Show All Data'}
+                            </Button>
+                        </div>
                     </CardHeader>
                     <CardContent>
                          <Table>
@@ -170,20 +181,31 @@ export default function AdminDashboardPage() {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {recentUsers.map(user => (
-                                    <TableRow key={user.id}>
-                                        <TableCell className="font-medium">{user.fullName}</TableCell>
-                                        <TableCell>{user.email}</TableCell>
-                                        <TableCell>
-                                            <Badge variant={user.usertype !== 'Basic' ? 'default' : 'secondary'}>
-                                                {user.usertype || 'Basic'}
-                                            </Badge>
-                                        </TableCell>
-                                        <TableCell>
-                                            {user.createdAt ? format(user.createdAt.toDate(), 'PPP') : 'N/A'}
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
+                                {loading ? (
+                                    [...Array(5)].map((_, i) => (
+                                        <TableRow key={i}>
+                                            <TableCell><Skeleton className="h-5 w-24" /></TableCell>
+                                            <TableCell><Skeleton className="h-5 w-32" /></TableCell>
+                                            <TableCell><Skeleton className="h-5 w-16" /></TableCell>
+                                            <TableCell><Skeleton className="h-5 w-20" /></TableCell>
+                                        </TableRow>
+                                    ))
+                                ) : (
+                                    users.map(user => (
+                                        <TableRow key={user.id}>
+                                            <TableCell className="font-medium">{user.fullName}</TableCell>
+                                            <TableCell>{user.email}</TableCell>
+                                            <TableCell>
+                                                <Badge variant={user.usertype !== 'Basic' ? 'default' : 'secondary'}>
+                                                    {user.usertype || 'Basic'}
+                                                </Badge>
+                                            </TableCell>
+                                            <TableCell>
+                                                {user.createdAt ? format(user.createdAt.toDate(), 'PPP') : 'N/A'}
+                                            </TableCell>
+                                        </TableRow>
+                                    ))
+                                )}
                             </TableBody>
                         </Table>
                     </CardContent>
