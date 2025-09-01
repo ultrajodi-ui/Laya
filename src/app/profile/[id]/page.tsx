@@ -10,7 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Heart, Calendar, Sparkles, MapPin } from "lucide-react";
+import { Heart, Calendar, Sparkles, MapPin, Eye } from "lucide-react";
 import Image from "next/image";
 import { Skeleton } from '@/components/ui/skeleton';
 import type { UserProfile } from '@/lib/types';
@@ -234,6 +234,23 @@ function ProfileContent({ id }: { id: string }) {
                             <p><span className="font-semibold text-foreground">Star Sign:</span> {user.starSign}</p>
                         </div>
                     </div>
+
+                    {user.mobileNo && (
+                        <div>
+                            <h3 className="text-lg font-semibold font-headline mb-2">Contact Details</h3>
+                            <div className="flex items-center gap-2 p-4 border rounded-lg bg-secondary/50">
+                                <span className="text-muted-foreground">Contact Number:</span>
+                                <span className="font-mono filter blur-sm select-none">
+                                    {user.mobileNo}
+                                </span>
+                                <Button variant="outline" size="sm" className="ml-auto bg-background">
+                                    <Eye className="mr-2 h-4 w-4" /> View
+                                </Button>
+                            </div>
+                        </div>
+                    )}
+
+
                      {user.interests && user.interests.length > 0 && (
                         <div>
                             <h3 className="text-lg font-semibold font-headline mb-2">Interests</h3>
@@ -279,5 +296,3 @@ export default function ProfileDetailPage({ params }: { params: { id: string } }
         </AppLayout>
     );
 }
-
-    
