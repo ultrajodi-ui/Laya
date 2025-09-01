@@ -36,7 +36,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { app } from '@/lib/firebase';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from './ui/skeleton';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from './ui/dropdown-menu';
@@ -69,7 +69,7 @@ function AppLayoutContent({ children }: { children: ReactNode }) {
   const { pageTitle, setPageTitle } = usePageTitle();
 
 
-  React.useEffect(() => {
+  useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         setUser(user);
@@ -105,7 +105,7 @@ function AppLayoutContent({ children }: { children: ReactNode }) {
     return () => unsubscribe();
   }, [router, pathname, toast]);
   
-  React.useEffect(() => {
+  useEffect(() => {
     if (pathname.startsWith('/profile/edit')) {
       setPageTitle('Edit Profile');
     } else if (pathname.startsWith('/profile/view')) {
@@ -136,6 +136,12 @@ function AppLayoutContent({ children }: { children: ReactNode }) {
     }
   }
 
+  // Render children without layout for auth pages
+  if (['/login', '/signup', '/'].includes(pathname)) {
+    return <>{children}</>;
+  }
+
+  // Show a full-page skeleton loader while we wait for auth.
   if (loading) {
     return (
         <div className="flex items-center justify-center h-screen">
@@ -144,22 +150,15 @@ function AppLayoutContent({ children }: { children: ReactNode }) {
     )
   }
 
-  // Render children without layout for auth pages
-  if (['/login', '/signup', '/'].includes(pathname) && !user) {
-    return <>{children}</>;
-  }
-
-  // If we are still loading but have a user (for protected routes), show skeleton.
-  if (!user && !['/login', '/signup', '/'].includes(pathname)) {
-     return (
-        <div className="flex items-center justify-center h-screen">
-            <Skeleton className='h-screen w-full' />
-        </div>
-    )
+  // If auth is done and there's no user, it means they need to log in.
+  // The onAuthStateChanged listener above will have already initiated a redirect.
+  // We can return null here to avoid a flash of unstyled content.
+  if (!user) {
+    return null;
   }
 
   return (
-    <SidebarProvider defaultOpen={false}>
+    <SidebarProvider defaultOpen={true}>
       <div className="flex min-h-screen">
         <Sidebar>
           <SidebarHeader>
