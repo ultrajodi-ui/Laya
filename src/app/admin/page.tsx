@@ -32,22 +32,7 @@ export default function AdminDashboardPage() {
     const auth = getAuth();
     const router = useRouter();
 
-    const fetchUsers = useCallback(async () => {
-        try {
-            const usersCollection = collection(db, "users");
-            const usersQuery = showAll 
-                ? query(usersCollection, orderBy("createdAt", "desc"))
-                : query(usersCollection, orderBy("createdAt", "desc"), limit(5));
-            
-            const usersSnapshot = await getDocs(usersQuery);
-            const fetchedUsers = usersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as UserProfile));
-            setUsers(fetchedUsers);
-        } catch (error) {
-            console.error("Error fetching users:", error);
-        }
-    }, [showAll]);
-
-    const fetchStats = async () => {
+    const fetchAdminData = useCallback(async () => {
         try {
             // Fetch Users for stats
             const usersCollection = collection(db, "users");
@@ -78,22 +63,32 @@ export default function AdminDashboardPage() {
                 }
             });
 
-
             setStats({ totalUsers, basicUsers, silverUsers, goldUsers, diamondUsers });
+
+            // Fetch recent/all users for the table
+            const usersQuery = showAll
+                ? query(usersCollection, orderBy("createdAt", "desc"))
+                : query(usersCollection, orderBy("createdAt", "desc"), limit(5));
+
+            const usersSnapshot = await getDocs(usersQuery);
+            const fetchedUsers = usersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as UserProfile));
+            setUsers(fetchedUsers);
+
         } catch (error) {
-            console.error("Error fetching stats:", error);
+            console.error("Error fetching admin data:", error);
         }
-    }
+    }, [showAll]);
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
             if (user) {
                 const userDocRef = doc(db, 'users', user.uid);
                 const userDoc = await getDoc(userDocRef);
-                if (userDoc.exists() && userDoc.data().role === 'admin') {
-                    setIsAdmin(true);
-                } else {
-                    setIsAdmin(false);
+                const userIsAdmin = userDoc.exists() && userDoc.data().role === 'admin';
+                setIsAdmin(userIsAdmin);
+
+                if (userIsAdmin) {
+                    await fetchAdminData();
                 }
             } else {
                 router.push('/login');
@@ -101,15 +96,14 @@ export default function AdminDashboardPage() {
              setLoading(false);
         });
         return () => unsubscribe();
-    }, [auth, router]);
+    }, [auth, router, fetchAdminData]);
 
     useEffect(() => {
-        if (isAdmin === true) {
-            fetchStats();
-            fetchUsers();
+        if (isAdmin) {
+            fetchAdminData();
         }
-    }, [isAdmin, fetchUsers]);
-    
+    }, [showAll, isAdmin, fetchAdminData]);
+
     if (loading) {
          return (
              <AppLayout>
@@ -130,7 +124,7 @@ export default function AdminDashboardPage() {
              </AppLayout>
          )
     }
-    
+
     if (isAdmin === false) {
          return (
             <AppLayout>
@@ -201,7 +195,7 @@ export default function AdminDashboardPage() {
                         </CardContent>
                     </Card>
                 </div>
-                
+
                 <Card>
                     <CardHeader>
                         <div className="flex items-center justify-between">
@@ -252,5 +246,4 @@ export default function AdminDashboardPage() {
             </div>
         </AppLayout>
     );
-
-    
+}
