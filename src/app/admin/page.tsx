@@ -31,8 +31,6 @@ export default function AdminDashboardPage() {
     const router = useRouter();
 
     const fetchUsers = useCallback(async () => {
-        // We set loading for users table specifically
-        // setLoading(true); 
         try {
             const usersCollection = collection(db, "users");
             const usersQuery = showAll 
@@ -44,10 +42,7 @@ export default function AdminDashboardPage() {
             setUsers(fetchedUsers);
         } catch (error) {
             console.error("Error fetching users:", error);
-        } 
-        // finally {
-        //     setLoading(false);
-        // }
+        }
     }, [showAll]);
 
     const fetchStats = async () => {
@@ -79,7 +74,6 @@ export default function AdminDashboardPage() {
                 const userDoc = await getDoc(userDocRef);
                 if (userDoc.exists() && userDoc.data().role === 'admin') {
                     setIsAdmin(true);
-                    await Promise.all([fetchStats(), fetchUsers()]);
                 } else {
                     setIsAdmin(false);
                 }
@@ -89,15 +83,14 @@ export default function AdminDashboardPage() {
              setLoading(false);
         });
         return () => unsubscribe();
-    }, [auth, router, fetchUsers]);
+    }, [auth, router]);
 
     useEffect(() => {
-        // This effect will run whenever `showAll` changes,
-        // allowing the admin to toggle between recent and all users.
-        if (isAdmin) {
+        if (isAdmin === true) {
+            fetchStats();
             fetchUsers();
         }
-    }, [isAdmin, showAll, fetchUsers]);
+    }, [isAdmin, fetchUsers]);
     
     if (loading) {
          return (
@@ -118,7 +111,7 @@ export default function AdminDashboardPage() {
          )
     }
     
-    if (!isAdmin) {
+    if (isAdmin === false) {
          return (
             <AppLayout>
                 <Card className="mt-10">
@@ -221,4 +214,5 @@ export default function AdminDashboardPage() {
             </div>
         </AppLayout>
     );
-}
+
+    
