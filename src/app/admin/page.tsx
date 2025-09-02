@@ -31,7 +31,8 @@ export default function AdminDashboardPage() {
     const router = useRouter();
 
     const fetchUsers = useCallback(async () => {
-        setLoading(true);
+        // We set loading for users table specifically
+        // setLoading(true); 
         try {
             const usersCollection = collection(db, "users");
             const usersQuery = showAll 
@@ -43,9 +44,10 @@ export default function AdminDashboardPage() {
             setUsers(fetchedUsers);
         } catch (error) {
             console.error("Error fetching users:", error);
-        } finally {
-            setLoading(false);
-        }
+        } 
+        // finally {
+        //     setLoading(false);
+        // }
     }, [showAll]);
 
     const fetchStats = async () => {
@@ -90,6 +92,8 @@ export default function AdminDashboardPage() {
     }, [auth, router, fetchUsers]);
 
     useEffect(() => {
+        // This effect will run whenever `showAll` changes,
+        // allowing the admin to toggle between recent and all users.
         if (isAdmin) {
             fetchUsers();
         }
@@ -190,15 +194,10 @@ export default function AdminDashboardPage() {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {loading && users.length === 0 ? (
-                                    [...Array(5)].map((_, i) => (
-                                        <TableRow key={i}>
-                                            <TableCell><Skeleton className="h-5 w-24" /></TableCell>
-                                            <TableCell><Skeleton className="h-5 w-32" /></TableCell>
-                                            <TableCell><Skeleton className="h-5 w-16" /></TableCell>
-                                            <TableCell><Skeleton className="h-5 w-20" /></TableCell>
-                                        </TableRow>
-                                    ))
+                                {users.length === 0 ? (
+                                    <TableRow>
+                                        <TableCell colSpan={4} className="text-center">No users found.</TableCell>
+                                    </TableRow>
                                 ) : (
                                     users.map(user => (
                                         <TableRow key={user.id}>
