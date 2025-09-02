@@ -7,15 +7,13 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { db } from "@/lib/firebase";
 import { UserProfile } from "@/lib/types";
-import { collection, getDocs, limit, orderBy, query, doc, getDoc } from "firebase/firestore";
+import { collection, getDocs, orderBy, query, doc, getDoc } from "firebase/firestore";
 import { Users, Star, Shield, Gem, User as UserIcon } from "lucide-react";
 import { useEffect, useState, useCallback } from "react";
 import { format } from 'date-fns';
 import { Skeleton } from "@/components/ui/skeleton";
 import { getAuth, onAuthStateChanged, User } from "firebase/auth";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-
 
 export default function AdminDashboardPage() {
     const [stats, setStats] = useState({
@@ -28,7 +26,6 @@ export default function AdminDashboardPage() {
     const [users, setUsers] = useState<UserProfile[]>([]);
     const [loading, setLoading] = useState(true);
     const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
-    const [showAll, setShowAll] = useState(false);
     const auth = getAuth();
     const router = useRouter();
 
@@ -55,9 +52,7 @@ export default function AdminDashboardPage() {
             });
             setStats({ totalUsers, basicUsers, silverUsers, goldUsers, diamondUsers });
 
-            const usersQuery = showAll
-                ? query(usersCollection, orderBy("createdAt", "desc"))
-                : query(usersCollection, orderBy("createdAt", "desc"), limit(5));
+            const usersQuery = query(usersCollection, orderBy("createdAt", "desc"));
             const usersTableSnapshot = await getDocs(usersQuery);
             const fetchedUsers = usersTableSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as UserProfile));
             setUsers(fetchedUsers);
@@ -67,7 +62,7 @@ export default function AdminDashboardPage() {
         } finally {
             setLoading(false);
         }
-    }, [showAll]);
+    }, []);
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -187,15 +182,8 @@ export default function AdminDashboardPage() {
 
                 <Card>
                     <CardHeader>
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <CardTitle>{showAll ? 'All Users' : 'Recent Registrations'}</CardTitle>
-                                <CardDescription>{showAll ? 'A list of all users.' : 'The last 5 users who signed up.'}</CardDescription>
-                            </div>
-                            <Button onClick={() => setShowAll(!showAll)} variant="outline">
-                                {showAll ? 'Show Recent' : 'Show All Data'}
-                            </Button>
-                        </div>
+                        <CardTitle>All Users</CardTitle>
+                        <CardDescription>A list of all registered users.</CardDescription>
                     </CardHeader>
                     <CardContent>
                          {loading ? (
