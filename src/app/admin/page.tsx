@@ -25,13 +25,13 @@ export default function AdminDashboardPage() {
     });
     const [users, setUsers] = useState<UserProfile[]>([]);
     const [loading, setLoading] = useState(true);
+    const [loadingData, setLoadingData] = useState(false);
     const [dataFetched, setDataFetched] = useState(false);
     const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
     const auth = getAuth();
     const router = useRouter();
 
      const fetchAdminStats = useCallback(async () => {
-        setLoading(true);
         try {
             const usersCollection = collection(db, "users");
             const userSnapshot = await getDocs(usersCollection);
@@ -56,13 +56,11 @@ export default function AdminDashboardPage() {
 
         } catch (error) {
             console.error("Error fetching admin stats:", error);
-        } finally {
-            setLoading(false);
         }
     }, []);
 
     const handleShowData = useCallback(async () => {
-        setLoading(true);
+        setLoadingData(true);
         try {
             const usersCollection = collection(db, "users");
             const usersQuery = query(usersCollection, orderBy("createdAt", "desc"));
@@ -73,7 +71,7 @@ export default function AdminDashboardPage() {
         } catch (error) {
             console.error("Error fetching users data:", error);
         } finally {
-            setLoading(false);
+            setLoadingData(false);
         }
     }, []);
 
@@ -87,7 +85,6 @@ export default function AdminDashboardPage() {
                     setIsAdmin(true);
                 } else {
                     setIsAdmin(false);
-                    setLoading(false);
                 }
             } else {
                 router.push('/login');
@@ -98,11 +95,14 @@ export default function AdminDashboardPage() {
     
     useEffect(() => {
         if (isAdmin === true) {
-            fetchAdminStats();
+            fetchAdminStats().finally(() => setLoading(false));
+        }
+        if (isAdmin === false) {
+            setLoading(false);
         }
     }, [isAdmin, fetchAdminStats]);
 
-    if (isAdmin === null) {
+    if (loading) {
          return (
              <AppLayout>
                  <div className="flex flex-col gap-4">
@@ -202,8 +202,8 @@ export default function AdminDashboardPage() {
                     <CardContent>
                         {!dataFetched ? (
                             <div className="flex justify-center items-center h-40">
-                                <Button onClick={handleShowData} disabled={loading}>
-                                    {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                <Button onClick={handleShowData} disabled={loadingData}>
+                                    {loadingData && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                     Show data
                                 </Button>
                             </div>
@@ -219,7 +219,7 @@ export default function AdminDashboardPage() {
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {loading ? (
+                                    {loadingData ? (
                                         <TableRow>
                                             <TableCell colSpan={5} className="text-center">
                                                 <Loader2 className="mx-auto h-6 w-6 animate-spin" />
@@ -252,5 +252,5 @@ export default function AdminDashboardPage() {
             </div>
         </AppLayout>
     );
-
+}
     
