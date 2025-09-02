@@ -8,12 +8,12 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { db } from "@/lib/firebase";
 import { UserProfile } from "@/lib/types";
 import { collection, getDocs, orderBy, query, doc, getDoc } from "firebase/firestore";
-import { Users, Star, Shield, Gem, User as UserIcon } from "lucide-react";
+import { Users, Star, Shield, Gem, User as UserIcon, Loader2 } from "lucide-react";
 import { useEffect, useState, useCallback } from "react";
-import { format } from 'date-fns';
 import { Skeleton } from "@/components/ui/skeleton";
 import { getAuth, onAuthStateChanged, User } from "firebase/auth";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
 
 export default function AdminDashboardPage() {
     const [stats, setStats] = useState({
@@ -25,11 +25,12 @@ export default function AdminDashboardPage() {
     });
     const [users, setUsers] = useState<UserProfile[]>([]);
     const [loading, setLoading] = useState(true);
+    const [dataFetched, setDataFetched] = useState(false);
     const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
     const auth = getAuth();
     const router = useRouter();
 
-    const fetchAdminData = useCallback(async () => {
+     const fetchAdminStats = useCallback(async () => {
         setLoading(true);
         try {
             const usersCollection = collection(db, "users");
@@ -43,7 +44,8 @@ export default function AdminDashboardPage() {
             let diamondUsers = 0;
 
             usersData.forEach(user => {
-                switch (user.usertype) {
+                const userType = user.usertype || 'Basic';
+                switch (userType) {
                     case 'Silver': silverUsers++; break;
                     case 'Gold': goldUsers++; break;
                     case 'Diamond': diamondUsers++; break;
@@ -52,17 +54,29 @@ export default function AdminDashboardPage() {
             });
             setStats({ totalUsers, basicUsers, silverUsers, goldUsers, diamondUsers });
 
-            const usersQuery = query(usersCollection, orderBy("createdAt", "desc"));
-            const usersTableSnapshot = await getDocs(usersQuery);
-            const fetchedUsers = usersTableSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as UserProfile));
-            setUsers(fetchedUsers);
-
         } catch (error) {
-            console.error("Error fetching admin data:", error);
+            console.error("Error fetching admin stats:", error);
         } finally {
             setLoading(false);
         }
     }, []);
+
+    const handleShowData = useCallback(async () => {
+        setLoading(true);
+        try {
+            const usersCollection = collection(db, "users");
+            const usersQuery = query(usersCollection, orderBy("createdAt", "desc"));
+            const usersTableSnapshot = await getDocs(usersQuery);
+            const fetchedUsers = usersTableSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as UserProfile));
+            setUsers(fetchedUsers.filter(user => user.role !== 'admin'));
+            setDataFetched(true);
+        } catch (error) {
+            console.error("Error fetching users data:", error);
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -84,11 +98,11 @@ export default function AdminDashboardPage() {
     
     useEffect(() => {
         if (isAdmin === true) {
-            fetchAdminData();
+            fetchAdminStats();
         }
-    }, [isAdmin, fetchAdminData]);
+    }, [isAdmin, fetchAdminStats]);
 
-    if (loading && isAdmin === null) {
+    if (isAdmin === null) {
          return (
              <AppLayout>
                  <div className="flex flex-col gap-4">
@@ -183,42 +197,49 @@ export default function AdminDashboardPage() {
                 <Card>
                     <CardHeader>
                         <CardTitle>All Users</CardTitle>
-                        <CardDescription>A list of all registered users.</CardDescription>
+                        <CardDescription>A list of all registered users in the system.</CardDescription>
                     </CardHeader>
                     <CardContent>
-                         {loading ? (
-                             <div className="space-y-4">
-                                <Skeleton className="h-10 w-full" />
-                                <Skeleton className="h-10 w-full" />
-                                <Skeleton className="h-10 w-full" />
-                             </div>
-                         ) : (
+                        {!dataFetched ? (
+                            <div className="flex justify-center items-center h-40">
+                                <Button onClick={handleShowData} disabled={loading}>
+                                    {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                    Show data
+                                </Button>
+                            </div>
+                        ) : (
                              <Table>
                                 <TableHeader>
                                     <TableRow>
-                                        <TableHead>User</TableHead>
+                                        <TableHead>Member Id</TableHead>
+                                        <TableHead>User name</TableHead>
                                         <TableHead>Email</TableHead>
-                                        <TableHead>Plan</TableHead>
-                                        <TableHead>Joined</TableHead>
+                                        <TableHead>Mobile No</TableHead>
+                                        <TableHead>User Type</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {users.length === 0 ? (
+                                    {loading ? (
                                         <TableRow>
-                                            <TableCell colSpan={4} className="text-center">No users found.</TableCell>
+                                            <TableCell colSpan={5} className="text-center">
+                                                <Loader2 className="mx-auto h-6 w-6 animate-spin" />
+                                            </TableCell>
+                                        </TableRow>
+                                    ) : users.length === 0 ? (
+                                        <TableRow>
+                                            <TableCell colSpan={5} className="text-center">No users found.</TableCell>
                                         </TableRow>
                                     ) : (
                                         users.map(user => (
                                             <TableRow key={user.id}>
+                                                <TableCell>{user.memberid || 'N/A'}</TableCell>
                                                 <TableCell className="font-medium">{user.fullName}</TableCell>
                                                 <TableCell>{user.email}</TableCell>
+                                                <TableCell>{user.mobileNo || 'N/A'}</TableCell>
                                                 <TableCell>
                                                     <Badge variant={user.usertype !== 'Basic' ? 'default' : 'secondary'}>
                                                         {user.usertype || 'Basic'}
                                                     </Badge>
-                                                </TableCell>
-                                                <TableCell>
-                                                    {user.createdAt ? format(user.createdAt.toDate(), 'PPP') : 'N/A'}
                                                 </TableCell>
                                             </TableRow>
                                         ))
@@ -231,5 +252,5 @@ export default function AdminDashboardPage() {
             </div>
         </AppLayout>
     );
-}
+
     
