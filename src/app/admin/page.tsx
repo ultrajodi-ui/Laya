@@ -8,7 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { db } from "@/lib/firebase";
 import { UserProfile } from "@/lib/types";
 import { collection, getDocs, limit, orderBy, query, doc, getDoc } from "firebase/firestore";
-import { Users, Heart, Star, ShieldAlert } from "lucide-react";
+import { Users, Star, Shield, Gem, User as UserIcon } from "lucide-react";
 import { useEffect, useState, useCallback } from "react";
 import { format } from 'date-fns';
 import { Skeleton } from "@/components/ui/skeleton";
@@ -20,8 +20,10 @@ import { Button } from "@/components/ui/button";
 export default function AdminDashboardPage() {
     const [stats, setStats] = useState({
         totalUsers: 0,
-        totalLikes: 0,
-        premiumUsers: 0,
+        basicUsers: 0,
+        silverUsers: 0,
+        goldUsers: 0,
+        diamondUsers: 0,
     });
     const [users, setUsers] = useState<UserProfile[]>([]);
     const [loading, setLoading] = useState(true);
@@ -53,15 +55,31 @@ export default function AdminDashboardPage() {
             const totalUsers = userSnapshot.size;
             const usersData = userSnapshot.docs.map(doc => doc.data() as UserProfile);
 
-            // Fetch Likes
-            const likesCollection = collection(db, "likesReceived");
-            const likesSnapshot = await getDocs(likesCollection);
-            const totalLikes = likesSnapshot.size;
+            // Calculate member types
+            let basicUsers = 0;
+            let silverUsers = 0;
+            let goldUsers = 0;
+            let diamondUsers = 0;
 
-            // Calculate Premium Users
-            const premiumUsers = usersData.filter(u => u.usertype && u.usertype !== 'Basic').length;
+            usersData.forEach(user => {
+                switch (user.usertype) {
+                    case 'Silver':
+                        silverUsers++;
+                        break;
+                    case 'Gold':
+                        goldUsers++;
+                        break;
+                    case 'Diamond':
+                        diamondUsers++;
+                        break;
+                    default:
+                        basicUsers++;
+                        break;
+                }
+            });
 
-            setStats({ totalUsers, totalLikes, premiumUsers });
+
+            setStats({ totalUsers, basicUsers, silverUsers, goldUsers, diamondUsers });
         } catch (error) {
             console.error("Error fetching stats:", error);
         }
@@ -99,7 +117,9 @@ export default function AdminDashboardPage() {
                      <h1 className="text-3xl font-headline font-bold"><Skeleton className="h-8 w-1/4" /></h1>
                      <div className="text-muted-foreground"><Skeleton className="h-4 w-1/2" /></div>
                 </div>
-                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mt-4">
+                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 mt-4">
+                     <Skeleton className="h-24 w-full" />
+                     <Skeleton className="h-24 w-full" />
                      <Skeleton className="h-24 w-full" />
                      <Skeleton className="h-24 w-full" />
                      <Skeleton className="h-24 w-full" />
@@ -116,7 +136,7 @@ export default function AdminDashboardPage() {
             <AppLayout>
                 <Card className="mt-10">
                     <CardHeader className="items-center text-center">
-                        <ShieldAlert className="w-16 h-16 text-destructive" />
+                        <Shield className="w-16 h-16 text-destructive" />
                         <CardTitle className="text-2xl font-headline">Access Denied</CardTitle>
                         <CardDescription>You do not have permission to view this page.</CardDescription>
                     </CardHeader>
@@ -134,7 +154,7 @@ export default function AdminDashboardPage() {
                      <p className="text-muted-foreground">An overview of your application's activity.</p>
                 </div>
 
-                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                             <CardTitle className="text-sm font-medium">Total Users</CardTitle>
@@ -144,22 +164,40 @@ export default function AdminDashboardPage() {
                             <div className="text-2xl font-bold">{stats.totalUsers}</div>
                         </CardContent>
                     </Card>
-                     <Card>
+                    <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Total Likes Given</CardTitle>
-                            <Heart className="h-4 w-4 text-muted-foreground" />
+                            <CardTitle className="text-sm font-medium">Basic Members</CardTitle>
+                            <UserIcon className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{stats.totalLikes}</div>
+                            <div className="text-2xl font-bold">{stats.basicUsers}</div>
                         </CardContent>
                     </Card>
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Premium Members</CardTitle>
+                            <CardTitle className="text-sm font-medium">Silver Members</CardTitle>
                             <Star className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{stats.premiumUsers}</div>
+                            <div className="text-2xl font-bold">{stats.silverUsers}</div>
+                        </CardContent>
+                    </Card>
+                     <Card>
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">Gold Members</CardTitle>
+                            <Shield className="h-4 w-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold">{stats.goldUsers}</div>
+                        </CardContent>
+                    </Card>
+                    <Card>
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">Diamond Members</CardTitle>
+                            <Gem className="h-4 w-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold">{stats.diamondUsers}</div>
                         </CardContent>
                     </Card>
                 </div>
