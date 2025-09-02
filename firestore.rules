@@ -3,36 +3,36 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
+    // Helper function to check if a user has the 'admin' role.
     function isAdmin(userId) {
       return exists(/databases/$(database)/documents/users/$(userId)) &&
              get(/databases/$(database)/documents/users/$(userId)).data.role == 'admin';
     }
 
     match /users/{userId} {
-      // Admins can read the entire users collection.
-      allow read: if isAdmin(request.auth.uid);
+      // Admins can read all user documents.
+      // Any authenticated user can create their own profile.
+      // Users can read and update their own profile.
+      allow read: if isAdmin(request.auth.uid) || request.auth.uid == userId;
+      allow create: if request.auth.uid == userId;
+      allow update: if request.auth.uid == userId;
       
-      // Any authenticated user can create their own document.
-      allow create: if request.auth != null && request.auth.uid == userId;
-
-      // Users can only read or update their own profile, unless they are an admin.
-      allow get, update: if request.auth.uid == userId || isAdmin(request.auth.uid);
-      
-      // Users can delete their own profile.
-      allow delete: if request.auth.uid == userId;
+      // Deny deletion of user profiles by default for safety.
+      allow delete: if false;
     }
-    
+
+    // Grant admins read-only access to the entire 'users' collection.
+    match /users/{document=**} {
+        allow read: if isAdmin(request.auth.uid);
+    }
+
     match /likesReceived/{likeId} {
-      // A user can only create or delete a like document if they are the one giving the like.
-      // The likeId is formatted as "likerMemberId_likes_likedMemberId".
-      // We check if the user's memberid matches the first part of the document ID.
-      allow create, delete: if request.auth != null && 
-                          likeId.split('_likes_')[0] == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.memberid;
-                          
-      // Only the person who received the like or an admin can read it.
-      allow read: if request.auth != null && 
-                     (isAdmin(request.auth.uid) || 
-                      likeId.split('_likes_')[1] == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.memberid);
+      // A user can only create/delete a 'like' record where they are the sender.
+      // The likeId is expected to be in the format: senderMemberId_likes_receiverMemberId
+      allow create, delete: if request.auth.uid != null && request.resource.id.startsWith(get(/databases/$(database)/documents/users/$(request.auth.uid)).data.memberid);
+      
+      // Only the recipient of the like can read the like document.
+      allow read: if request.auth.uid != null && request.resource.id.endsWith(get(/databases/$(database)/documents/users/$(request.auth.uid)).data.memberid);
     }
   }
 }
