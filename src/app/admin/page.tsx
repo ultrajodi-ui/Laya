@@ -33,14 +33,13 @@ export default function AdminDashboardPage() {
     const router = useRouter();
 
     const fetchAdminData = useCallback(async () => {
+        setLoading(true);
         try {
-            // Fetch Users for stats
             const usersCollection = collection(db, "users");
             const userSnapshot = await getDocs(usersCollection);
             const totalUsers = userSnapshot.size;
             const usersData = userSnapshot.docs.map(doc => doc.data() as UserProfile);
 
-            // Calculate member types
             let basicUsers = 0;
             let silverUsers = 0;
             let goldUsers = 0;
@@ -48,34 +47,25 @@ export default function AdminDashboardPage() {
 
             usersData.forEach(user => {
                 switch (user.usertype) {
-                    case 'Silver':
-                        silverUsers++;
-                        break;
-                    case 'Gold':
-                        goldUsers++;
-                        break;
-                    case 'Diamond':
-                        diamondUsers++;
-                        break;
-                    default:
-                        basicUsers++;
-                        break;
+                    case 'Silver': silverUsers++; break;
+                    case 'Gold': goldUsers++; break;
+                    case 'Diamond': diamondUsers++; break;
+                    default: basicUsers++; break;
                 }
             });
-
             setStats({ totalUsers, basicUsers, silverUsers, goldUsers, diamondUsers });
 
-            // Fetch recent/all users for the table
             const usersQuery = showAll
                 ? query(usersCollection, orderBy("createdAt", "desc"))
                 : query(usersCollection, orderBy("createdAt", "desc"), limit(5));
-
-            const usersSnapshot = await getDocs(usersQuery);
-            const fetchedUsers = usersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as UserProfile));
+            const usersTableSnapshot = await getDocs(usersQuery);
+            const fetchedUsers = usersTableSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as UserProfile));
             setUsers(fetchedUsers);
 
         } catch (error) {
             console.error("Error fetching admin data:", error);
+        } finally {
+            setLoading(false);
         }
     }, [showAll]);
 
@@ -84,27 +74,26 @@ export default function AdminDashboardPage() {
             if (user) {
                 const userDocRef = doc(db, 'users', user.uid);
                 const userDoc = await getDoc(userDocRef);
-                const userIsAdmin = userDoc.exists() && userDoc.data().role === 'admin';
-                setIsAdmin(userIsAdmin);
-
-                if (userIsAdmin) {
-                    await fetchAdminData();
+                if (userDoc.exists() && userDoc.data().role === 'admin') {
+                    setIsAdmin(true);
+                } else {
+                    setIsAdmin(false);
+                    setLoading(false);
                 }
             } else {
                 router.push('/login');
             }
-             setLoading(false);
         });
         return () => unsubscribe();
-    }, [auth, router, fetchAdminData]);
-
+    }, [auth, router]);
+    
     useEffect(() => {
-        if (isAdmin) {
+        if (isAdmin === true) {
             fetchAdminData();
         }
-    }, [showAll, isAdmin, fetchAdminData]);
+    }, [isAdmin, fetchAdminData]);
 
-    if (loading) {
+    if (loading && isAdmin === null) {
          return (
              <AppLayout>
                  <div className="flex flex-col gap-4">
@@ -209,41 +198,50 @@ export default function AdminDashboardPage() {
                         </div>
                     </CardHeader>
                     <CardContent>
-                         <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>User</TableHead>
-                                    <TableHead>Email</TableHead>
-                                    <TableHead>Plan</TableHead>
-                                    <TableHead>Joined</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {users.length === 0 ? (
+                         {loading ? (
+                             <div className="space-y-4">
+                                <Skeleton className="h-10 w-full" />
+                                <Skeleton className="h-10 w-full" />
+                                <Skeleton className="h-10 w-full" />
+                             </div>
+                         ) : (
+                             <Table>
+                                <TableHeader>
                                     <TableRow>
-                                        <TableCell colSpan={4} className="text-center">No users found.</TableCell>
+                                        <TableHead>User</TableHead>
+                                        <TableHead>Email</TableHead>
+                                        <TableHead>Plan</TableHead>
+                                        <TableHead>Joined</TableHead>
                                     </TableRow>
-                                ) : (
-                                    users.map(user => (
-                                        <TableRow key={user.id}>
-                                            <TableCell className="font-medium">{user.fullName}</TableCell>
-                                            <TableCell>{user.email}</TableCell>
-                                            <TableCell>
-                                                <Badge variant={user.usertype !== 'Basic' ? 'default' : 'secondary'}>
-                                                    {user.usertype || 'Basic'}
-                                                </Badge>
-                                            </TableCell>
-                                            <TableCell>
-                                                {user.createdAt ? format(user.createdAt.toDate(), 'PPP') : 'N/A'}
-                                            </TableCell>
+                                </TableHeader>
+                                <TableBody>
+                                    {users.length === 0 ? (
+                                        <TableRow>
+                                            <TableCell colSpan={4} className="text-center">No users found.</TableCell>
                                         </TableRow>
-                                    ))
-                                )}
-                            </TableBody>
-                        </Table>
+                                    ) : (
+                                        users.map(user => (
+                                            <TableRow key={user.id}>
+                                                <TableCell className="font-medium">{user.fullName}</TableCell>
+                                                <TableCell>{user.email}</TableCell>
+                                                <TableCell>
+                                                    <Badge variant={user.usertype !== 'Basic' ? 'default' : 'secondary'}>
+                                                        {user.usertype || 'Basic'}
+                                                    </Badge>
+                                                </TableCell>
+                                                <TableCell>
+                                                    {user.createdAt ? format(user.createdAt.toDate(), 'PPP') : 'N/A'}
+                                                </TableCell>
+                                            </TableRow>
+                                        ))
+                                    )}
+                                </TableBody>
+                            </Table>
+                         )}
                     </CardContent>
                 </Card>
             </div>
         </AppLayout>
     );
 }
+    
