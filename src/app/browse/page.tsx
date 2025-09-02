@@ -85,8 +85,9 @@ export default function BrowsePage() {
                 
                 const fetchedUsers: UserProfile[] = [];
                 querySnapshot.forEach((doc) => {
-                    if (doc.id !== currentUserId) {
-                       fetchedUsers.push({ id: doc.id, ...doc.data() } as UserProfile);
+                    const userData = doc.data() as UserProfile;
+                    if (doc.id !== currentUserId && userData.role !== 'admin') {
+                       fetchedUsers.push({ id: doc.id, ...userData });
                     }
                 });
                 setUsers(fetchedUsers);
@@ -189,6 +190,7 @@ export default function BrowsePage() {
 
     const filteredUsers = useMemo(() => {
         return users
+            .filter(user => user.role !== 'admin')
             .filter(user => {
                 const searchLower = searchQuery.toLowerCase();
                 const nameMatch = user.fullName?.toLowerCase().includes(searchLower);
