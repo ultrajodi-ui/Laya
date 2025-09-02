@@ -97,16 +97,6 @@ export default function SettingsPage() {
                             <Switch id="profile-visibility" defaultChecked />
                         </div>
 
-                         <div className="flex items-center justify-between space-x-2 rounded-lg border p-4">
-                            <div className="space-y-0.5">
-                                <Label htmlFor="message-notifications" className="text-base">Message Notifications</Label>
-                                <p className="text-sm text-muted-foreground">
-                                    Receive email notifications for new messages.
-                                </p>
-                            </div>
-                            <Switch id="message-notifications" defaultChecked />
-                        </div>
-
                         <div className="flex items-center justify-between space-x-2 rounded-lg border p-4">
                             <div className="space-y-0.5">
                                 <Label htmlFor="match-notifications" className="text-base">New Match Alerts</Label>
