@@ -2,31 +2,31 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-
+    
     function isAdmin() {
       return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
 
     match /users/{userId} {
-      // Admins can read any user document
-      // Authenticated users can read any user document (for profile browsing)
+      // Allow any authenticated user to read any profile.
+      // This is needed for the browse page and profile pages to function.
       allow read: if request.auth != null;
 
-      // Only the user themselves can create or update their own document
-      allow create, update: if request.auth.uid == userId;
+      // Allow a user to create, update, and delete their own document.
+      allow write: if request.auth.uid == userId;
 
-      // Only the user themselves or an admin can delete their document
-      allow delete: if request.auth.uid == userId || isAdmin();
+      // Additionally, allow an admin to read any user document. 
+      // While covered by the general read rule, this makes the intent explicit.
+      allow read: if request.auth != null && isAdmin();
     }
-
+    
     match /likesReceived/{likeId} {
-      // A user can only create a like record if the 'likedBy' field matches their own member ID
-      // and the likeId is correctly formatted.
-      allow create: if request.auth != null && request.resource.data.likedBy == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.memberid
-                      && likeId == request.resource.data.likedBy + '_likes_' + request.resource.data.likedUser;
-                      
-      // A user can only delete a like they created. We check this by comparing the start of the document ID.
-      allow delete: if request.auth != null && likeId.startsWith(get(/databases/$(database)/documents/users/$(request.auth.uid)).data.memberid);
+      // Users can only create and delete their own like records.
+      // The likeId is formatted as "likerMemberId_likes_likedMemberId".
+      allow create, delete: if request.auth != null && request.resource.id.startsWith(get(/databases/$(database)/documents/users/$(request.auth.uid)).data.memberid);
+      
+      // No one should be able to update or list all likes.
+      allow read, update: if false;
     }
   }
 }
