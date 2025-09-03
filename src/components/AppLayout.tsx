@@ -66,62 +66,52 @@ function AppLayoutContent({ children }: { children: ReactNode }) {
   const [loading, setLoading] = React.useState(true);
   const { pageTitle, setPageTitle } = usePageTitle();
 
+  useEffect(() => {
+    const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
+      setUser(user);
+      setLoading(false);
+    });
+    return () => unsubscribeAuth();
+  }, []);
 
   useEffect(() => {
-    let unsubscribeSnapshot: (() => void) | undefined;
-
-    const unsubscribeAuth = onAuthStateChanged(auth, async (user) => {
-        if (unsubscribeSnapshot) {
-            unsubscribeSnapshot();
+    if (user) {
+      const userDocRef = doc(db, 'users', user.uid);
+      const unsubscribeSnapshot = onSnapshot(userDocRef, (userDoc) => {
+        if (userDoc.exists()) {
+          const profile = userDoc.data() as UserProfile;
+          setUserProfile(profile);
+           if (Object.keys(profile).length < 5 && pathname !== '/profile/edit') {
+              toast({
+                  title: "Profile Incomplete",
+                  description: "Please complete your profile to continue.",
+              });
+              router.push('/profile/edit');
+          }
+        } else if (pathname !== '/profile/edit') {
+           toast({
+              title: "Profile Incomplete",
+              description: "Please complete your profile to continue.",
+          });
+          router.push('/profile/edit');
         }
+      }, (error) => {
+          console.error("Snapshot listener error:", error);
+          toast({
+              variant: 'destructive',
+              title: 'Error',
+              description: 'Could not fetch profile data. Please try again later.'
+          })
+      });
 
-        if (user) {
-            setUser(user);
-            const userDocRef = doc(db, 'users', user.uid);
-            
-            unsubscribeSnapshot = onSnapshot(userDocRef, (userDoc) => {
-                if (userDoc.exists()) {
-                    const profile = userDoc.data() as UserProfile;
-                    setUserProfile(profile);
-                    if (Object.keys(profile).length < 5 && pathname !== '/profile/edit') {
-                        toast({
-                            title: "Profile Incomplete",
-                            description: "Please complete your profile to continue.",
-                        });
-                        router.push('/profile/edit');
-                    }
-                } else if (pathname !== '/profile/edit') {
-                    toast({
-                        title: "Profile Incomplete",
-                        description: "Please complete your profile to continue.",
-                    });
-                    router.push('/profile/edit');
-                }
-            }, (error) => {
-                console.error("Snapshot listener error:", error);
-                toast({
-                    variant: 'destructive',
-                    title: 'Error',
-                    description: 'Could not fetch profile data. Please try again later.'
-                })
-            });
-        } else {
-            setUser(null);
-            setUserProfile(null);
-            if (!['/login', '/signup', '/', '/forgot-password'].includes(pathname)) {
-                router.push('/login');
-            }
-        }
-        setLoading(false);
-    });
-
-    return () => {
-        unsubscribeAuth();
-        if (unsubscribeSnapshot) {
-            unsubscribeSnapshot();
-        }
-    };
-}, [router, pathname, toast]);
+      return () => unsubscribeSnapshot();
+    } else {
+      setUserProfile(null);
+      if (!loading && !['/login', '/signup', '/', '/forgot-password'].includes(pathname)) {
+        router.push('/login');
+      }
+    }
+  }, [user, loading, pathname, router, toast]);
   
   useEffect(() => {
     if (pathname.startsWith('/profile/edit')) {
