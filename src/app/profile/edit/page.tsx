@@ -447,16 +447,26 @@ export default function ProfileEditPage() {
                                 <Input id="workingPlace" value={profileData.workingPlace || ''} onChange={handleInputChange} />
                             </div>
                              <div className="grid gap-2">
-                                <Label htmlFor="homeAddress">Address</Label>
-                                <Input id="homeAddress" value={profileData.homeAddress || ''} onChange={handleInputChange} />
-                            </div>
-                             <div className="grid gap-2">
                                 <Label htmlFor="city">City</Label>
                                 <Input id="city" value={profileData.city || ''} onChange={handleInputChange} />
                             </div>
                              <div className="grid gap-2">
                                 <Label htmlFor="mobileNo">Mobile No</Label>
                                 <Input id="mobileNo" value={profileData.mobileNo || ''} onChange={handleInputChange} />
+                            </div>
+                            <div className="grid gap-2">
+                                <Label htmlFor="maritalStatus">Marital Status</Label>
+                                <Select value={profileData.maritalStatus || ''} onValueChange={(value) => handleSelectChange('maritalStatus', value)}>
+                                    <SelectTrigger id="maritalStatus">
+                                        <SelectValue placeholder="Select marital status" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="Never Married">Never Married</SelectItem>
+                                        <SelectItem value="Divorced">Divorced</SelectItem>
+                                        <SelectItem value="Widow">Widow</SelectItem>
+                                        <SelectItem value="Widower">Widower</SelectItem>
+                                    </SelectContent>
+                                </Select>
                             </div>
                             <div className="grid gap-2">
                                 <Label htmlFor="religion">Religion</Label>

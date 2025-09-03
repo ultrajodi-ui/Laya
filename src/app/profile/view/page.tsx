@@ -148,9 +148,9 @@ export default function ProfileViewPage() {
                             <ProfileDetail label="Employed In" value={profileData.employed} />
                             <ProfileDetail label="Occupation" value={profileData.occupation} />
                             <ProfileDetail label="Working Place" value={profileData.workingPlace} />
-                            <ProfileDetail label="Address" value={profileData.homeAddress} />
                             <ProfileDetail label="City" value={profileData.city} />
                             <ProfileDetail label="Mobile No" value={profileData.mobileNo} />
+                             <ProfileDetail label="Marital Status" value={profileData.maritalStatus} />
                             <ProfileDetail label="Religion" value={profileData.religion} />
                             <ProfileDetail label="Community" value={profileData.community} />
                             <ProfileDetail label="Sub Caste" value={profileData.subCaste} />

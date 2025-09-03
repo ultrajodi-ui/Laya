@@ -18,6 +18,7 @@ export type UserProfile = {
   fatherName?: string;
   motherName?: string;
   mobileNo?: string;
+  maritalStatus?: 'Never Married' | 'Divorced' | 'Widow' | 'Widower';
   zodiacSign?: string;
   starSign?: string;
   religion?: string;
@@ -29,7 +30,6 @@ export type UserProfile = {
   occupation?: string;
   salary?: string;
   workingPlace?: string;
-  homeAddress?: string;
   city?: string;
   state?: string;
   email?: string;
