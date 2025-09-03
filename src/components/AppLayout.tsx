@@ -118,7 +118,7 @@ function AppLayoutContent({ children }: { children: ReactNode }) {
             unsubscribeSnapshot();
         }
     };
-}, [user, loading, pathname, router, toast]);
+}, [user, pathname, router, toast]);
   
   useEffect(() => {
     if (pathname.startsWith('/profile/edit')) {
