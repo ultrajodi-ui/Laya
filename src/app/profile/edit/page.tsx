@@ -382,7 +382,7 @@ export default function ProfileEditPage() {
                                             <SelectValue placeholder="Inches" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            {['1','2','3','4','5','6','7','8','9','10','11'].map(inch => (
+                                            {['0','1','2','3','4','5','6','7','8','9','10','11'].map(inch => (
                                                 <SelectItem key={inch} value={inch}>{inch} in</SelectItem>
                                             ))}
                                         </SelectContent>
