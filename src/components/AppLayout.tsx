@@ -17,7 +17,7 @@ import {
   Star,
 } from 'lucide-react';
 import { getAuth, onAuthStateChanged, signOut, User as FirebaseUser } from 'firebase/auth';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, onSnapshot } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 
 import {
@@ -68,40 +68,60 @@ function AppLayoutContent({ children }: { children: ReactNode }) {
 
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        setUser(user);
-        const userDocRef = doc(db, 'users', user.uid);
-        const userDoc = await getDoc(userDocRef);
-        if (userDoc.exists()) {
-            const profile = userDoc.data() as UserProfile;
-            setUserProfile(profile);
-            if (Object.keys(profile).length < 5 && pathname !== '/profile/edit') { // Rough check for incomplete profile
-                 toast({
-                    title: "Profile Incomplete",
-                    description: "Please complete your profile to continue.",
-                });
-                router.push('/profile/edit');
-            }
-        } else if (pathname !== '/profile/edit') {
-            toast({
-                title: "Profile Incomplete",
-                description: "Please complete your profile to continue.",
+    let unsubscribeSnapshot: (() => void) | undefined;
+
+    const unsubscribeAuth = onAuthStateChanged(auth, async (user) => {
+        if (unsubscribeSnapshot) {
+            unsubscribeSnapshot();
+        }
+
+        if (user) {
+            setUser(user);
+            const userDocRef = doc(db, 'users', user.uid);
+            
+            unsubscribeSnapshot = onSnapshot(userDocRef, (userDoc) => {
+                if (userDoc.exists()) {
+                    const profile = userDoc.data() as UserProfile;
+                    setUserProfile(profile);
+                    if (Object.keys(profile).length < 5 && pathname !== '/profile/edit') {
+                        toast({
+                            title: "Profile Incomplete",
+                            description: "Please complete your profile to continue.",
+                        });
+                        router.push('/profile/edit');
+                    }
+                } else if (pathname !== '/profile/edit') {
+                    toast({
+                        title: "Profile Incomplete",
+                        description: "Please complete your profile to continue.",
+                    });
+                    router.push('/profile/edit');
+                }
+            }, (error) => {
+                console.error("Snapshot listener error:", error);
+                toast({
+                    variant: 'destructive',
+                    title: 'Error',
+                    description: 'Could not fetch profile data. Please try again later.'
+                })
             });
-            router.push('/profile/edit');
+        } else {
+            setUser(null);
+            setUserProfile(null);
+            if (!['/login', '/signup', '/', '/forgot-password'].includes(pathname)) {
+                router.push('/login');
+            }
         }
-      } else {
-        setUser(null);
-        setUserProfile(null);
-        if(!['/login', '/signup', '/'].includes(pathname)) {
-            router.push('/login');
-        }
-      }
-      setLoading(false);
+        setLoading(false);
     });
 
-    return () => unsubscribe();
-  }, [router, pathname, toast]);
+    return () => {
+        unsubscribeAuth();
+        if (unsubscribeSnapshot) {
+            unsubscribeSnapshot();
+        }
+    };
+}, [router, pathname, toast]);
   
   useEffect(() => {
     if (pathname.startsWith('/profile/edit')) {
@@ -135,7 +155,7 @@ function AppLayoutContent({ children }: { children: ReactNode }) {
   }
 
   // Render children without layout for auth pages
-  if (['/login', '/signup', '/'].includes(pathname)) {
+  if (['/login', '/signup', '/', '/forgot-password'].includes(pathname)) {
     return <>{children}</>;
   }
 
