@@ -159,6 +159,8 @@ export default function ProfileEditPage() {
 
   const motherTongues = ["Assamese", "Bengali", "Bodo", "Dogri", "English", "Gujarati", "Hindi", "Kannada", "Kashmiri", "Konkani", "Maithili", "Malayalam", "Manipuri", "Marathi", "Nepali", "Odia", "Punjabi", "Sanskrit", "Santali", "Sindhi", "Tamil", "Telugu", "Urdu", "Other"];
     
+    const educationLevels = ["SSLC", "HSC", "ITI", "Diploma", "Bachelors", "PG", "Engineering", "MBBS"];
+
     if (isLoading) {
         return (
             <AppLayout>
@@ -388,6 +390,19 @@ export default function ProfileEditPage() {
                                         </SelectContent>
                                     </Select>
                                 </div>
+                            </div>
+                            <div className="grid gap-2">
+                                <Label htmlFor="education">Education</Label>
+                                <Select value={profileData.education || ''} onValueChange={(value) => handleSelectChange('education', value)}>
+                                    <SelectTrigger id="education">
+                                        <SelectValue placeholder="Select education level" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {educationLevels.map(level => (
+                                            <SelectItem key={level} value={level}>{level}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
                             </div>
                              <div className="grid gap-2">
                                 <Label htmlFor="employed">Employed</Label>
