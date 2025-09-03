@@ -404,6 +404,10 @@ export default function ProfileEditPage() {
                                     </SelectContent>
                                 </Select>
                             </div>
+                            <div className="grid gap-2">
+                                <Label htmlFor="educationDetails">Education Details</Label>
+                                <Input id="educationDetails" value={profileData.educationDetails || ''} onChange={handleInputChange} />
+                            </div>
                              <div className="grid gap-2">
                                 <Label htmlFor="employed">Employed</Label>
                                 <Select value={profileData.employed || ''} onValueChange={(value) => handleSelectChange('employed', value)}>

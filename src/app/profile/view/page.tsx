@@ -144,6 +144,7 @@ export default function ProfileViewPage() {
                             <ProfileDetail label="Complexion" value={profileData.complexion} />
                              <ProfileDetail label="Height" value={heightValue} />
                             <ProfileDetail label="Education" value={profileData.education} />
+                            <ProfileDetail label="Education Details" value={profileData.educationDetails} />
                             <ProfileDetail label="Employed In" value={profileData.employed} />
                             <ProfileDetail label="Occupation" value={profileData.occupation} />
                             <ProfileDetail label="Working Place" value={profileData.workingPlace} />

@@ -24,6 +24,7 @@ export type UserProfile = {
   community?: string;
   subCaste?: string;
   education?: string;
+  educationDetails?: string;
   employed?: 'Government' | 'Private' | 'Business' | 'Self Employed' | 'Un Employed';
   occupation?: string;
   salary?: string;
