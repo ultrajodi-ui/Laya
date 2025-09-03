@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import type { ReactNode } from 'react';
@@ -75,45 +74,47 @@ function AppLayoutContent({ children }: { children: ReactNode }) {
   }, []);
   
   useEffect(() => {
-    if (!user) {
-      setUserProfile(null);
-      if (!loading && !['/login', '/signup', '/', '/forgot-password'].includes(pathname)) {
-        router.push('/login');
-      }
-      return;
+    let unsubscribeSnapshot = () => {};
+
+    if (user) {
+        const userDocRef = doc(db, 'users', user.uid);
+        unsubscribeSnapshot = onSnapshot(userDocRef, (userDoc) => {
+            if (userDoc.exists()) {
+                const profile = userDoc.data() as UserProfile;
+                setUserProfile(profile);
+                if (Object.keys(profile).length < 5 && pathname !== '/profile/edit') {
+                    toast({
+                        title: "Profile Incomplete",
+                        description: "Please complete your profile to continue.",
+                    });
+                    router.push('/profile/edit');
+                }
+            } else if (pathname !== '/profile/edit') {
+                toast({
+                    title: "Profile Incomplete",
+                    description: "Please complete your profile to continue.",
+                });
+                router.push('/profile/edit');
+            }
+        }, (error) => {
+            console.error("Snapshot listener error:", error);
+            toast({
+                variant: 'destructive',
+                title: 'Error',
+                description: 'Could not fetch profile data. Please try again later.'
+            });
+        });
+    } else {
+        setUserProfile(null);
+        if (!loading && !['/login', '/signup', '/', '/forgot-password'].includes(pathname)) {
+            router.push('/login');
+        }
     }
 
-    const userDocRef = doc(db, 'users', user.uid);
-    const unsubscribeSnapshot = onSnapshot(userDocRef, (userDoc) => {
-      if (userDoc.exists()) {
-        const profile = userDoc.data() as UserProfile;
-        setUserProfile(profile);
-         if (Object.keys(profile).length < 5 && pathname !== '/profile/edit') {
-            toast({
-                title: "Profile Incomplete",
-                description: "Please complete your profile to continue.",
-            });
-            router.push('/profile/edit');
-        }
-      } else if (pathname !== '/profile/edit') {
-         toast({
-            title: "Profile Incomplete",
-            description: "Please complete your profile to continue.",
-        });
-        router.push('/profile/edit');
-      }
-    }, (error) => {
-        console.error("Snapshot listener error:", error);
-        toast({
-            variant: 'destructive',
-            title: 'Error',
-            description: 'Could not fetch profile data. Please try again later.'
-        })
-    });
-
-    return () => unsubscribeSnapshot();
-    
-  }, [user, loading, pathname, router, toast]);
+    return () => {
+        unsubscribeSnapshot();
+    };
+}, [user, loading, pathname, router, toast]);
   
   useEffect(() => {
     if (pathname.startsWith('/profile/edit')) {
@@ -305,3 +306,5 @@ export function AppLayout({ children }: { children: ReactNode }) {
     </PageTitleProvider>
   )
 }
+
+    
