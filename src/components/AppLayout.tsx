@@ -16,7 +16,7 @@ import {
   Star,
 } from 'lucide-react';
 import { getAuth, onAuthStateChanged, signOut, User as FirebaseUser } from 'firebase/auth';
-import { doc, getDoc, onSnapshot } from 'firebase/firestore';
+import { doc, getDoc, onSnapshot, Unsubscribe } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 
 import {
@@ -74,9 +74,11 @@ function AppLayoutContent({ children }: { children: ReactNode }) {
   }, []);
   
   useEffect(() => {
+    let unsubscribeSnapshot: Unsubscribe | undefined;
+
     if (user) {
         const userDocRef = doc(db, 'users', user.uid);
-        const unsubscribeSnapshot = onSnapshot(userDocRef, (userDoc) => {
+        unsubscribeSnapshot = onSnapshot(userDocRef, (userDoc) => {
             if (userDoc.exists()) {
                 const profile = userDoc.data() as UserProfile;
                 setUserProfile(profile);
@@ -96,8 +98,7 @@ function AppLayoutContent({ children }: { children: ReactNode }) {
             }
         }, (error) => {
             console.error("Snapshot listener error:", error);
-            // Don't toast on logout permission errors.
-            if (error.code !== 'permission-denied') {
+             if (error.code !== 'permission-denied') {
                 toast({
                     variant: 'destructive',
                     title: 'Error',
@@ -105,14 +106,18 @@ function AppLayoutContent({ children }: { children: ReactNode }) {
                 });
             }
         });
-
-        return () => unsubscribeSnapshot();
     } else {
         setUserProfile(null);
         if (!loading && !['/login', '/signup', '/', '/forgot-password'].includes(pathname)) {
             router.push('/login');
         }
     }
+
+    return () => {
+        if (unsubscribeSnapshot) {
+            unsubscribeSnapshot();
+        }
+    };
 }, [user, loading, pathname, router, toast]);
   
   useEffect(() => {
