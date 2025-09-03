@@ -1,5 +1,6 @@
 
 
+
 export type UserProfile = {
   id: string;
   name: string;
@@ -14,15 +15,15 @@ export type UserProfile = {
   fullName?: string;
   dob?: any;
   gender?: 'male' | 'female' | 'other';
-  motherTongue?: string;
+  motherTongue?: "Assamese" | "Bengali" | "Bodo" | "Dogri" | "English" | "Gujarati" | "Hindi" | "Kannada" | "Kashmiri" | "Konkani" | "Maithili" | "Malayalam" | "Manipuri" | "Marathi" | "Nepali" | "Odia" | "Punjabi" | "Sanskrit" | "Santali" | "Sindhi" | "Tamil" | "Telugu" | "Urdu" | "Other";
   fatherName?: string;
   motherName?: string;
   mobileNo?: string;
   maritalStatus?: 'Never Married' | 'Divorced' | 'Widow' | 'Widower';
   zodiacSign?: string;
   starSign?: string;
-  religion?: string;
-  community?: string;
+  religion?: "Hindu" | "Christian" | "Muslim - Shia" | "Muslim - Sunni" | "Muslim - Other" | "Sikh" | "Jain - Digambar" | "Jain - Shwetamber" | "Jain - Others" | "Parsi" | "Buddhist" | "Jewish" | "Inter - Religion" | "No Religious Belief";
+  community?: "OC" | "FC" | "MBC" | "BC" | "SC" | "ST" | "Other";
   subCaste?: string;
   education?: string;
   educationDetails?: string;

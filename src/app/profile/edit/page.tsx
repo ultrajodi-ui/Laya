@@ -24,12 +24,13 @@ import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import Link from 'next/link';
+import { UserProfile } from '@/lib/types';
 
 export default function ProfileEditPage() {
     const { toast } = useToast();
     const router = useRouter();
     const [user, setUser] = useState<User | null>(null);
-    const [profileData, setProfileData] = useState<any>({ gender: 'female', photoVisibility: 'Public' });
+    const [profileData, setProfileData] = useState<Partial<UserProfile>>({ gender: 'female', photoVisibility: 'Public' });
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
     const [isCalendarOpen, setIsCalendarOpen] = useState(false);
@@ -57,7 +58,7 @@ export default function ProfileEditPage() {
                 }
             } else {
                 setUser(null);
-                setProfileData(null);
+                setProfileData({});
             }
             setIsLoading(false);
         });
@@ -160,6 +161,9 @@ export default function ProfileEditPage() {
   const motherTongues = ["Assamese", "Bengali", "Bodo", "Dogri", "English", "Gujarati", "Hindi", "Kannada", "Kashmiri", "Konkani", "Maithili", "Malayalam", "Manipuri", "Marathi", "Nepali", "Odia", "Punjabi", "Sanskrit", "Santali", "Sindhi", "Tamil", "Telugu", "Urdu", "Other"];
     
     const educationLevels = ["SSLC", "HSC", "ITI", "Diploma", "Bachelors", "PG", "Engineering", "MBBS"];
+    const religions = ["Hindu", "Christian", "Muslim - Shia", "Muslim - Sunni", "Muslim - Other", "Sikh", "Jain - Digambar", "Jain - Shwetamber", "Jain - Others", "Parsi", "Buddhist", "Jewish", "Inter - Religion", "No Religious Belief"];
+    const communities = ["OC", "FC", "MBC", "BC", "SC", "ST", "Other"];
+
 
     if (isLoading) {
         return (
@@ -470,11 +474,29 @@ export default function ProfileEditPage() {
                             </div>
                             <div className="grid gap-2">
                                 <Label htmlFor="religion">Religion</Label>
-                                <Input id="religion" value={profileData.religion || ''} onChange={handleInputChange} />
+                                <Select value={profileData.religion || ''} onValueChange={(value) => handleSelectChange('religion', value)}>
+                                    <SelectTrigger id="religion">
+                                        <SelectValue placeholder="Select religion" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {religions.map(item => (
+                                            <SelectItem key={item} value={item}>{item}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
                             </div>
                              <div className="grid gap-2">
                                 <Label htmlFor="community">Community</Label>
-                                <Input id="community" value={profileData.community || ''} onChange={handleInputChange} />
+                                <Select value={profileData.community || ''} onValueChange={(value) => handleSelectChange('community', value)}>
+                                    <SelectTrigger id="community">
+                                        <SelectValue placeholder="Select community" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {communities.map(item => (
+                                            <SelectItem key={item} value={item}>{item}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
                             </div>
                              <div className="grid gap-2">
                                 <Label htmlFor="subCaste">Sub Caste</Label>
