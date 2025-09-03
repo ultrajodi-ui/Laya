@@ -29,7 +29,7 @@ export default function ProfileEditPage() {
     const { toast } = useToast();
     const router = useRouter();
     const [user, setUser] = useState<User | null>(null);
-    const [profileData, setProfileData] = useState<any>({ gender: 'female', employed: 'yes', photoVisibility: 'Public' });
+    const [profileData, setProfileData] = useState<any>({ gender: 'female', photoVisibility: 'Public' });
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
     const [isCalendarOpen, setIsCalendarOpen] = useState(false);
@@ -318,6 +318,21 @@ export default function ProfileEditPage() {
                              <div className="grid gap-2">
                                 <Label htmlFor="motherName">Mother Name</Label>
                                 <Input id="motherName" value={profileData.motherName || ''} onChange={handleInputChange} />
+                            </div>
+                             <div className="grid gap-2">
+                                <Label htmlFor="employed">Employed</Label>
+                                <Select value={profileData.employed || ''} onValueChange={(value) => handleSelectChange('employed', value)}>
+                                    <SelectTrigger id="employed">
+                                        <SelectValue placeholder="Select employment status" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="Government">Government</SelectItem>
+                                        <SelectItem value="Private">Private</SelectItem>
+                                        <SelectItem value="Business">Business</SelectItem>
+                                        <SelectItem value="Self Employed">Self Employed</SelectItem>
+                                        <SelectItem value="Un Employed">Un Employed</SelectItem>
+                                    </SelectContent>
+                                </Select>
                             </div>
                             <div className="grid gap-2">
                                 <Label htmlFor="occupation">Occupation</Label>

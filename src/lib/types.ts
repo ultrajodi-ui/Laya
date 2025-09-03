@@ -22,7 +22,7 @@ export type UserProfile = {
   religion?: string;
   community?: string;
   subCaste?: string;
-  employed?: 'yes' | 'no';
+  employed?: 'Government' | 'Private' | 'Business' | 'Self Employed' | 'Un Employed';
   occupation?: string;
   salary?: string;
   workingPlace?: string;
