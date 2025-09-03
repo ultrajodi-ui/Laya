@@ -361,6 +361,34 @@ export default function ProfileEditPage() {
                                     </SelectContent>
                                 </Select>
                             </div>
+                            <div className="grid grid-cols-2 gap-4 col-span-1">
+                                <div className="grid gap-2">
+                                    <Label htmlFor="heightFeet">Height (Feet)</Label>
+                                    <Select value={profileData.heightFeet || ''} onValueChange={(value) => handleSelectChange('heightFeet', value)}>
+                                        <SelectTrigger id="heightFeet">
+                                            <SelectValue placeholder="Feet" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {['3', '4', '5', '6', '7', '8'].map(ft => (
+                                                <SelectItem key={ft} value={ft}>{ft} ft</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="grid gap-2">
+                                    <Label htmlFor="heightInches">Height (Inches)</Label>
+                                    <Select value={profileData.heightInches || ''} onValueChange={(value) => handleSelectChange('heightInches', value)}>
+                                        <SelectTrigger id="heightInches">
+                                            <SelectValue placeholder="Inches" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {['1','2','3','4','5','6','7','8','9','10','11'].map(inch => (
+                                                <SelectItem key={inch} value={inch}>{inch} in</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            </div>
                              <div className="grid gap-2">
                                 <Label htmlFor="employed">Employed</Label>
                                 <Select value={profileData.employed || ''} onValueChange={(value) => handleSelectChange('employed', value)}>

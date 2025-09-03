@@ -42,6 +42,8 @@ export type UserProfile = {
   role?: 'admin' | 'user';
   bodyType?: 'Slim' | 'Normal' | 'Little Fat';
   complexion?: 'Fair' | 'Medium Fair' | 'Medium Brown' | 'Brown';
+  heightFeet?: string;
+  heightInches?: string;
 };
 
 export type Connection = {

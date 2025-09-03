@@ -102,6 +102,10 @@ export default function ProfileViewPage() {
         </div>
     );
 
+    const heightValue = profileData.heightFeet && profileData.heightInches 
+        ? `${profileData.heightFeet}' ${profileData.heightInches}"` 
+        : '-';
+
     return (
         <AppLayout>
             <div className="mx-auto grid max-w-4xl gap-6">
@@ -138,6 +142,7 @@ export default function ProfileViewPage() {
                             <ProfileDetail label="Mother Name" value={profileData.motherName} />
                             <ProfileDetail label="Body Type" value={profileData.bodyType} />
                             <ProfileDetail label="Complexion" value={profileData.complexion} />
+                             <ProfileDetail label="Height" value={heightValue} />
                             <ProfileDetail label="Employed In" value={profileData.employed} />
                             <ProfileDetail label="Occupation" value={profileData.occupation} />
                             <ProfileDetail label="Working Place" value={profileData.workingPlace} />
