@@ -74,11 +74,9 @@ function AppLayoutContent({ children }: { children: ReactNode }) {
   }, []);
   
   useEffect(() => {
-    let unsubscribeSnapshot = () => {};
-
     if (user) {
         const userDocRef = doc(db, 'users', user.uid);
-        unsubscribeSnapshot = onSnapshot(userDocRef, (userDoc) => {
+        const unsubscribeSnapshot = onSnapshot(userDocRef, (userDoc) => {
             if (userDoc.exists()) {
                 const profile = userDoc.data() as UserProfile;
                 setUserProfile(profile);
@@ -98,22 +96,23 @@ function AppLayoutContent({ children }: { children: ReactNode }) {
             }
         }, (error) => {
             console.error("Snapshot listener error:", error);
-            toast({
-                variant: 'destructive',
-                title: 'Error',
-                description: 'Could not fetch profile data. Please try again later.'
-            });
+            // Don't toast on logout permission errors.
+            if (error.code !== 'permission-denied') {
+                toast({
+                    variant: 'destructive',
+                    title: 'Error',
+                    description: 'Could not fetch profile data. Please try again later.'
+                });
+            }
         });
+
+        return () => unsubscribeSnapshot();
     } else {
         setUserProfile(null);
         if (!loading && !['/login', '/signup', '/', '/forgot-password'].includes(pathname)) {
             router.push('/login');
         }
     }
-
-    return () => {
-        unsubscribeSnapshot();
-    };
 }, [user, loading, pathname, router, toast]);
   
   useEffect(() => {
@@ -306,5 +305,3 @@ export function AppLayout({ children }: { children: ReactNode }) {
     </PageTitleProvider>
   )
 }
-
-    
