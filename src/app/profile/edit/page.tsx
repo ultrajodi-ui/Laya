@@ -334,6 +334,33 @@ export default function ProfileEditPage() {
                                 <Label htmlFor="motherName">Mother Name</Label>
                                 <Input id="motherName" value={profileData.motherName || ''} onChange={handleInputChange} />
                             </div>
+                            <div className="grid gap-2">
+                                <Label htmlFor="bodyType">Body Type</Label>
+                                <Select value={profileData.bodyType || ''} onValueChange={(value) => handleSelectChange('bodyType', value)}>
+                                    <SelectTrigger id="bodyType">
+                                        <SelectValue placeholder="Select body type" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="Slim">Slim</SelectItem>
+                                        <SelectItem value="Normal">Normal</SelectItem>
+                                        <SelectItem value="Little Fat">Little Fat</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="grid gap-2">
+                                <Label htmlFor="complexion">Complexion</Label>
+                                <Select value={profileData.complexion || ''} onValueChange={(value) => handleSelectChange('complexion', value)}>
+                                    <SelectTrigger id="complexion">
+                                        <SelectValue placeholder="Select complexion" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="Fair">Fair</SelectItem>
+                                        <SelectItem value="Medium Fair">Medium Fair</SelectItem>
+                                        <SelectItem value="Medium Brown">Medium Brown</SelectItem>
+                                        <SelectItem value="Brown">Brown</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
                              <div className="grid gap-2">
                                 <Label htmlFor="employed">Employed</Label>
                                 <Select value={profileData.employed || ''} onValueChange={(value) => handleSelectChange('employed', value)}>

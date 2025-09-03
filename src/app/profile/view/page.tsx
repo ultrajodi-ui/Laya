@@ -136,6 +136,8 @@ export default function ProfileViewPage() {
                             <ProfileDetail label="Mother Tongue" value={profileData.motherTongue} />
                             <ProfileDetail label="Father Name" value={profileData.fatherName} />
                             <ProfileDetail label="Mother Name" value={profileData.motherName} />
+                            <ProfileDetail label="Body Type" value={profileData.bodyType} />
+                            <ProfileDetail label="Complexion" value={profileData.complexion} />
                             <ProfileDetail label="Employed In" value={profileData.employed} />
                             <ProfileDetail label="Occupation" value={profileData.occupation} />
                             <ProfileDetail label="Working Place" value={profileData.workingPlace} />

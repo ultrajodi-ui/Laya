@@ -40,6 +40,8 @@ export type UserProfile = {
   contactLimit?: number;
   viewedContacts?: string[];
   role?: 'admin' | 'user';
+  bodyType?: 'Slim' | 'Normal' | 'Little Fat';
+  complexion?: 'Fair' | 'Medium Fair' | 'Medium Brown' | 'Brown';
 };
 
 export type Connection = {
