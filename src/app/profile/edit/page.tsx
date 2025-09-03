@@ -156,6 +156,8 @@ export default function ProfileEditPage() {
     "Kumbha (Aquarius)",
     "Meena (Pisces)"
   ];
+
+  const motherTongues = ["Assamese", "Bengali", "Bodo", "Dogri", "English", "Gujarati", "Hindi", "Kannada", "Kashmiri", "Konkani", "Maithili", "Malayalam", "Manipuri", "Marathi", "Nepali", "Odia", "Punjabi", "Sanskrit", "Santali", "Sindhi", "Tamil", "Telugu", "Urdu", "Other"];
     
     if (isLoading) {
         return (
@@ -294,7 +296,7 @@ export default function ProfileEditPage() {
                                   </PopoverContent>
                               </Popover>
                             </div>
-                              <div className="grid gap-2 md:col-span-2">
+                              <div className="grid gap-2">
                               <Label>Gender</Label>
                               <RadioGroup value={profileData.gender} onValueChange={(value) => handleSelectChange('gender', value)} className="flex gap-4">
                                   <div className="flex items-center space-x-2">
@@ -311,6 +313,19 @@ export default function ProfileEditPage() {
                                   </div>
                               </RadioGroup>
                           </div>
+                            <div className="grid gap-2">
+                                <Label htmlFor="motherTongue">Mother Tongue</Label>
+                                <Select value={profileData.motherTongue || ''} onValueChange={(value) => handleSelectChange('motherTongue', value)}>
+                                    <SelectTrigger id="motherTongue">
+                                        <SelectValue placeholder="Select mother tongue" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {motherTongues.map(lang => (
+                                            <SelectItem key={lang} value={lang}>{lang}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
                             <div className="grid gap-2">
                                 <Label htmlFor="fatherName">Father Name</Label>
                                 <Input id="fatherName" ref={fatherNameRef} value={profileData.fatherName || ''} onChange={handleInputChange} />

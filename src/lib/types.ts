@@ -14,6 +14,7 @@ export type UserProfile = {
   fullName?: string;
   dob?: any;
   gender?: 'male' | 'female' | 'other';
+  motherTongue?: string;
   fatherName?: string;
   motherName?: string;
   mobileNo?: string;
