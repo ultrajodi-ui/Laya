@@ -2,6 +2,7 @@
 
 
 
+
 export type UserProfile = {
   id: string;
   name: string;
@@ -15,7 +16,7 @@ export type UserProfile = {
   // Firestore data
   fullName?: string;
   dob?: any;
-  gender?: 'male' | 'female' | 'other';
+  gender?: 'male' | 'female';
   motherTongue?: "Assamese" | "Bengali" | "Bodo" | "Dogri" | "English" | "Gujarati" | "Hindi" | "Kannada" | "Kashmiri" | "Konkani" | "Maithili" | "Malayalam" | "Manipuri" | "Marathi" | "Nepali" | "Odia" | "Punjabi" | "Sanskrit" | "Santali" | "Sindhi" | "Tamil" | "Telugu" | "Urdu" | "Other";
   fatherName?: string;
   motherName?: string;
@@ -49,6 +50,9 @@ export type UserProfile = {
   complexion?: 'Fair' | 'Medium Fair' | 'Medium Brown' | 'Brown';
   heightFeet?: string;
   heightInches?: string;
+  diet?: 'Vegetarian' | 'Non-Vegetarian' | 'Eggetarian';
+  drinkingHabit?: 'Non-Drinker' | 'Social Drinker' | 'Moderate drinker' | 'Heavy drinkers';
+  smokingHabit?: 'Non-Smoker' | 'Light Smoker' | 'Moderate Smoker' | 'Heavy Smoker';
 };
 
 export type Connection = {

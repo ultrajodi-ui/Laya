@@ -95,10 +95,18 @@ export default function ProfileViewPage() {
         );
     }
     
-    const ProfileDetail = ({ label, value }: { label: string, value: string | undefined }) => (
+    const ProfileDetail = ({ label, value }: { label: string, value: string | undefined | string[] }) => (
         <div className="grid gap-1">
             <p className="text-sm font-medium text-muted-foreground">{label}</p>
-            <p className="text-base">{value || '-'}</p>
+            {Array.isArray(value) ? (
+                <div className="flex flex-wrap gap-2">
+                    {value.map((item) => (
+                        <Badge key={item} variant="secondary">{item}</Badge>
+                    ))}
+                </div>
+            ) : (
+                <p className="text-base">{value || '-'}</p>
+            )}
         </div>
     );
 
@@ -158,7 +166,18 @@ export default function ProfileViewPage() {
                             <ProfileDetail label="Zodiac Sign" value={profileData.zodiacSign} />
                             <ProfileDetail label="Star Sign (Nakshatra)" value={profileData.starSign} />
                              <ProfileDetail label="Salary" value={profileData.salary} />
+                             <ProfileDetail label="Diet" value={profileData.diet} />
+                             <ProfileDetail label="Drinking Habit" value={profileData.drinkingHabit} />
+                             <ProfileDetail label="Smoking Habit" value={profileData.smokingHabit} />
                         </div>
+                        <div className="grid gap-2">
+                             <ProfileDetail label="Interests" value={profileData.interests} />
+                        </div>
+                         <div className="grid gap-2">
+                            <p className="text-sm font-medium text-muted-foreground">What I'm Looking For</p>
+                             <p className="text-base italic text-muted-foreground">"{profileData.lookingFor || '-'}"</p>
+                        </div>
+
                     </CardContent>
                 </Card>
             </div>

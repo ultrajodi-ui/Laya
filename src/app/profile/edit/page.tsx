@@ -25,12 +25,13 @@ import { cn } from '@/lib/utils';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import Link from 'next/link';
 import { UserProfile } from '@/lib/types';
+import { Checkbox } from '@/components/ui/checkbox';
 
 export default function ProfileEditPage() {
     const { toast } = useToast();
     const router = useRouter();
     const [user, setUser] = useState<User | null>(null);
-    const [profileData, setProfileData] = useState<Partial<UserProfile>>({ gender: 'female', photoVisibility: 'Public' });
+    const [profileData, setProfileData] = useState<Partial<UserProfile>>({ gender: 'female', photoVisibility: 'Public', interests: [] });
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
     const [isCalendarOpen, setIsCalendarOpen] = useState(false);
@@ -51,10 +52,11 @@ export default function ProfileEditPage() {
                         ...data,
                         dob: dob,
                         photoVisibility: data.photoVisibility || 'Public',
+                        interests: data.interests || [],
                     });
                 } else {
                     // New user, pre-fill email
-                    setProfileData((prev: any) => ({ ...prev, email: currentUser.email }));
+                    setProfileData((prev: any) => ({ ...prev, email: currentUser.email, interests: [] }));
                 }
             } else {
                 setUser(null);
@@ -96,6 +98,19 @@ export default function ProfileEditPage() {
                 description: 'In a real app, this would be uploaded.',
             });
         }
+    };
+    
+    const handleInterestChange = (interest: string) => {
+        setProfileData((prev) => {
+            const interests = prev.interests ? [...prev.interests] : [];
+            const index = interests.indexOf(interest);
+            if (index > -1) {
+                interests.splice(index, 1);
+            } else {
+                interests.push(interest);
+            }
+            return { ...prev, interests };
+        });
     };
 
 
@@ -164,6 +179,7 @@ export default function ProfileEditPage() {
     const religions = ["Hindu", "Christian", "Muslim - Shia", "Muslim - Sunni", "Muslim - Other", "Sikh", "Jain - Digambar", "Jain - Shwetamber", "Jain - Others", "Parsi", "Buddhist", "Jewish", "Inter - Religion", "No Religious Belief"];
     const communities = ["OC", "FC", "MBC", "BC", "SC", "ST", "Other"];
     const states = ["Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Puducherry", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal"];
+    const interests = ["Reading", "Traveling", "Cooking", "Foodie", "Music", "Movies", "Hiking", "Fitness", "Yoga", "Sports", "Dancing", "Singing", "Acting", "Photography", "Painting", "Writing", "Pets", "Fashion", "Meditation", "Shopping", "cycling", "Swimming", "Gaming", "Volunteering", "Family Time", "Temple Visit", "Prayers", "Gardening", "Storytelling", "Helping Others", "Celebrations"];
 
 
     if (isLoading) {
@@ -313,10 +329,6 @@ export default function ProfileEditPage() {
                                   <div className="flex items-center space-x-2">
                                       <RadioGroupItem value="male" id="male" />
                                       <Label htmlFor="male">Male</Label>
-                                  </div>
-                                  <div className="flex items-center space-x-2">
-                                      <RadioGroupItem value="other" id="other" />
-                                      <Label htmlFor="other">Other</Label>
                                   </div>
                               </RadioGroup>
                           </div>
@@ -542,12 +554,68 @@ export default function ProfileEditPage() {
                                   </SelectContent>
                               </Select>
                           </div>
+                          <div className="grid gap-2">
+                            <Label htmlFor="diet">Diet</Label>
+                            <Select value={profileData.diet || ''} onValueChange={(value) => handleSelectChange('diet', value)}>
+                                <SelectTrigger id="diet">
+                                    <SelectValue placeholder="Select diet" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="Vegetarian">Vegetarian</SelectItem>
+                                    <SelectItem value="Non-Vegetarian">Non-Vegetarian</SelectItem>
+                                    <SelectItem value="Eggetarian">Eggetarian</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="grid gap-2">
+                            <Label htmlFor="drinkingHabit">Drinking Habit</Label>
+                            <Select value={profileData.drinkingHabit || ''} onValueChange={(value) => handleSelectChange('drinkingHabit', value)}>
+                                <SelectTrigger id="drinkingHabit">
+                                    <SelectValue placeholder="Select drinking habit" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="Non-Drinker">Non-Drinker</SelectItem>
+                                    <SelectItem value="Social Drinker">Social Drinker</SelectItem>
+                                    <SelectItem value="Moderate drinker">Moderate drinker</SelectItem>
+                                    <SelectItem value="Heavy drinkers">Heavy drinkers</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="grid gap-2">
+                            <Label htmlFor="smokingHabit">Smoking Habit</Label>
+                            <Select value={profileData.smokingHabit || ''} onValueChange={(value) => handleSelectChange('smokingHabit', value)}>
+                                <SelectTrigger id="smokingHabit">
+                                    <SelectValue placeholder="Select smoking habit" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="Non-Smoker">Non-Smoker</SelectItem>
+                                    <SelectItem value="Light Smoker">Light Smoker</SelectItem>
+                                    <SelectItem value="Moderate Smoker">Moderate Smoker</SelectItem>
+                                    <SelectItem value="Heavy Smoker">Heavy Smoker</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
                         </div>
                         
-                        <div className="grid gap-2">
-                            <Label htmlFor="interests">Interests</Label>
-                            <Input id="interests" placeholder="e.g. Cooking, Hiking, Reading" value={profileData.interests?.join(', ') || ''} onChange={(e) => setProfileData({...profileData, interests: e.target.value.split(',').map(i => i.trim())})} />
-                             <p className="text-sm text-muted-foreground">Separate interests with a comma.</p>
+                        <div className="grid gap-4">
+                            <Label>Interests</Label>
+                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                                {interests.map((interest) => (
+                                    <div key={interest} className="flex items-center space-x-2">
+                                        <Checkbox
+                                            id={interest}
+                                            checked={profileData.interests?.includes(interest)}
+                                            onCheckedChange={() => handleInterestChange(interest)}
+                                        />
+                                        <label
+                                            htmlFor={interest}
+                                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                        >
+                                            {interest}
+                                        </label>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
 
                         <div className="grid gap-2">
