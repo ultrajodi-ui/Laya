@@ -479,7 +479,7 @@ export default function ProfileEditPage() {
                                 </Select>
                             </div>
                              <div className="grid gap-2">
-                                <Label htmlFor="city">City</Label>
+                                <Label htmlFor="city">Home Town/City</Label>
                                 <Input id="city" value={profileData.city || ''} onChange={handleInputChange} />
                             </div>
                              <div className="grid gap-2">
