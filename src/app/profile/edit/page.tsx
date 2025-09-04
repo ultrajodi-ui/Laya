@@ -180,6 +180,7 @@ export default function ProfileEditPage() {
     const communities = ["OC", "FC", "MBC", "BC", "SC", "ST", "Other"];
     const states = ["Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Puducherry", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal"];
     const interests = ["Reading", "Traveling", "Cooking", "Foodie", "Music", "Movies", "Hiking", "Fitness", "Yoga", "Sports", "Dancing", "Singing", "Acting", "Photography", "Painting", "Writing", "Pets", "Fashion", "Meditation", "Shopping", "cycling", "Swimming", "Gaming", "Volunteering", "Family Time", "Temple Visit", "Prayers", "Gardening", "Storytelling", "Helping Others", "Celebrations"];
+    const profileByOptions = ["Self", "Parents", "Sibling", "Guardian", "Friends", "Relatives"];
 
 
     if (isLoading) {
@@ -284,6 +285,20 @@ export default function ProfileEditPage() {
                                     </Link>
                                 </Button>
                             </div>
+                        </div>
+
+                         <div className="grid gap-2">
+                            <Label htmlFor="profileBy">Profile By</Label>
+                            <Select value={profileData.profileBy} onValueChange={(value) => handleSelectChange('profileBy', value)}>
+                                <SelectTrigger id="profileBy">
+                                    <SelectValue placeholder="Select who created this profile" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {profileByOptions.map(option => (
+                                        <SelectItem key={option} value={option}>{option}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
                         </div>
 
                         <div className="grid sm:grid-cols-2 gap-4">

@@ -3,6 +3,7 @@
 
 
 
+
 export type UserProfile = {
   id: string;
   name: string;
@@ -53,6 +54,7 @@ export type UserProfile = {
   diet?: 'Vegetarian' | 'Non-Vegetarian' | 'Eggetarian';
   drinkingHabit?: 'Non-Drinker' | 'Social Drinker' | 'Moderate drinker' | 'Heavy drinkers';
   smokingHabit?: 'Non-Smoker' | 'Light Smoker' | 'Moderate Smoker' | 'Heavy Smoker';
+  profileBy?: "Self" | "Parents" | "Sibling" | "Guardian" | "Friends" | "Relatives";
 };
 
 export type Connection = {

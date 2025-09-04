@@ -142,6 +142,7 @@ export default function ProfileViewPage() {
                         </div>
 
                         <div className="grid sm:grid-cols-2 gap-6">
+                            <ProfileDetail label="Profile By" value={profileData.profileBy} />
                             <ProfileDetail label="Full Name" value={profileData.fullName} />
                             <ProfileDetail label="Date of Birth" value={profileData.dob ? format(profileData.dob, 'PPP') : '-'} />
                             <ProfileDetail label="Gender" value={profileData.gender} />
