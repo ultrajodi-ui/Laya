@@ -163,6 +163,7 @@ export default function ProfileEditPage() {
     const educationLevels = ["SSLC", "HSC", "ITI", "Diploma", "Bachelors", "PG", "Engineering", "MBBS"];
     const religions = ["Hindu", "Christian", "Muslim - Shia", "Muslim - Sunni", "Muslim - Other", "Sikh", "Jain - Digambar", "Jain - Shwetamber", "Jain - Others", "Parsi", "Buddhist", "Jewish", "Inter - Religion", "No Religious Belief"];
     const communities = ["OC", "FC", "MBC", "BC", "SC", "ST", "Other"];
+    const states = ["Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Puducherry", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal"];
 
 
     if (isLoading) {
@@ -395,7 +396,21 @@ export default function ProfileEditPage() {
                                     </Select>
                                 </div>
                             </div>
-                            <div className="grid gap-2">
+                             <div className="grid gap-2">
+                                <Label htmlFor="maritalStatus">Marital Status</Label>
+                                <Select value={profileData.maritalStatus || ''} onValueChange={(value) => handleSelectChange('maritalStatus', value)}>
+                                    <SelectTrigger id="maritalStatus">
+                                        <SelectValue placeholder="Select marital status" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="Never Married">Never Married</SelectItem>
+                                        <SelectItem value="Divorced">Divorced</SelectItem>
+                                        <SelectItem value="Widow">Widow</SelectItem>
+                                        <SelectItem value="Widower">Widower</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                             <div className="grid gap-2">
                                 <Label htmlFor="education">Education</Label>
                                 <Select value={profileData.education || ''} onValueChange={(value) => handleSelectChange('education', value)}>
                                     <SelectTrigger id="education">
@@ -451,26 +466,25 @@ export default function ProfileEditPage() {
                                 <Input id="workingPlace" value={profileData.workingPlace || ''} onChange={handleInputChange} />
                             </div>
                              <div className="grid gap-2">
+                                <Label htmlFor="homeState">Home State</Label>
+                                <Select value={profileData.homeState || ''} onValueChange={(value) => handleSelectChange('homeState', value)}>
+                                    <SelectTrigger id="homeState">
+                                        <SelectValue placeholder="Select your state" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {states.map(state => (
+                                            <SelectItem key={state} value={state}>{state}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                             <div className="grid gap-2">
                                 <Label htmlFor="city">City</Label>
                                 <Input id="city" value={profileData.city || ''} onChange={handleInputChange} />
                             </div>
                              <div className="grid gap-2">
                                 <Label htmlFor="mobileNo">Mobile No</Label>
                                 <Input id="mobileNo" value={profileData.mobileNo || ''} onChange={handleInputChange} />
-                            </div>
-                            <div className="grid gap-2">
-                                <Label htmlFor="maritalStatus">Marital Status</Label>
-                                <Select value={profileData.maritalStatus || ''} onValueChange={(value) => handleSelectChange('maritalStatus', value)}>
-                                    <SelectTrigger id="maritalStatus">
-                                        <SelectValue placeholder="Select marital status" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="Never Married">Never Married</SelectItem>
-                                        <SelectItem value="Divorced">Divorced</SelectItem>
-                                        <SelectItem value="Widow">Widow</SelectItem>
-                                        <SelectItem value="Widower">Widower</SelectItem>
-                                    </SelectContent>
-                                </Select>
                             </div>
                             <div className="grid gap-2">
                                 <Label htmlFor="religion">Religion</Label>

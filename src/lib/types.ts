@@ -1,6 +1,7 @@
 
 
 
+
 export type UserProfile = {
   id: string;
   name: string;
@@ -31,6 +32,7 @@ export type UserProfile = {
   occupation?: string;
   salary?: string;
   workingPlace?: string;
+  homeState?: string;
   city?: string;
   state?: string;
   email?: string;
