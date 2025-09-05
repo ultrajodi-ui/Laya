@@ -30,6 +30,7 @@ const communities = ["FC", "MBC", "BC", "SC", "ST", "Other"];
 const subCastes = ["Vanniyar", "Settiyar", "Readdy", "Yadavar", "Braminar", "Adi Dravidar", "Mudaliyar"];
 const ageRanges = ["18 to 22", "23 to 26", "27 to 30", "31 to 35", "Above 35"];
 const salaryRanges = ["<3LPA", "3-5LPA", "5-10LPA", "10-20LPA", ">20LPA"];
+const employedOptions = ["Government", "Private", "Business", "Self Employed", "Un Employed"];
 
 const UserTypeIcon = ({ usertype }: { usertype?: string }) => {
     switch (usertype) {
@@ -55,6 +56,7 @@ export default function BrowsePage() {
     const [selectedSubCaste, setSelectedSubCaste] = useState('');
     const [selectedAgeRange, setSelectedAgeRange] = useState('');
     const [selectedSalary, setSelectedSalary] = useState('');
+    const [selectedEmployed, setSelectedEmployed] = useState('');
 
     const auth = getAuth();
     const { toast } = useToast();
@@ -217,6 +219,7 @@ export default function BrowsePage() {
             .filter(user => !selectedCommunity || user.community === selectedCommunity)
             .filter(user => !selectedSubCaste || user.subCaste === selectedSubCaste)
             .filter(user => !selectedSalary || user.salary === selectedSalary)
+            .filter(user => !selectedEmployed || user.employed === selectedEmployed)
             .filter(user => {
                 if (!selectedAgeRange) return true;
                 const age = calculateAge(user.dob);
@@ -227,7 +230,7 @@ export default function BrowsePage() {
                 if (selectedAgeRange === "Above 35") return age > 35;
                 return true;
             });
-    }, [users, searchQuery, selectedInterests, selectedLocations, selectedReligion, selectedCommunity, selectedSubCaste, selectedAgeRange, selectedSalary]);
+    }, [users, searchQuery, selectedInterests, selectedLocations, selectedReligion, selectedCommunity, selectedSubCaste, selectedAgeRange, selectedSalary, selectedEmployed]);
 
 
     const FilterDropdown = ({ placeholder, options, value, onChange }: { placeholder: string, options: string[], value: string, onChange: (value: string) => void }) => (
@@ -291,12 +294,13 @@ export default function BrowsePage() {
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </div>
-                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
                     <FilterDropdown placeholder="Religion" options={religions} value={selectedReligion} onChange={(v) => setSelectedReligion(v === 'all' ? '' : v)} />
                     <FilterDropdown placeholder="Community" options={communities} value={selectedCommunity} onChange={(v) => setSelectedCommunity(v === 'all' ? '' : v)} />
                     <FilterDropdown placeholder="Sub-Caste" options={subCastes} value={selectedSubCaste} onChange={(v) => setSelectedSubCaste(v === 'all' ? '' : v)} />
                     <FilterDropdown placeholder="Age Range" options={ageRanges} value={selectedAgeRange} onChange={(v) => setSelectedAgeRange(v === 'all' ? '' : v)} />
                     <FilterDropdown placeholder="Salary" options={salaryRanges} value={selectedSalary} onChange={(v) => setSelectedSalary(v === 'all' ? '' : v)} />
+                    <FilterDropdown placeholder="Employed" options={employedOptions} value={selectedEmployed} onChange={(v) => setSelectedEmployed(v === 'all' ? '' : v)} />
                 </div>
                 {loading ? (
                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -375,5 +379,3 @@ export default function BrowsePage() {
         </AppLayout>
     );
 }
-
-    
