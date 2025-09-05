@@ -72,6 +72,26 @@ function AppLayoutContent({ children }: { children: ReactNode }) {
     });
     return () => unsubscribeAuth();
   }, []);
+  
+  useEffect(() => {
+    if (!user) {
+      setUserProfile(null);
+      return;
+    }
+
+    const userDocRef = doc(db, 'users', user.uid);
+    const unsubscribeSnapshot = onSnapshot(userDocRef, (doc) => {
+        if (doc.exists()) {
+            setUserProfile(doc.data() as UserProfile);
+        } else {
+             setUserProfile(null);
+        }
+    }, (error) => {
+        console.error("Snapshot listener error:", error);
+    });
+
+    return () => unsubscribeSnapshot();
+  }, [user]);
 
   useEffect(() => {
     if (loading) return;
@@ -90,37 +110,6 @@ function AppLayoutContent({ children }: { children: ReactNode }) {
     }
   }, [user, userProfile, loading, pathname, router, toast]);
 
-  useEffect(() => {
-    if (!user?.uid) {
-        setUserProfile(null);
-        return;
-    };
-
-    const userDocRef = doc(db, 'users', user.uid);
-    const unsubscribeSnapshot = onSnapshot(userDocRef, (doc) => {
-        if (doc.exists()) {
-            setUserProfile(doc.data() as UserProfile);
-        } else if (pathname !== '/profile/edit') {
-            toast({
-                title: "Profile Incomplete",
-                description: "Please complete your profile to create one.",
-            });
-            router.push('/profile/edit');
-        }
-    }, (error) => {
-        console.error("Snapshot listener error:", error);
-        if (error.code !== 'permission-denied') {
-            toast({
-                variant: 'destructive',
-                title: 'Error',
-                description: 'Could not fetch profile data. Please try again later.'
-            });
-        }
-    });
-
-    return () => unsubscribeSnapshot();
-  }, [user?.uid, pathname, router, toast]);
-  
   useEffect(() => {
     if (pathname.startsWith('/profile/edit')) {
       setPageTitle('Edit Profile');
