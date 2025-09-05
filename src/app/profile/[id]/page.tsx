@@ -153,6 +153,15 @@ function ProfileContent({ id }: { id: string }) {
             return;
         }
 
+        // Rule: Basic users cannot see premium users' contact details
+        const isCurrentUserBasic = !currentUserProfile.usertype || currentUserProfile.usertype === 'Basic';
+        const isTargetUserPremium = user.usertype && user.usertype !== 'Basic';
+
+        if (isCurrentUserBasic && isTargetUserPremium) {
+            setShowUpgradeAlert(true);
+            return;
+        }
+
         const hasViewed = currentUserProfile.viewedContacts?.includes(user.memberid);
         if (hasViewed) {
              setIsContactVisible(true);
@@ -340,9 +349,9 @@ function ProfileContent({ id }: { id: string }) {
             </div>
             <AlertDialogContent>
                 <AlertDialogHeader>
-                    <AlertDialogTitle>Contact Limit Reached</AlertDialogTitle>
+                    <AlertDialogTitle>Upgrade Required</AlertDialogTitle>
                     <AlertDialogDescription>
-                        Your contact view limit is over. Please upgrade your plan to view more contacts and enjoy other premium benefits.
+                        You need to upgrade your plan to view this user's contact details. Please upgrade your plan to view more contacts and enjoy other premium benefits.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
@@ -374,5 +383,3 @@ export default function ProfileDetailPage({ params }: { params: { id: string } }
         </AppLayout>
     );
 }
-
-    
