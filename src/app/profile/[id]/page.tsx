@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useEffect, use } from 'react';
@@ -10,7 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Heart, Calendar, Sparkles, MapPin, Eye } from "lucide-react";
+import { Heart, Calendar, Sparkles, MapPin, Eye, Star, Shield, Gem } from "lucide-react";
 import Image from "next/image";
 import { Skeleton } from '@/components/ui/skeleton';
 import type { UserProfile } from '@/lib/types';
@@ -27,6 +26,15 @@ const calculateAge = (dob: any) => {
     const birthDate = dob.toDate ? dob.toDate() : new Date(dob);
     return differenceInYears(new Date(), birthDate);
 }
+
+const UserTypeIcon = ({ usertype }: { usertype?: string }) => {
+    switch (usertype) {
+        case 'Silver': return <Star className="w-5 h-5 ml-2 text-slate-500" />;
+        case 'Gold': return <Shield className="w-5 h-5 ml-2 text-yellow-500" />;
+        case 'Diamond': return <Gem className="w-5 h-5 ml-2 text-blue-500" />;
+        default: return null;
+    }
+};
 
 function ProfileContent({ id }: { id: string }) {
     const [user, setUser] = useState<UserProfile | null>(null);
@@ -261,7 +269,10 @@ function ProfileContent({ id }: { id: string }) {
                                 <Heart className={cn("mr-2 h-4 w-4", isLiked && "fill-red-500 text-red-500")} /> Like
                             </Button>
                         </div>
-                        <CardTitle className="text-3xl font-headline">{user.fullName}, {calculateAge(user.dob)}</CardTitle>
+                        <CardTitle className="text-3xl font-headline flex items-center">
+                            <span>{user.fullName}, {calculateAge(user.dob)}</span>
+                            <UserTypeIcon usertype={user.usertype} />
+                        </CardTitle>
                         <CardDescription className="!mt-1 text-base text-muted-foreground">
                             ID: {user.memberid}
                         </CardDescription>
@@ -363,3 +374,5 @@ export default function ProfileDetailPage({ params }: { params: { id: string } }
         </AppLayout>
     );
 }
+
+    

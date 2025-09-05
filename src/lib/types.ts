@@ -1,9 +1,4 @@
 
-
-
-
-
-
 export type UserProfile = {
   id: string;
   name: string;
@@ -38,7 +33,7 @@ export type UserProfile = {
   city?: string;
   state?: string;
   email?: string;
-  usertype?: 'Basic' | 'Premium';
+  usertype?: 'Basic' | 'Silver' | 'Gold' | 'Diamond';
   memberid?: string;
   coverUrl?: string;
   createdAt?: any;
@@ -77,3 +72,5 @@ export type Conversation = {
   messages: Message[];
   lastMessage: Message;
 };
+
+    

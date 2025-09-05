@@ -8,7 +8,7 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Heart, ListFilter, MapPin, Search as SearchIcon } from "lucide-react";
+import { Heart, ListFilter, MapPin, Search as SearchIcon, Star, Shield, Gem } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState, useMemo } from "react";
@@ -31,6 +31,14 @@ const subCastes = ["Vanniyar", "Settiyar", "Readdy", "Yadavar", "Braminar", "Adi
 const ageRanges = ["18 to 22", "23 to 26", "27 to 30", "31 to 35", "Above 35"];
 const salaryRanges = ["<3LPA", "3-5LPA", "5-10LPA", "10-20LPA", ">20LPA"];
 
+const UserTypeIcon = ({ usertype }: { usertype?: string }) => {
+    switch (usertype) {
+        case 'Silver': return <Star className="w-4 h-4 ml-2 text-slate-500" />;
+        case 'Gold': return <Shield className="w-4 h-4 ml-2 text-yellow-500" />;
+        case 'Diamond': return <Gem className="w-4 h-4 ml-2 text-blue-500" />;
+        default: return null;
+    }
+};
 
 export default function BrowsePage() {
     const [users, setUsers] = useState<UserProfile[]>([]);
@@ -330,7 +338,10 @@ export default function BrowsePage() {
                                 <CardContent className="p-4 space-y-2">
                                     <div>
                                         <Link href={`/profile/${user.id}`}>
-                                            <h3 className="text-xl font-headline font-semibold">{user.fullName}, {calculateAge(user.dob)}</h3>
+                                            <h3 className="text-xl font-headline font-semibold flex items-center">
+                                                <span>{user.fullName}, {calculateAge(user.dob)}</span>
+                                                <UserTypeIcon usertype={user.usertype} />
+                                            </h3>
                                         </Link>
                                         <p className="text-sm text-muted-foreground">ID: {user.memberid}</p>
                                     </div>
