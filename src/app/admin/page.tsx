@@ -35,8 +35,8 @@ export default function AdminDashboardPage() {
         try {
             const usersCollection = collection(db, "users");
             const userSnapshot = await getDocs(usersCollection);
-            const totalUsers = userSnapshot.size;
-            const usersData = userSnapshot.docs.map(doc => doc.data() as UserProfile);
+            const usersData = userSnapshot.docs.map(doc => doc.data() as UserProfile).filter(user => user.role !== 'admin');
+            const totalUsers = usersData.length;
 
             let basicUsers = 0;
             let silverUsers = 0;
