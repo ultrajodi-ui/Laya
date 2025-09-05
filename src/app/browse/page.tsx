@@ -25,7 +25,7 @@ const allInterests = ["Cooking", "Hiking", "Reading", "Technology", "Art", "Musi
 const allLocations = ["Mumbai, India", "Delhi, India", "Bangalore, India", "Pune, India", "Hyderabad, India", "Chennai, India"];
 
 // Data for new dropdowns
-const religions = ["Hindu", "Muslim", "Christian", "Sikh", "Jain", "Buddhist", "Others"];
+const religions = ["Hindu", "Christian", "Muslim - Shia", "Muslim - Sunni", "Muslim - Other", "Sikh", "Jain - Digambar", "Jain - Shwetamber", "Jain - Others", "Parsi", "Buddhist", "Jewish", "Inter - Religion", "No Religious Belief"];
 const communities = ["FC", "MBC", "BC", "SC", "ST", "Other"];
 const subCastes = ["Vanniyar", "Settiyar", "Readdy", "Yadavar", "Braminar", "Adi Dravidar", "Mudaliyar"];
 const ageRanges = ["18 to 22", "23 to 26", "27 to 30", "31 to 35", "Above 35"];
