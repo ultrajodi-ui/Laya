@@ -21,7 +21,7 @@ import { cn } from "@/lib/utils";
 import { useToast } from '@/hooks/use-toast';
 
 // Mock data for filters
-const allInterests = ["Cooking", "Hiking", "Reading", "Technology", "Art", "Music", "Films", "Cycling", "Fitness", "Business", "Nutrition", "Dogs", "Brunch", "Mysteries", "Philosophy", "Concerts"];
+const allInterests = ["Reading", "Traveling", "Cooking", "Foodie", "Music", "Movies", "Hiking", "Fitness", "Yoga", "Sports", "Dancing", "Singing", "Acting", "Photography", "Painting", "Writing", "Pets", "Fashion", "Meditation", "Shopping", "cycling", "Swimming", "Gaming", "Volunteering", "Family Time", "Temple Visit", "Prayers", "Gardening", "Storytelling", "Helping Others", "Celebrations"];
 const allLocations = ["Mumbai, India", "Delhi, India", "Bangalore, India", "Pune, India", "Hyderabad, India", "Chennai, India"];
 
 // Data for new dropdowns
@@ -271,21 +271,9 @@ export default function BrowsePage() {
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-56">
-                            <DropdownMenuLabel>Filter by Location</DropdownMenuLabel>
-                            <DropdownMenuSeparator />
-                             {allLocations.slice(0, 5).map(location => (
-                                <DropdownMenuCheckboxItem 
-                                    key={location}
-                                    checked={selectedLocations.includes(location)}
-                                    onCheckedChange={(checked) => handleFilterChange('location', location, !!checked)}
-                                >
-                                    {location}
-                                </DropdownMenuCheckboxItem>
-                            ))}
-                            <DropdownMenuSeparator />
                             <DropdownMenuLabel>Filter by Interest</DropdownMenuLabel>
                              <DropdownMenuSeparator />
-                            {allInterests.slice(0, 5).map(interest => (
+                            {allInterests.slice(0, 10).map(interest => (
                                 <DropdownMenuCheckboxItem 
                                     key={interest}
                                     checked={selectedInterests.includes(interest)}
