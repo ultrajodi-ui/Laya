@@ -14,6 +14,7 @@ import {
   User,
   Shield,
   Star,
+  Zap,
 } from 'lucide-react';
 import { getAuth, onAuthStateChanged, signOut, User as FirebaseUser } from 'firebase/auth';
 import { doc, getDoc, onSnapshot, Unsubscribe } from 'firebase/firestore';
@@ -48,7 +49,8 @@ const auth = getAuth(app);
 const navItems = [
   { href: '/browse', icon: Home, label: 'Browse' },
   { href: '/matches', icon: Search, label: 'AI Matches' },
-   { href: '/likes-received', icon: Star, label: 'Likes Received' },
+  { href: '/likes-received', icon: Star, label: 'Likes Received' },
+  { href: '/upgrade', icon: Zap, label: 'Premium Benefits' },
 ];
 
 const settingsNavItems = [
@@ -67,11 +69,19 @@ function AppLayoutContent({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
-      setUser(user);
       setLoading(false);
+      if (user) {
+        setUser(user);
+      } else {
+        setUser(null);
+        // If no user and not on a public page, redirect to login
+        if (!['/login', '/signup', '/', '/forgot-password'].includes(pathname)) {
+          router.push('/login');
+        }
+      }
     });
     return () => unsubscribeAuth();
-  }, []);
+  }, [pathname, router]);
   
   useEffect(() => {
     if (!user) {
@@ -82,33 +92,32 @@ function AppLayoutContent({ children }: { children: ReactNode }) {
     const userDocRef = doc(db, 'users', user.uid);
     const unsubscribeSnapshot = onSnapshot(userDocRef, (doc) => {
         if (doc.exists()) {
-            setUserProfile(doc.data() as UserProfile);
+            const profile = doc.data() as UserProfile;
+            setUserProfile(profile);
+
+            // Profile completion check
+            const profileIsMinimal = Object.keys(profile).length < 5;
+            if (profileIsMinimal && pathname !== '/profile/edit') {
+                toast({
+                    title: "Profile Incomplete",
+                    description: "Please complete your profile to continue.",
+                });
+                router.push('/profile/edit');
+            }
         } else {
              setUserProfile(null);
+             // If user exists in auth but not DB, redirect to edit profile
+             if (pathname !== '/profile/edit') {
+                 router.push('/profile/edit');
+             }
         }
     }, (error) => {
         console.error("Snapshot listener error:", error);
     });
 
     return () => unsubscribeSnapshot();
-  }, [user]);
+  }, [user, pathname, router, toast]);
 
-  useEffect(() => {
-    if (loading) return;
-
-    if (!user && !['/login', '/signup', '/', '/forgot-password'].includes(pathname)) {
-        router.push('/login');
-    } else if (user && userProfile) {
-        const profileIsMinimal = Object.keys(userProfile).length < 5;
-        if (profileIsMinimal && pathname !== '/profile/edit') {
-             toast({
-                title: "Profile Incomplete",
-                description: "Please complete your profile to continue.",
-            });
-            router.push('/profile/edit');
-        }
-    }
-  }, [user, userProfile, loading, pathname, router, toast]);
 
   useEffect(() => {
     if (pathname.startsWith('/profile/edit')) {
