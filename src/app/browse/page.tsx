@@ -300,7 +300,7 @@ export default function BrowsePage() {
                 {loading ? (
                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                         {[...Array(8)].map((_, i) => (
-                             <Card key={i} className="overflow-hidden">
+                             <Card key={i} className="overflow-hidden" style={{ backgroundColor: '#FFF8E7' }}>
                                  <Skeleton className="w-full h-64" />
                                 <CardContent className="p-4 space-y-2">
                                      <Skeleton className="h-6 w-3/4" />
@@ -321,7 +321,7 @@ export default function BrowsePage() {
                                 ? `https://picsum.photos/seed/default-avatar/400/400`
                                 : user.imageUrl || `https://picsum.photos/seed/${user.id}/400/400`;
                             return (
-                            <Card key={user.id} className="overflow-hidden transition-transform transform hover:scale-105 hover:shadow-lg duration-300 ease-in-out">
+                            <Card key={user.id} className="overflow-hidden transition-transform transform hover:scale-105 hover:shadow-lg duration-300 ease-in-out" style={{ backgroundColor: '#FFF8E7' }}>
                                  <CardHeader className="p-0">
                                     <Link href={`/profile/${user.id}`}>
                                         <Image
@@ -361,7 +361,7 @@ export default function BrowsePage() {
                                     </div>
                                 </CardContent>
                                 <CardFooter className="p-4 pt-0">
-                                     <Button className="w-full bg-accent text-accent-foreground hover:bg-accent/90" onClick={() => handleLikeClick(user)}>
+                                     <Button style={{ backgroundColor: '#1E3A8A' }} className="w-full text-white hover:bg-blue-800/90" onClick={() => handleLikeClick(user)}>
                                         <Heart className={cn("mr-2 h-4 w-4", isLiked && "fill-red-500 text-red-500")} /> Like
                                     </Button>
                                 </CardFooter>
@@ -379,3 +379,5 @@ export default function BrowsePage() {
         </AppLayout>
     );
 }
+
+    
