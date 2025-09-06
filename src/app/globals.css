@@ -12,11 +12,11 @@ h1, h2, h3, h4, h5, h6 {
 
 @layer base {
   :root {
-    --background: 210 40% 98%;
+    --background: 40 33% 93%;
     --foreground: 222.2 84% 4.9%;
-    --card: 40 67% 94%;
+    --card: 43 74% 95%;
     --card-foreground: 222.2 84% 4.9%;
-    --popover: 40 67% 94%;
+    --popover: 43 74% 95%;
     --popover-foreground: 222.2 84% 4.9%;
     --primary: 222.2 47.4% 11.2%;
     --primary-foreground: 210 40% 98%;
@@ -37,6 +37,12 @@ h1, h2, h3, h4, h5, h6 {
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
     --radius: 0.5rem;
+    --sidebar-background: 0 11% 21%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-border: 0 11% 28%;
+    --sidebar-accent: 0 11% 28%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-ring: 0 11% 21%;
   }
 }
 
