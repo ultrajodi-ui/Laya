@@ -285,7 +285,7 @@ function AppLayoutContent({ children }: { children: ReactNode }) {
                   </DropdownMenuContent>
                 </DropdownMenu>
             </header>
-            <main className="flex-1 p-4 sm:p-6">{children}</main>
+            <main className="flex-1 p-0 sm:p-0">{children}</main>
         </SidebarInset>
       </div>
     </SidebarProvider>
