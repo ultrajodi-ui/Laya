@@ -81,7 +81,7 @@ export default function LoginPage() {
           className="flex-1 flex items-center justify-center p-4"
           style={{ backgroundImage: "linear-gradient( 100.1deg,  rgba(217,157,38,1) 16.8%, rgba(247,213,110,1) 77.3% )" }}
       >
-        <Card className="mx-auto max-w-sm w-full">
+        <Card className="mx-auto max-w-sm w-full" style={{ backgroundColor: '#FFF8E7' }}>
           <CardHeader>
             <CardTitle className="text-2xl font-headline">Welcome Back</CardTitle>
             <CardDescription>
@@ -99,6 +99,7 @@ export default function LoginPage() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  style={{ backgroundColor: '#F8F8F8' }}
                 />
               </div>
               <div className="grid gap-2">
@@ -117,9 +118,10 @@ export default function LoginPage() {
                   required 
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  style={{ backgroundColor: '#F8F8F8' }}
                 />
               </div>
-              <Button type="submit" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground" disabled={isLoading}>
+              <Button type="submit" className="w-full" disabled={isLoading} style={{ backgroundColor: '#1E3A8A' }}>
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Login
               </Button>
