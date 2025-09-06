@@ -8,7 +8,7 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Heart, ListFilter, MapPin, Search as SearchIcon, Star, Shield, Gem } from "lucide-react";
+import { Heart, ListFilter, MapPin, Search as SearchIcon, Star, Shield, Gem, Briefcase, IndianRupee } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState, useMemo } from "react";
@@ -348,11 +348,16 @@ export default function BrowsePage() {
                                         <MapPin className="w-4 h-4 mr-1" />
                                         <span>{user.city}</span>
                                     </div>
-                                    <p className="text-sm text-muted-foreground line-clamp-2 h-10">{user.occupation}</p>
-                                    <div className="flex flex-wrap gap-1 pt-1">
-                                        {user.interests?.slice(0, 3).map(interest => (
-                                            <Badge key={interest} variant="secondary">{interest}</Badge>
-                                        ))}
+                                    <div className="flex items-center text-sm text-muted-foreground">
+                                        <Briefcase className="w-4 h-4 mr-1" />
+                                        <span>{user.occupation}</span>
+                                    </div>
+                                    <div className="flex items-center text-sm text-muted-foreground">
+                                        <Badge variant="secondary">{user.subCaste}</Badge>
+                                    </div>
+                                    <div className="flex items-center text-sm text-muted-foreground">
+                                        <IndianRupee className="w-4 h-4 mr-1" />
+                                        <span>{user.salary}</span>
                                     </div>
                                 </CardContent>
                                 <CardFooter className="p-4 pt-0">
