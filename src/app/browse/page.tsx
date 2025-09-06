@@ -250,10 +250,7 @@ export default function BrowsePage() {
 
     return (
         <AppLayout>
-            <div 
-              className="flex flex-col gap-4 rounded-lg p-4"
-              style={{ backgroundImage: "linear-gradient( 100.1deg,  rgba(217,157,38,1) 16.8%, rgba(247,213,110,1) 77.3% )" }}
-            >
+            <div className="flex flex-col gap-4 rounded-lg p-4">
                 <div className="flex items-center gap-4">
                     <div className="relative flex-1">
                         <Input 
