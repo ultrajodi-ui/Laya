@@ -15,6 +15,7 @@ import {
   Shield,
   Star,
   Zap,
+  Info,
 } from 'lucide-react';
 import { getAuth, onAuthStateChanged, signOut, User as FirebaseUser } from 'firebase/auth';
 import { doc, getDoc, onSnapshot, Unsubscribe } from 'firebase/firestore';
@@ -51,6 +52,7 @@ const navItems = [
   { href: '/matches', icon: Search, label: 'AI Matches' },
   { href: '/likes-received', icon: Star, label: 'Likes Received' },
   { href: '/upgrade', icon: Zap, label: 'Premium Member Benefits' },
+  { href: '/about-us', icon: Info, label: 'About Us' },
 ];
 
 const settingsNavItems = [
