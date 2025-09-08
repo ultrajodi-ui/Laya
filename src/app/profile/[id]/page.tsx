@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect, use } from 'react';
@@ -257,6 +258,9 @@ function ProfileContent({ id }: { id: string }) {
     const profileImageUrl = user.photoVisibility === 'Private' 
         ? `https://picsum.photos/seed/default-avatar/100/100`
         : user.imageUrl || `https://picsum.photos/seed/${user.id}/100/100`;
+    const heightValue = user.heightFeet && user.heightInches 
+        ? `${user.heightFeet}' ${user.heightInches}"` 
+        : '-';
 
     return (
          <AlertDialog open={showUpgradeAlert} onOpenChange={setShowUpgradeAlert}>
@@ -296,6 +300,7 @@ function ProfileContent({ id }: { id: string }) {
                              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 text-muted-foreground">
                                 <p><span className="font-semibold text-foreground">Father:</span> {user.fatherName}</p>
                                 <p><span className="font-semibold text-foreground">Mother:</span> {user.motherName}</p>
+                                <p><span className="font-semibold text-foreground">Date of Birth:</span> {user.dob ? format(user.dob.toDate(), 'PPP') : '-'}</p>
                                 <p><span className="font-semibold text-foreground">Mother Tongue:</span> {user.motherTongue}</p>
                                 <p><span className="font-semibold text-foreground">Occupation:</span> {user.occupation}</p>
                                 <p><span className="font-semibold text-foreground">Salary:</span> {user.salary}</p>
@@ -305,6 +310,12 @@ function ProfileContent({ id }: { id: string }) {
                                 <p><span className="font-semibold text-foreground">Sub-caste:</span> {user.subCaste}</p>
                                 <p><span className="font-semibold text-foreground">Zodiac Sign:</span> {user.zodiacSign}</p>
                                 <p><span className="font-semibold text-foreground">Star Sign:</span> {user.starSign}</p>
+                                <p><span className="font-semibold text-foreground">Complexion:</span> {user.complexion}</p>
+                                <p><span className="font-semibold text-foreground">Body Type:</span> {user.bodyType}</p>
+                                <p><span className="font-semibold text-foreground">Diet:</span> {user.diet}</p>
+                                <p><span className="font-semibold text-foreground">Height:</span> {heightValue}</p>
+                                <p><span className="font-semibold text-foreground">Drinking Habit:</span> {user.drinkingHabit}</p>
+                                <p><span className="font-semibold text-foreground">Smoking Habit:</span> {user.smokingHabit}</p>
                             </div>
                         </div>
 
@@ -385,4 +396,3 @@ export default function ProfileDetailPage({ params }: { params: { id: string } }
     );
 }
 
-    
