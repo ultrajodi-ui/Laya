@@ -63,13 +63,9 @@ function LikesReceivedContent() {
                 const likesReceivedQuery = query(collection(db, "likesReceived"), where("likedUser", "==", currentUserProfile.memberid));
                 const querySnapshot = await getDocs(likesReceivedQuery);
                 const likedByUserMemberIds = querySnapshot.docs.map(doc => doc.data().likedBy);
-                const dislikedUserIds = currentUserProfile.dislikes || [];
 
-                const relevantUserIds = likedByUserMemberIds.filter(id => !dislikedUserIds.includes(id));
-
-
-                if (relevantUserIds.length > 0) {
-                    const usersQuery = query(collection(db, "users"), where("memberid", "in", relevantUserIds));
+                if (likedByUserMemberIds.length > 0) {
+                    const usersQuery = query(collection(db, "users"), where("memberid", "in", likedByUserMemberIds));
                     const usersSnapshot = await getDocs(usersQuery);
                     const fetchedUsers = usersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as UserProfile));
                     setLikedByUsers(fetchedUsers);
@@ -103,39 +99,6 @@ function LikesReceivedContent() {
         }
         return age;
     }
-
-    const handleDislikeClick = async (targetUserId: string | undefined) => {
-        if (!currentUser || !targetUserId) {
-            toast({
-                variant: 'destructive',
-                title: 'Error',
-                description: 'Could not perform action. Please try again.',
-            });
-            return;
-        }
-
-        try {
-            const userDocRef = doc(db, 'users', currentUser.uid);
-            await updateDoc(userDocRef, {
-                dislikes: arrayUnion(targetUserId)
-            });
-
-            // Optimistically remove the user from the UI
-            setLikedByUsers(prevUsers => prevUsers.filter(user => user.memberid !== targetUserId));
-
-            toast({
-                title: 'Profile Hidden',
-                description: "You won't see this profile in your received likes anymore.",
-            });
-        } catch (error) {
-             console.error("Failed to dislike user:", error);
-            toast({
-                variant: 'destructive',
-                title: 'Update Failed',
-                description: 'Could not hide profile. Please try again.',
-            });
-        }
-    };
     
     const handleLikeClick = async (targetUser: UserProfile) => {
         if (!currentUser || !currentUserProfile?.memberid || !targetUser.memberid) {
@@ -267,9 +230,6 @@ function LikesReceivedContent() {
                                 </div>
                             </CardContent>
                             <CardFooter className="p-4 pt-0 flex gap-2">
-                                 <Button variant="outline" size="icon" className="border-destructive text-destructive hover:bg-destructive/10" onClick={() => handleDislikeClick(user.memberid)}>
-                                    <X className="h-4 w-4" />
-                                 </Button>
                                  <Button style={{ backgroundColor: '#3B2F2F' }} className="w-full text-white hover:bg-slate-800/90" onClick={() => handleLikeClick(user)}>
                                     <Heart className={cn("mr-2 h-4 w-4", isLiked && "fill-red-500 text-red-500")} /> {isLiked ? 'Liked Back' : 'Like'}
                                 </Button>
