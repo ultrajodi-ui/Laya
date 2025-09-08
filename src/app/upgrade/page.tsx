@@ -29,7 +29,7 @@ const plans = [
         features: [
             "View 10 Contacts Details",
             "Send 50 likes per Month",
-            "Chat with matches",
+            "Watch 10 Silver Profile and 20 Basic Profile Contact Numbers per Month",
             "Get better visibility",
         ],
     },
