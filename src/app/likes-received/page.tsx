@@ -10,7 +10,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
-import { collection, doc, getDocs, query, where, arrayUnion, arrayRemove, updateDoc, writeBatch, getDoc } from 'firebase/firestore';
+import { collection, doc, getDocs, query, where, arrayUnion, arrayRemove, updateDoc, writeBatch, getDoc, deleteDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import type { UserProfile } from "@/lib/types";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -165,6 +165,45 @@ function LikesReceivedContent() {
             });
         }
     };
+    
+    const handleDislikeClick = async (targetUser: UserProfile) => {
+        if (!currentUserProfile?.memberid || !targetUser?.memberid) return;
+        
+        const dislikedUserMemberId = targetUser.memberid;
+        const currentUserMemberId = currentUserProfile.memberid;
+        
+        // This is tricky. The like was created by the *other* user.
+        // So the doc ID is based on them.
+        const likeReceivedDocId = `${dislikedUserMemberId}_likes_${currentUserMemberId}`;
+        const likeReceivedDocRef = doc(db, 'likesReceived', likeReceivedDocId);
+
+        try {
+            await deleteDoc(likeReceivedDocRef);
+            
+            // Also remove from the other user's `likes` array
+            const otherUserQuery = query(collection(db, "users"), where("memberid", "==", dislikedUserMemberId));
+            const otherUserSnapshot = await getDocs(otherUserQuery);
+            if (!otherUserSnapshot.empty) {
+                const otherUserDoc = otherUserSnapshot.docs[0];
+                await updateDoc(otherUserDoc.ref, {
+                    likes: arrayRemove(currentUserMemberId)
+                });
+            }
+
+            setLikedByUsers(prev => prev.filter(u => u.id !== targetUser.id));
+            toast({
+                title: 'Profile Removed',
+                description: "You won't see this profile in your likes again.",
+            });
+        } catch (error) {
+            console.error("Error disliking profile:", error);
+            toast({
+                variant: 'destructive',
+                title: 'Error',
+                description: 'Could not remove the profile. Please try again.',
+            });
+        }
+    };
 
     return (
         <div className="flex flex-col gap-4">
@@ -230,6 +269,9 @@ function LikesReceivedContent() {
                                 </div>
                             </CardContent>
                             <CardFooter className="p-4 pt-0 flex gap-2">
+                                 <Button variant="outline" className="w-full" onClick={() => handleDislikeClick(user)}>
+                                    <X className="mr-2 h-4 w-4" /> Dislike
+                                </Button>
                                  <Button style={{ backgroundColor: '#3B2F2F' }} className="w-full text-white hover:bg-slate-800/90" onClick={() => handleLikeClick(user)}>
                                     <Heart className={cn("mr-2 h-4 w-4", isLiked && "fill-red-500 text-red-500")} /> {isLiked ? 'Liked Back' : 'Like'}
                                 </Button>
