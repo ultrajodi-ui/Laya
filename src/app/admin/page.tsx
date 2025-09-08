@@ -25,7 +25,7 @@ export default function AdminDashboardPage() {
     });
     const [users, setUsers] = useState<UserProfile[]>([]);
     const [loading, setLoading] = useState(true);
-    const [loadingData, setLoadingData] = useState(false);
+    const [loadingData, setLoadingData] = useState(true);
     const [dataFetched, setDataFetched] = useState(false);
     const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
     const auth = getAuth();
@@ -59,7 +59,7 @@ export default function AdminDashboardPage() {
         }
     }, []);
 
-    const handleShowData = useCallback(async () => {
+    const fetchUsersData = useCallback(async () => {
         setLoadingData(true);
         try {
             const usersCollection = collection(db, "users");
@@ -95,12 +95,13 @@ export default function AdminDashboardPage() {
     
     useEffect(() => {
         if (isAdmin === true) {
-            fetchAdminStats().finally(() => setLoading(false));
+            fetchAdminStats();
+            fetchUsersData().finally(() => setLoading(false));
         }
         if (isAdmin === false) {
             setLoading(false);
         }
-    }, [isAdmin, fetchAdminStats]);
+    }, [isAdmin, fetchAdminStats, fetchUsersData]);
 
     if (loading) {
          return (
@@ -200,53 +201,44 @@ export default function AdminDashboardPage() {
                         <CardDescription>A list of all registered users in the system.</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        {!dataFetched ? (
-                            <div className="flex justify-center items-center h-40">
-                                <Button onClick={handleShowData} disabled={loadingData}>
-                                    {loadingData && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                    Show data
-                                </Button>
-                            </div>
-                        ) : (
-                             <Table>
-                                <TableHeader>
+                         <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Member Id</TableHead>
+                                    <TableHead>User name</TableHead>
+                                    <TableHead>Email</TableHead>
+                                    <TableHead>Mobile No</TableHead>
+                                    <TableHead>User Type</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {loadingData ? (
                                     <TableRow>
-                                        <TableHead>Member Id</TableHead>
-                                        <TableHead>User name</TableHead>
-                                        <TableHead>Email</TableHead>
-                                        <TableHead>Mobile No</TableHead>
-                                        <TableHead>User Type</TableHead>
+                                        <TableCell colSpan={5} className="text-center">
+                                            <Loader2 className="mx-auto h-6 w-6 animate-spin" />
+                                        </TableCell>
                                     </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {loadingData ? (
-                                        <TableRow>
-                                            <TableCell colSpan={5} className="text-center">
-                                                <Loader2 className="mx-auto h-6 w-6 animate-spin" />
+                                ) : users.length === 0 ? (
+                                    <TableRow>
+                                        <TableCell colSpan={5} className="text-center">No users found.</TableCell>
+                                    </TableRow>
+                                ) : (
+                                    users.map(user => (
+                                        <TableRow key={user.id}>
+                                            <TableCell>{user.memberid || 'N/A'}</TableCell>
+                                            <TableCell className="font-medium">{user.fullName}</TableCell>
+                                            <TableCell>{user.email}</TableCell>
+                                            <TableCell>{user.mobileNo || 'N/A'}</TableCell>
+                                            <TableCell>
+                                                <Badge variant={user.usertype !== 'Basic' ? 'default' : 'secondary'}>
+                                                    {user.usertype || 'Basic'}
+                                                </Badge>
                                             </TableCell>
                                         </TableRow>
-                                    ) : users.length === 0 ? (
-                                        <TableRow>
-                                            <TableCell colSpan={5} className="text-center">No users found.</TableCell>
-                                        </TableRow>
-                                    ) : (
-                                        users.map(user => (
-                                            <TableRow key={user.id}>
-                                                <TableCell>{user.memberid || 'N/A'}</TableCell>
-                                                <TableCell className="font-medium">{user.fullName}</TableCell>
-                                                <TableCell>{user.email}</TableCell>
-                                                <TableCell>{user.mobileNo || 'N/A'}</TableCell>
-                                                <TableCell>
-                                                    <Badge variant={user.usertype !== 'Basic' ? 'default' : 'secondary'}>
-                                                        {user.usertype || 'Basic'}
-                                                    </Badge>
-                                                </TableCell>
-                                            </TableRow>
-                                        ))
-                                    )}
-                                </TableBody>
-                            </Table>
-                         )}
+                                    ))
+                                )}
+                            </TableBody>
+                        </Table>
                     </CardContent>
                 </Card>
             </div>
