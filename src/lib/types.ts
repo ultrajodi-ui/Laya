@@ -50,6 +50,7 @@ export type UserProfile = {
   drinkingHabit?: 'Non-Drinker' | 'Social Drinker' | 'Moderate drinker' | 'Heavy drinkers';
   smokingHabit?: 'Non-Smoker' | 'Light Smoker' | 'Moderate Smoker' | 'Heavy Smoker';
   profileBy?: "Self" | "Parents" | "Sibling" | "Guardian" | "Friends" | "Relatives";
+  dislikes?: string[];
 };
 
 export type Connection = {
