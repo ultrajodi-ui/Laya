@@ -5,7 +5,7 @@ import { AppLayout } from "@/components/AppLayout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
-import { Heart, MapPin, X } from "lucide-react";
+import { Briefcase, Heart, IndianRupee, MapPin, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -254,18 +254,23 @@ function LikesReceivedContent() {
                                     <MapPin className="w-4 h-4 mr-1" />
                                     <span>{user.city}</span>
                                 </div>
-                                <p className="text-sm text-muted-foreground line-clamp-2 h-10">{user.occupation}</p>
-                                <div className="flex flex-wrap gap-1 pt-1">
-                                    {user.interests?.slice(0, 3).map(interest => (
-                                        <Badge key={interest} variant="secondary">{interest}</Badge>
-                                    ))}
+                                <div className="flex items-center text-sm text-muted-foreground">
+                                    <Briefcase className="w-4 h-4 mr-1" />
+                                    <span>{user.occupation}</span>
+                                </div>
+                                <div className="flex items-center text-sm text-muted-foreground">
+                                    <Badge variant="secondary">{user.subCaste}</Badge>
+                                </div>
+                                <div className="flex items-center text-sm text-muted-foreground">
+                                    <IndianRupee className="w-4 h-4 mr-1" />
+                                    <span>{user.salary}</span>
                                 </div>
                             </CardContent>
                             <CardFooter className="p-4 pt-0 flex gap-2">
                                  <Button variant="outline" size="icon" className="border-destructive text-destructive hover:bg-destructive/10" onClick={() => handleDislikeClick(user.memberid)}>
                                     <X className="h-4 w-4" />
                                  </Button>
-                                 <Button className="w-full bg-accent text-accent-foreground hover:bg-accent/90" onClick={() => handleLikeClick(user)}>
+                                 <Button style={{ backgroundColor: '#3B2F2F' }} className="w-full text-white hover:bg-slate-800/90" onClick={() => handleLikeClick(user)}>
                                     <Heart className={cn("mr-2 h-4 w-4", isLiked && "fill-red-500 text-red-500")} /> {isLiked ? 'Liked Back' : 'Like'}
                                 </Button>
                             </CardFooter>
