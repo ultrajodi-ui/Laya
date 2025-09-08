@@ -50,7 +50,7 @@ const navItems = [
   { href: '/browse', icon: Home, label: 'Browse' },
   { href: '/matches', icon: Search, label: 'AI Matches' },
   { href: '/likes-received', icon: Star, label: 'Likes Received' },
-  { href: '/upgrade', icon: Zap, label: 'Premium Benefits' },
+  { href: '/upgrade', icon: Zap, label: 'Premium Member Benefits' },
 ];
 
 const settingsNavItems = [
@@ -68,33 +68,24 @@ function AppLayoutContent({ children }: { children: ReactNode }) {
   const { pageTitle, setPageTitle } = usePageTitle();
 
   useEffect(() => {
-    const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
-      setLoading(false);
-      if (user) {
-        setUser(user);
-      } else {
-        setUser(null);
-        // If no user and not on a public page, redirect to login
-        if (!['/login', '/signup', '/', '/forgot-password'].includes(pathname)) {
-          router.push('/login');
-        }
-      }
-    });
-    return () => unsubscribeAuth();
-  }, [pathname, router]);
-  
-  useEffect(() => {
-    if (!user) {
-      setUserProfile(null);
-      return;
-    }
+    let unsubscribeSnapshot: Unsubscribe | undefined;
 
-    const userDocRef = doc(db, 'users', user.uid);
-    const unsubscribeSnapshot = onSnapshot(userDocRef, (doc) => {
-        if (doc.exists()) {
+    const unsubscribeAuth = onAuthStateChanged(auth, (authUser) => {
+      setLoading(false);
+      
+      // If there's an existing snapshot listener, unsubscribe from it first
+      if (unsubscribeSnapshot) {
+        unsubscribeSnapshot();
+      }
+
+      if (authUser) {
+        setUser(authUser);
+        const userDocRef = doc(db, 'users', authUser.uid);
+        
+        unsubscribeSnapshot = onSnapshot(userDocRef, (doc) => {
+          if (doc.exists()) {
             const profile = doc.data() as UserProfile;
             setUserProfile(profile);
-
             // Profile completion check
             const profileIsMinimal = Object.keys(profile).length < 5;
             if (profileIsMinimal && pathname !== '/profile/edit') {
@@ -104,20 +95,37 @@ function AppLayoutContent({ children }: { children: ReactNode }) {
                 });
                 router.push('/profile/edit');
             }
-        } else {
+          } else {
              setUserProfile(null);
              // If user exists in auth but not DB, redirect to edit profile
              if (pathname !== '/profile/edit') {
                  router.push('/profile/edit');
              }
+          }
+        }, (error) => {
+            console.error("Snapshot listener error:", error);
+            // This is where permission errors might be caught if they still occur
+        });
+
+      } else {
+        setUser(null);
+        setUserProfile(null);
+        // If no user and not on a public page, redirect to login
+        if (!['/login', '/signup', '/', '/forgot-password'].includes(pathname)) {
+          router.push('/login');
         }
-    }, (error) => {
-        console.error("Snapshot listener error:", error);
+      }
     });
 
-    return () => unsubscribeSnapshot();
-  }, [user, pathname, router, toast]);
-
+    // Cleanup both auth and snapshot listeners on component unmount
+    return () => {
+        unsubscribeAuth();
+        if (unsubscribeSnapshot) {
+            unsubscribeSnapshot();
+        }
+    };
+  }, [pathname, router, toast]);
+  
 
   useEffect(() => {
     if (pathname.startsWith('/profile/edit')) {
