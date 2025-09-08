@@ -296,6 +296,7 @@ function ProfileContent({ id }: { id: string }) {
                              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 text-muted-foreground">
                                 <p><span className="font-semibold text-foreground">Father:</span> {user.fatherName}</p>
                                 <p><span className="font-semibold text-foreground">Mother:</span> {user.motherName}</p>
+                                <p><span className="font-semibold text-foreground">Mother Tongue:</span> {user.motherTongue}</p>
                                 <p><span className="font-semibold text-foreground">Occupation:</span> {user.occupation}</p>
                                 <p><span className="font-semibold text-foreground">Salary:</span> {user.salary}</p>
                                 <p><span className="font-semibold text-foreground">Location:</span> {user.workingPlace}</p>
@@ -383,3 +384,5 @@ export default function ProfileDetailPage({ params }: { params: { id: string } }
         </AppLayout>
     );
 }
+
+    
