@@ -11,7 +11,7 @@ export default function AboutUsPage() {
       <div className="space-y-8 max-w-4xl mx-auto">
         <section className="text-center">
             <h1 className="text-4xl font-headline font-bold tracking-tight">About Ultra Jodi</h1>
-            <p className="mt-4 text-xl text-muted-foreground">Connecting hearts, creating futures.</p>
+            <p className="mt-4 text-xl text-muted-foreground">More than a Match, a true Connection</p>
         </section>
 
         <section>
