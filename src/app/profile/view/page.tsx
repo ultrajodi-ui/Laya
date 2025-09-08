@@ -144,32 +144,32 @@ export default function ProfileViewPage() {
                         <div className="grid sm:grid-cols-2 gap-6">
                             <ProfileDetail label="Profile By" value={profileData.profileBy} />
                             <ProfileDetail label="Full Name" value={profileData.fullName} />
-                            <ProfileDetail label="Date of Birth" value={profileData.dob ? format(profileData.dob, 'PPP') : '-'} />
                             <ProfileDetail label="Gender" value={profileData.gender} />
-                            <ProfileDetail label="Mother Tongue" value={profileData.motherTongue} />
                             <ProfileDetail label="Father Name" value={profileData.fatherName} />
                             <ProfileDetail label="Mother Name" value={profileData.motherName} />
-                            <ProfileDetail label="Body Type" value={profileData.bodyType} />
-                            <ProfileDetail label="Complexion" value={profileData.complexion} />
-                             <ProfileDetail label="Height" value={heightValue} />
-                            <ProfileDetail label="Education" value={profileData.education} />
-                            <ProfileDetail label="Education Details" value={profileData.educationDetails} />
-                            <ProfileDetail label="Employed In" value={profileData.employed} />
-                            <ProfileDetail label="Occupation" value={profileData.occupation} />
-                            <ProfileDetail label="Working Place" value={profileData.workingPlace} />
-                            <ProfileDetail label="Home State" value={profileData.homeState} />
-                            <ProfileDetail label="Home Town/City" value={profileData.city} />
-                            <ProfileDetail label="Mobile No" value={profileData.mobileNo} />
-                             <ProfileDetail label="Marital Status" value={profileData.maritalStatus} />
+                            <ProfileDetail label="Date of Birth" value={profileData.dob ? format(profileData.dob, 'PPP') : '-'} />
+                            <ProfileDetail label="Mother Tongue" value={profileData.motherTongue} />
+                            <ProfileDetail label="Marital Status" value={profileData.maritalStatus} />
                             <ProfileDetail label="Religion" value={profileData.religion} />
                             <ProfileDetail label="Community" value={profileData.community} />
                             <ProfileDetail label="Sub Caste" value={profileData.subCaste} />
                             <ProfileDetail label="Zodiac Sign" value={profileData.zodiacSign} />
                             <ProfileDetail label="Star Sign (Nakshatra)" value={profileData.starSign} />
-                             <ProfileDetail label="Salary" value={profileData.salary} />
-                             <ProfileDetail label="Diet" value={profileData.diet} />
-                             <ProfileDetail label="Drinking Habit" value={profileData.drinkingHabit} />
-                             <ProfileDetail label="Smoking Habit" value={profileData.smokingHabit} />
+                            <ProfileDetail label="Complexion" value={profileData.complexion} />
+                            <ProfileDetail label="Body Type" value={profileData.bodyType} />
+                            <ProfileDetail label="Diet" value={profileData.diet} />
+                            <ProfileDetail label="Height" value={heightValue} />
+                            <ProfileDetail label="Drinking Habit" value={profileData.drinkingHabit} />
+                            <ProfileDetail label="Smoking Habit" value={profileData.smokingHabit} />
+                            <ProfileDetail label="Education" value={profileData.education} />
+                            <ProfileDetail label="Education Details" value={profileData.educationDetails} />
+                            <ProfileDetail label="Employed In" value={profileData.employed} />
+                            <ProfileDetail label="Occupation" value={profileData.occupation} />
+                            <ProfileDetail label="Salary" value={profileData.salary} />
+                            <ProfileDetail label="Working Place" value={profileData.workingPlace} />
+                            <ProfileDetail label="Home State" value={profileData.homeState} />
+                            <ProfileDetail label="Home Town/City" value={profileData.city} />
+                            <ProfileDetail label="Mobile No" value={profileData.mobileNo} />
                         </div>
                         <div className="grid gap-2">
                              <ProfileDetail label="Interests" value={profileData.interests} />
