@@ -28,7 +28,7 @@ const plans = [
         duration: "/ 3 months",
         features: [
             "View 10 Contacts Details",
-            "Send unlimited interests",
+            "Send 50 likes per Month",
             "Chat with matches",
             "Get better visibility",
         ],
