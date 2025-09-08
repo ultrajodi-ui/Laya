@@ -424,7 +424,7 @@ export default function ProfileEditPage() {
                                 </div>
                             </div>
                              <div className="grid gap-2">
-                                <Label htmlFor="maritalStatus">Marital Status</Label>
+                                <Label htmlFor="maritalStatus">Marital Status<span className="text-red-500">*</span></Label>
                                 <Select value={profileData.maritalStatus || ''} onValueChange={(value) => handleSelectChange('maritalStatus', value)}>
                                     <SelectTrigger id="maritalStatus">
                                         <SelectValue placeholder="Select marital status" />
