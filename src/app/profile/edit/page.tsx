@@ -116,6 +116,16 @@ export default function ProfileEditPage() {
 
     const handleSaveChanges = async () => {
         if (!user) return;
+        
+        if (!profileData.maritalStatus) {
+            toast({
+                variant: "destructive",
+                title: "Missing Information",
+                description: "Please select your Marital Status.",
+            });
+            return;
+        }
+
         setIsSaving(true);
         try {
             const dataToSave = { ...profileData };
