@@ -17,7 +17,7 @@ const plans = [
         features: [
             "Create profile",
             "Browse matches",
-            "Send limited interests",
+            "Send limited Likes",
             "View 3 Contacts Only"
         ],
         isCurrent: true,
