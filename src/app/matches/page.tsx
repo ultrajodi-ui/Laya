@@ -112,7 +112,7 @@ export default function MatchesPage() {
                 location: currentUserProfile.city,
                 lookingFor: currentUserProfile.lookingFor,
                 occupation: currentUserProfile.occupation,
-                religion: currentUser_profile.religion,
+                religion: currentUserProfile.religion,
                 subCaste: currentUserProfile.subCaste,
             },
             candidates: candidateProfiles.map(p => ({
