@@ -33,7 +33,7 @@ export type UserProfile = {
   city?: string;
   state?: string;
   email?: string;
-  usertype?: 'Basic' | 'Silver' | 'Gold' | 'Diamond';
+  usertype?: 'admin' |'Basic' | 'Silver' | 'Gold' | 'Diamond';
   memberid?: string;
   coverUrl?: string;
   createdAt?: any;

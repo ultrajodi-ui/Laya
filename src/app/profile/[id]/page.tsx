@@ -72,6 +72,10 @@ function ProfileContent({ id }: { id: string }) {
 
     useEffect(() => {
         if (currentUserProfile && user) {
+             if (currentUserProfile.role === 'admin') {
+                setIsContactVisible(true);
+                return;
+            }
             const hasViewed = currentUserProfile.viewedContacts?.includes(user.memberid!);
             if (hasViewed) {
                 setIsContactVisible(true);
@@ -151,6 +155,12 @@ function ProfileContent({ id }: { id: string }) {
     const handleViewContact = async () => {
         if (!currentUser || !currentUserProfile || !user?.memberid) {
             toast({ variant: 'destructive', title: 'Please log in to view contact details.' });
+            return;
+        }
+
+        // Admin check
+        if (currentUserProfile.role === 'admin') {
+            setIsContactVisible(true);
             return;
         }
 
