@@ -201,7 +201,7 @@ function AppLayoutContent({ children }: { children: ReactNode }) {
                 >
                     <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
                 </svg>
-                <span className="font-headline text-lg font-semibold" style={{ color: '#3B2F2F' }}>Ultra Jodi Matrimony</span>
+                <span className="font-headline text-lg font-semibold text-white">Ultra Jodi Matrimony</span>
             </div>
           </SidebarHeader>
           <SidebarContent>
@@ -262,12 +262,12 @@ function AppLayoutContent({ children }: { children: ReactNode }) {
           </SidebarFooter>
         </Sidebar>
         <SidebarInset>
-            <header className="flex h-14 items-center gap-4 border-b bg-background/95 backdrop-blur-sm px-4 lg:h-[60px] lg:px-6 sticky top-0 z-30">
-                <SidebarTrigger className="md:hidden"/>
+            <header className="flex h-14 items-center gap-4 border-b px-4 lg:h-[60px] lg:px-6 sticky top-0 z-30" style={{ backgroundColor: '#3B2F2F' }}>
+                <SidebarTrigger className="md:hidden text-white"/>
                 <div className="flex-1">
-                    <h1 className="font-headline text-lg font-semibold md:text-2xl capitalize">{pageTitle}</h1>
+                    <h1 className="font-headline text-lg font-semibold md:text-2xl capitalize text-white">{pageTitle}</h1>
                 </div>
-                 <Button variant="ghost" size="icon" className="rounded-full" asChild>
+                 <Button variant="ghost" size="icon" className="rounded-full text-white hover:bg-white/20 hover:text-white" asChild>
                     <Link href="/browse">
                         <Home className="h-5 w-5" />
                         <span className="sr-only">Home</span>
