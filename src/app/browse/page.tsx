@@ -26,6 +26,7 @@ const allLocations = ["Mumbai, India", "Delhi, India", "Bangalore, India", "Pune
 
 // Data for new dropdowns
 const states = ["Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Puducherry", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal"];
+const motherTongues = ["Assamese", "Bengali", "Bodo", "Dogri", "English", "Gujarati", "Hindi", "Kannada", "Kashmiri", "Konkani", "Maithili", "Malayalam", "Manipuri", "Marathi", "Nepali", "Odia", "Punjabi", "Sanskrit", "Santali", "Sindhi", "Tamil", "Telugu", "Urdu", "Other"];
 const religions = ["Hindu", "Christian", "Muslim - Shia", "Muslim - Sunni", "Muslim - Other", "Sikh", "Jain - Digambar", "Jain - Shwetamber", "Jain - Others", "Parsi", "Buddhist", "Jewish", "Inter - Religion", "No Religious Belief"];
 const communities = ["FC", "MBC", "BC", "SC", "ST", "Other"];
 const subCastes = ["Vanniyar", "Settiyar", "Readdy", "Yadavar", "Braminar", "Adi Dravidar", "Mudaliyar"];
@@ -53,6 +54,7 @@ export default function BrowsePage() {
     
     // State for new filters
     const [selectedHomeState, setSelectedHomeState] = useState('');
+    const [selectedMotherTongue, setSelectedMotherTongue] = useState('');
     const [selectedReligion, setSelectedReligion] = useState('');
     const [selectedCommunity, setSelectedCommunity] = useState('');
     const [selectedSubCaste, setSelectedSubCaste] = useState('');
@@ -218,6 +220,7 @@ export default function BrowsePage() {
                 return user.city && selectedLocations.includes(user.city);
             })
             .filter(user => !selectedHomeState || user.homeState === selectedHomeState)
+            .filter(user => !selectedMotherTongue || user.motherTongue === selectedMotherTongue)
             .filter(user => !selectedReligion || user.religion === selectedReligion)
             .filter(user => !selectedCommunity || user.community === selectedCommunity)
             .filter(user => !selectedSubCaste || user.subCaste === selectedSubCaste)
@@ -233,7 +236,7 @@ export default function BrowsePage() {
                 if (selectedAgeRange === "Above 35") return age > 35;
                 return true;
             });
-    }, [users, searchQuery, selectedInterests, selectedLocations, selectedHomeState, selectedReligion, selectedCommunity, selectedSubCaste, selectedAgeRange, selectedSalary, selectedEmployed]);
+    }, [users, searchQuery, selectedInterests, selectedLocations, selectedHomeState, selectedMotherTongue, selectedReligion, selectedCommunity, selectedSubCaste, selectedAgeRange, selectedSalary, selectedEmployed]);
 
 
     const FilterDropdown = ({ placeholder, options, value, onChange }: { placeholder: string, options: string[], value: string, onChange: (value: string) => void }) => (
@@ -285,8 +288,9 @@ export default function BrowsePage() {
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </div>
-                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-4">
+                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-8 gap-4">
                     <FilterDropdown placeholder="Home State" options={states} value={selectedHomeState} onChange={(v) => setSelectedHomeState(v === 'all' ? '' : v)} />
+                    <FilterDropdown placeholder="Mother Tongue" options={motherTongues} value={selectedMotherTongue} onChange={(v) => setSelectedMotherTongue(v === 'all' ? '' : v)} />
                     <FilterDropdown placeholder="Religion" options={religions} value={selectedReligion} onChange={(v) => setSelectedReligion(v === 'all' ? '' : v)} />
                     <FilterDropdown placeholder="Community" options={communities} value={selectedCommunity} onChange={(v) => setSelectedCommunity(v === 'all' ? '' : v)} />
                     <FilterDropdown placeholder="Sub-Caste" options={subCastes} value={selectedSubCaste} onChange={(v) => setSelectedSubCaste(v === 'all' ? '' : v)} />
