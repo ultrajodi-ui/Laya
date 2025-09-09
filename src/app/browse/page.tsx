@@ -77,7 +77,7 @@ export default function BrowsePage() {
                     if (doc.exists()) {
                         const userData = doc.data() as UserProfile;
                         setCurrentUserProfile({id: doc.id, ...userData});
-                        fetchUsers(userData.gender, user.uid);
+                        fetchUsers(userData, user.uid);
                     } else {
                          setLoading(false);
                     }
@@ -92,23 +92,34 @@ export default function BrowsePage() {
             }
         });
 
-        const fetchUsers = async (gender: string | undefined, currentUserId: string) => {
-             if (gender) {
-                const genderToFetch = gender === 'male' ? 'female' : 'male';
-                const usersRef = collection(db, "users");
-                const q = query(usersRef, where("gender", "==", genderToFetch));
-                const querySnapshot = await getDocs(q);
-                
-                const fetchedUsers: UserProfile[] = [];
-                querySnapshot.forEach((doc) => {
-                    const userData = doc.data() as UserProfile;
-                    if (doc.id !== currentUserId && userData.role !== 'admin') {
-                       fetchedUsers.push({ id: doc.id, ...userData });
-                    }
-                });
-                setUsers(fetchedUsers);
-             }
-             setLoading(false);
+        const fetchUsers = async (profile: UserProfile, currentUserId: string) => {
+            const usersRef = collection(db, "users");
+            let q;
+
+            if (profile.role === 'admin') {
+                // Admin gets all users
+                q = query(usersRef);
+            } else if (profile.gender) {
+                // Regular user gets opposite gender
+                const genderToFetch = profile.gender === 'male' ? 'female' : 'male';
+                q = query(usersRef, where("gender", "==", genderToFetch));
+            } else {
+                setLoading(false);
+                return;
+            }
+
+            const querySnapshot = await getDocs(q);
+            
+            const fetchedUsers: UserProfile[] = [];
+            querySnapshot.forEach((doc) => {
+                const userData = doc.data() as UserProfile;
+                // Exclude current user and admins from browse list (unless current user is admin)
+                if (doc.id !== currentUserId && (profile.role === 'admin' || userData.role !== 'admin')) {
+                    fetchedUsers.push({ id: doc.id, ...userData });
+                }
+            });
+            setUsers(fetchedUsers);
+            setLoading(false);
         };
 
 
@@ -206,7 +217,7 @@ export default function BrowsePage() {
 
     const filteredUsers = useMemo(() => {
         return users
-            .filter(user => user.role !== 'admin')
+            .filter(user => currentUserProfile?.role === 'admin' ? true : user.role !== 'admin')
             .filter(user => {
                 const searchLower = searchQuery.toLowerCase();
                 const nameMatch = user.fullName?.toLowerCase().includes(searchLower);
@@ -243,7 +254,7 @@ export default function BrowsePage() {
                 if (selectedAgeRange === "Above 35") return age > 35;
                 return true;
             });
-    }, [users, searchQuery, selectedInterests, selectedLocations, selectedHomeState, selectedMotherTongue, selectedReligion, selectedCommunity, selectedSubCaste, selectedAgeRange, selectedSalary, selectedEmployed, selectedUserType]);
+    }, [users, searchQuery, selectedInterests, selectedLocations, selectedHomeState, selectedMotherTongue, selectedReligion, selectedCommunity, selectedSubCaste, selectedAgeRange, selectedSalary, selectedEmployed, selectedUserType, currentUserProfile]);
 
 
     const FilterDropdown = ({ placeholder, options, value, onChange }: { placeholder: string, options: string[], value: string, onChange: (value: string) => void }) => (
@@ -388,3 +399,5 @@ export default function BrowsePage() {
         </AppLayout>
     );
 }
+
+    
