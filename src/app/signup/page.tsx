@@ -131,7 +131,7 @@ export default function SignupPage() {
                       onChange={(e) => setConfirmPassword(e.target.value)}
                     />
                   </div>
-                  <Button type="submit" className="w-full bg-[#212121] hover:bg-[#212121]/90 text-white" disabled={isLoading}>
+                  <Button type="submit" className="w-full text-white" disabled={isLoading} style={{ backgroundColor: '#3B2F2F' }}>
                       {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                       Create an account
                   </Button>
