@@ -37,7 +37,7 @@ export default function Home() {
         <section className="relative w-full h-[80vh] min-h-[600px] flex items-center justify-center pt-16">
           <div className="absolute inset-0 bg-black/50 z-0">
             <Image
-              src="https://picsum.photos/1920/1080"
+              src="https://images.unsplash.com/photo-1511405889574-b01de1da5441?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyMHx8Y291cGxlfGVufDB8fHx8MTc1NzQxMTIyNnww&ixlib=rb-4.1.0&q=80&w=1080"
               alt="Couple holding hands"
               data-ai-hint="couple hands"
               fill
