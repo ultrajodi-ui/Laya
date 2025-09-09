@@ -33,6 +33,7 @@ const subCastes = ["Vanniyar", "Settiyar", "Readdy", "Yadavar", "Braminar", "Adi
 const ageRanges = ["18 to 22", "23 to 26", "27 to 30", "31 to 35", "Above 35"];
 const salaryRanges = ["<3LPA", "3-5LPA", "5-10LPA", "10-20LPA", ">20LPA"];
 const employedOptions = ["Government", "Private", "Business", "Self Employed", "Un Employed"];
+const userTypes = ["Basic", "Silver", "Gold", "Diamond"];
 
 const UserTypeIcon = ({ usertype }: { usertype?: string }) => {
     switch (usertype) {
@@ -61,6 +62,7 @@ export default function BrowsePage() {
     const [selectedAgeRange, setSelectedAgeRange] = useState('');
     const [selectedSalary, setSelectedSalary] = useState('');
     const [selectedEmployed, setSelectedEmployed] = useState('');
+    const [selectedUserType, setSelectedUserType] = useState('');
 
     const auth = getAuth();
     const { toast } = useToast();
@@ -227,6 +229,11 @@ export default function BrowsePage() {
             .filter(user => !selectedSalary || user.salary === selectedSalary)
             .filter(user => !selectedEmployed || user.employed === selectedEmployed)
             .filter(user => {
+                if (!selectedUserType) return true;
+                const userType = user.usertype || 'Basic';
+                return userType === selectedUserType;
+            })
+            .filter(user => {
                 if (!selectedAgeRange) return true;
                 const age = calculateAge(user.dob);
                 if (selectedAgeRange === "18 to 22") return age >= 18 && age <= 22;
@@ -236,7 +243,7 @@ export default function BrowsePage() {
                 if (selectedAgeRange === "Above 35") return age > 35;
                 return true;
             });
-    }, [users, searchQuery, selectedInterests, selectedLocations, selectedHomeState, selectedMotherTongue, selectedReligion, selectedCommunity, selectedSubCaste, selectedAgeRange, selectedSalary, selectedEmployed]);
+    }, [users, searchQuery, selectedInterests, selectedLocations, selectedHomeState, selectedMotherTongue, selectedReligion, selectedCommunity, selectedSubCaste, selectedAgeRange, selectedSalary, selectedEmployed, selectedUserType]);
 
 
     const FilterDropdown = ({ placeholder, options, value, onChange }: { placeholder: string, options: string[], value: string, onChange: (value: string) => void }) => (
@@ -288,7 +295,7 @@ export default function BrowsePage() {
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </div>
-                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-8 gap-4">
+                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-9 gap-4">
                     <FilterDropdown placeholder="Home State" options={states} value={selectedHomeState} onChange={(v) => setSelectedHomeState(v === 'all' ? '' : v)} />
                     <FilterDropdown placeholder="Mother Tongue" options={motherTongues} value={selectedMotherTongue} onChange={(v) => setSelectedMotherTongue(v === 'all' ? '' : v)} />
                     <FilterDropdown placeholder="Religion" options={religions} value={selectedReligion} onChange={(v) => setSelectedReligion(v === 'all' ? '' : v)} />
@@ -297,6 +304,7 @@ export default function BrowsePage() {
                     <FilterDropdown placeholder="Age Range" options={ageRanges} value={selectedAgeRange} onChange={(v) => setSelectedAgeRange(v === 'all' ? '' : v)} />
                     <FilterDropdown placeholder="Salary" options={salaryRanges} value={selectedSalary} onChange={(v) => setSelectedSalary(v === 'all' ? '' : v)} />
                     <FilterDropdown placeholder="Employed" options={employedOptions} value={selectedEmployed} onChange={(v) => setSelectedEmployed(v === 'all' ? '' : v)} />
+                    <FilterDropdown placeholder="User Type" options={userTypes} value={selectedUserType} onChange={(v) => setSelectedUserType(v === 'all' ? '' : v)} />
                 </div>
                 {loading ? (
                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
