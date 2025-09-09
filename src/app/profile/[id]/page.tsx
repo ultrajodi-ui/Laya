@@ -303,6 +303,7 @@ function ProfileContent({ id }: { id: string }) {
                                 <p><span className="font-semibold text-foreground">Date of Birth:</span> {user.dob ? format(user.dob.toDate(), 'PPP') : '-'}</p>
                                 <p><span className="font-semibold text-foreground">Marital Status:</span> {user.maritalStatus}</p>
                                 <p><span className="font-semibold text-foreground">Mother Tongue:</span> {user.motherTongue}</p>
+                                <p><span className="font-semibold text-foreground">Home State:</span> {user.homeState}</p>
                                 <p><span className="font-semibold text-foreground">Occupation:</span> {user.occupation}</p>
                                 <p><span className="font-semibold text-foreground">Salary:</span> {user.salary}</p>
                                 <p><span className="font-semibold text-foreground">Location:</span> {user.workingPlace}</p>
