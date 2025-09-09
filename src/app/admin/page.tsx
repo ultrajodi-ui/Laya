@@ -8,12 +8,23 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { db } from "@/lib/firebase";
 import { UserProfile } from "@/lib/types";
 import { collection, getDocs, orderBy, query, doc, getDoc } from "firebase/firestore";
-import { Users, Star, Shield, Gem, User as UserIcon, Loader2 } from "lucide-react";
+import { Users, Star, Shield, Gem, User as UserIcon, Loader2, MessageSquare } from "lucide-react";
 import { useEffect, useState, useCallback } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getAuth, onAuthStateChanged, User } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { format } from 'date-fns';
+
+type SupportQuery = {
+    id: string;
+    memberId?: string;
+    name?: string;
+    email?: string;
+    contactNo?: string;
+    query?: string;
+    submittedAt?: Date;
+}
 
 export default function AdminDashboardPage() {
     const [stats, setStats] = useState({
@@ -24,9 +35,10 @@ export default function AdminDashboardPage() {
         diamondUsers: 0,
     });
     const [users, setUsers] = useState<UserProfile[]>([]);
+    const [queries, setQueries] = useState<SupportQuery[]>([]);
     const [loading, setLoading] = useState(true);
     const [loadingData, setLoadingData] = useState(true);
-    const [dataFetched, setDataFetched] = useState(false);
+    const [loadingQueries, setLoadingQueries] = useState(true);
     const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
     const auth = getAuth();
     const router = useRouter();
@@ -67,11 +79,32 @@ export default function AdminDashboardPage() {
             const usersTableSnapshot = await getDocs(usersQuery);
             const fetchedUsers = usersTableSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as UserProfile));
             setUsers(fetchedUsers.filter(user => user.role !== 'admin'));
-            setDataFetched(true);
         } catch (error) {
             console.error("Error fetching users data:", error);
         } finally {
             setLoadingData(false);
+        }
+    }, []);
+
+    const fetchSupportQueries = useCallback(async () => {
+        setLoadingQueries(true);
+        try {
+            const queriesCollection = collection(db, "supportQueries");
+            const queriesQuery = query(queriesCollection, orderBy("submittedAt", "desc"));
+            const queriesSnapshot = await getDocs(queriesQuery);
+            const fetchedQueries = queriesSnapshot.docs.map(doc => {
+                const data = doc.data();
+                return {
+                    id: doc.id,
+                    ...data,
+                    submittedAt: data.submittedAt?.toDate()
+                };
+            });
+            setQueries(fetchedQueries);
+        } catch (error) {
+            console.error("Error fetching support queries:", error);
+        } finally {
+            setLoadingQueries(false);
         }
     }, []);
 
@@ -95,13 +128,13 @@ export default function AdminDashboardPage() {
     
     useEffect(() => {
         if (isAdmin === true) {
-            fetchAdminStats();
-            fetchUsersData().finally(() => setLoading(false));
+            Promise.all([fetchAdminStats(), fetchUsersData(), fetchSupportQueries()])
+                .finally(() => setLoading(false));
         }
         if (isAdmin === false) {
             setLoading(false);
         }
-    }, [isAdmin, fetchAdminStats, fetchUsersData]);
+    }, [isAdmin, fetchAdminStats, fetchUsersData, fetchSupportQueries]);
 
     if (loading) {
          return (
@@ -241,8 +274,55 @@ export default function AdminDashboardPage() {
                         </Table>
                     </CardContent>
                 </Card>
+
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2"><MessageSquare /> Queries</CardTitle>
+                        <CardDescription>User-submitted support queries.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                         <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Member ID</TableHead>
+                                    <TableHead>Name</TableHead>
+                                    <TableHead>Email</TableHead>
+                                    <TableHead>Contact No</TableHead>
+                                    <TableHead>Query</TableHead>
+                                    <TableHead>Submitted At</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {loadingQueries ? (
+                                    <TableRow>
+                                        <TableCell colSpan={6} className="text-center">
+                                            <Loader2 className="mx-auto h-6 w-6 animate-spin" />
+                                        </TableCell>
+                                    </TableRow>
+                                ) : queries.length === 0 ? (
+                                    <TableRow>
+                                        <TableCell colSpan={6} className="text-center">No queries found.</TableCell>
+                                    </TableRow>
+                                ) : (
+                                    queries.map(q => (
+                                        <TableRow key={q.id}>
+                                            <TableCell>{q.memberId || 'N/A'}</TableCell>
+                                            <TableCell className="font-medium">{q.name}</TableCell>
+                                            <TableCell>{q.email}</TableCell>
+                                            <TableCell>{q.contactNo}</TableCell>
+                                            <TableCell className="max-w-xs truncate">{q.query}</TableCell>
+                                            <TableCell>{q.submittedAt ? format(q.submittedAt, 'PPp') : 'N/A'}</TableCell>
+                                        </TableRow>
+                                    ))
+                                )}
+                            </TableBody>
+                        </Table>
+                    </CardContent>
+                </Card>
             </div>
         </AppLayout>
     );
 }
+    
+
     

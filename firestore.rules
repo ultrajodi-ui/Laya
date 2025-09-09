@@ -1,37 +1,31 @@
+
 rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-  
-    // User Profiles
+
+    // Allow users to read, update, and delete their own profile
     match /users/{userId} {
-      // Any authenticated user can view any profile (for browsing)
-      allow read: if request.auth != null;
-      // Only the user themselves or an admin can create/update their profile
-      allow write: if request.auth.uid == userId || get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
-      // Only the user themselves or an admin can delete their profile
-      allow delete: if request.auth.uid == userId || get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+      allow read, update, delete: if request.auth.uid == userId;
+      allow create: if request.auth.uid != null;
     }
 
-    // Likes Received
-    match /likesReceived/{likeId} {
-        // Any authenticated user can create a like. The like document ID is structured to prevent duplicates.
-        allow create: if request.auth != null;
-        // Allow read/delete only if the user is the one who was liked, or the one who gave the like.
-        allow read, delete: if request.auth != null && (
-                            resource.data.likedUser == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.memberid ||
-                            resource.data.likedBy == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.memberid
-                           );
-        allow update: if false; // Likes cannot be updated, only created/deleted.
+    // Admins can read and write any user's profile
+    match /users/{userId} {
+      allow read, write: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
-    
-    // Support Queries
+
+    // Allow logged-in users to create support queries
     match /supportQueries/{queryId} {
-        // Any authenticated user can create a support query.
-        allow create: if request.auth != null;
-        
-        // Only an admin can read, update, or delete support queries.
-        allow read, update, delete: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+      allow create: if request.auth.uid != null;
+      // Admins can read all support queries
+      allow read: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+     match /likesReceived/{likeId} {
+      allow read, write, delete: if request.auth != null;
     }
   }
 }
+
+    
