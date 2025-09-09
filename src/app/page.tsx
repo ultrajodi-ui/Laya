@@ -26,7 +26,7 @@ export default function Home() {
           <span className="ml-2 font-headline text-xl font-semibold text-white">Ultra Jodi Matrimony</span>
         </Link>
         <nav className="ml-auto flex gap-4 sm:gap-6">
-          <Button variant="ghost" asChild className="text-white hover:bg-white/20 hover:text-white">
+          <Button asChild style={{ backgroundColor: 'hsl(var(--background))', color: '#3B2F2F' }} className="hover:bg-slate-200">
             <Link href="/login">Login</Link>
           </Button>
           <Button asChild style={{ backgroundColor: 'hsl(var(--background))', color: '#3B2F2F' }} className="hover:bg-slate-200">
