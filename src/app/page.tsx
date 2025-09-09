@@ -47,7 +47,7 @@ export default function Home() {
           </div>
           <div className="container px-4 md:px-6 text-center text-white relative z-10">
             <div className="space-y-4">
-              <h1 className="text-4xl font-headline font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
+              <h1 className="text-4xl font-headline font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl" style={{ color: 'hsl(var(--background))' }}>
                 Ultra Jodi Matrimony
               </h1>
               <p className="mx-auto max-w-[700px] text-gray-200 md:text-xl">
