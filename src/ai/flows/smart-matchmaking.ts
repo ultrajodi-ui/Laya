@@ -9,22 +9,40 @@
  */
 
 import {ai} from '@/ai/genkit';
+import { UserProfile } from '@/lib/types';
 import {z} from 'genkit';
 
+const UserProfileSchema = z.object({
+  id: z.string(),
+  fullName: z.string().optional(),
+  age: z.number().optional(),
+  gender: z.enum(['male', 'female']).optional(),
+  occupation: z.string().optional(),
+  education: z.string().optional(),
+  religion: z.string().optional(),
+  subCaste: z.string().optional(),
+  location: z.string().optional(),
+  interests: z.array(z.string()).optional(),
+  lookingFor: z.string().optional(),
+  bio: z.string().optional(),
+});
+
 const SmartMatchmakingInputSchema = z.object({
-  profileDetails: z
+  currentUser: UserProfileSchema.describe("The profile of the user seeking matches."),
+  candidates: z.array(UserProfileSchema).describe("A list of potential candidates to match against."),
+   matchingCriteria: z
     .string()
-    .describe("User's profile details including interests, preferences, and personal information."),
-  matchingCriteria: z
-    .string()
-    .describe('Criteria for matching users, such as age range, location, and shared interests.'),
+    .describe('Specific criteria or preferences the user has for a partner.'),
 });
 export type SmartMatchmakingInput = z.infer<typeof SmartMatchmakingInputSchema>;
 
 const SmartMatchmakingOutputSchema = z.object({
   suggestedMatches: z
-    .string()
-    .describe('A list of suggested user matches with a compatibility score for each match.'),
+    .array(UserProfileSchema.extend({
+        compatibilityScore: z.number().describe("A score from 0 to 100 indicating the compatibility between the user and the suggested match."),
+        compatibilityReason: z.string().describe("A brief explanation of why this match is considered compatible."),
+    }))
+    .describe('A list of suggested user matches with a compatibility score and reason for each match.'),
 });
 export type SmartMatchmakingOutput = z.infer<typeof SmartMatchmakingOutputSchema>;
 
@@ -36,12 +54,24 @@ const prompt = ai.definePrompt({
   name: 'smartMatchmakingPrompt',
   input: {schema: SmartMatchmakingInputSchema},
   output: {schema: SmartMatchmakingOutputSchema},
-  prompt: `You are an AI matchmaker. Analyze the user's profile details and matching criteria to suggest compatible matches.
+  prompt: `You are an expert AI matchmaker for a matrimonial service. Your task is to find the most suitable partners for a user from a list of candidates.
 
-User Profile Details: {{{profileDetails}}}
-Matching Criteria: {{{matchingCriteria}}}
+Analyze the user's profile and their stated preferences. Then, for each candidate, evaluate their compatibility based on all available profile information (age, location, occupation, interests, religion, sub-caste, what they are looking for, etc.).
 
-Based on this information, suggest a list of user matches along with a compatibility score (out of 100) for each match. Return the results as a single string.
+Return a list of the top 3-5 most compatible matches. For each match, you MUST provide a compatibility score (from 0 to 100) and a concise, one-sentence reason for why they are a good match.
+
+Current User's Profile:
+\`\`\`json
+{{{json currentUser}}}
+\`\`\`
+
+User's Specific Criteria:
+"{{{matchingCriteria}}}"
+
+List of Potential Candidates:
+\`\`\`json
+{{{json candidates}}}
+\`\`\`
 `,
 });
 
