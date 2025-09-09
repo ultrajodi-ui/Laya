@@ -5,7 +5,7 @@ import Image from 'next/image';
 export default function Home() {
   return (
     <div className="flex flex-col min-h-screen">
-      <header className="px-4 lg:px-6 h-16 flex items-center bg-background/80 backdrop-blur-sm fixed top-0 w-full z-10">
+      <header className="px-4 lg:px-6 h-16 flex items-center bg-background/80 backdrop-blur-sm fixed top-0 w-full z-10" style={{ backgroundColor: '#3B2F2F' }}>
         <Link href="/" className="flex items-center justify-center">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -17,18 +17,18 @@ export default function Home() {
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
-            className="h-6 w-6 text-primary"
+            className="h-6 w-6 text-white"
           >
             <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
           </svg>
           <span className="sr-only">Ultra Jodi Matrimony</span>
-          <span className="ml-2 font-headline text-xl font-semibold" style={{ color: '#3B2F2F' }}>Ultra Jodi Matrimony</span>
+          <span className="ml-2 font-headline text-xl font-semibold text-white">Ultra Jodi Matrimony</span>
         </Link>
         <nav className="ml-auto flex gap-4 sm:gap-6">
-          <Button variant="ghost" asChild>
+          <Button variant="ghost" asChild className="text-white hover:bg-white/20 hover:text-white">
             <Link href="/login">Login</Link>
           </Button>
-          <Button asChild className="bg-accent hover:bg-accent/90 text-accent-foreground">
+          <Button asChild style={{ backgroundColor: 'hsl(var(--background))', color: '#3B2F2F' }} className="hover:bg-slate-200">
             <Link href="/signup">Sign Up</Link>
           </Button>
         </nav>
