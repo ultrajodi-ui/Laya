@@ -121,7 +121,7 @@ export default function LoginPage() {
                   style={{ backgroundColor: '#F8F8F8' }}
                 />
               </div>
-              <Button type="submit" className="w-full" disabled={isLoading} style={{ backgroundColor: '#1E3A8A' }}>
+              <Button type="submit" className="w-full" disabled={isLoading} style={{ backgroundColor: '#3B2F2F' }}>
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Login
               </Button>
