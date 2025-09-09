@@ -48,7 +48,7 @@ export default function Home() {
           <div className="container px-4 md:px-6 text-center text-white relative z-10">
             <div className="space-y-4">
               <h1 className="text-4xl font-headline font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
-                Find Your Forever.
+                Ultra Jodi Matrimony
               </h1>
               <p className="mx-auto max-w-[700px] text-gray-200 md:text-xl">
                 Ultra Jodi uses cutting-edge AI to help you find a truly compatible partner. <br /> Your journey to a lasting connection starts here.
