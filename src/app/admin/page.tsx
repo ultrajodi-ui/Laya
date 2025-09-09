@@ -48,7 +48,7 @@ export default function AdminDashboardPage() {
         try {
             const usersCollection = collection(db, "users");
             const userSnapshot = await getDocs(usersCollection);
-            const usersData = userSnapshot.docs.map(doc => doc.data() as UserProfile).filter(user => user.role !== 'admin');
+            const usersData = userSnapshot.docs.map(doc => doc.data() as UserProfile).filter(user => user.usertype !== 'admin');
             const totalUsers = usersData.length;
 
             let basicUsers = 0;
@@ -80,7 +80,7 @@ export default function AdminDashboardPage() {
             const usersQuery = query(usersCollection, orderBy("createdAt", "desc"));
             const usersTableSnapshot = await getDocs(usersQuery);
             const fetchedUsers = usersTableSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as UserProfile));
-            setUsers(fetchedUsers.filter(user => user.role !== 'admin'));
+            setUsers(fetchedUsers.filter(user => user.usertype !== 'admin'));
         } catch (error) {
             console.error("Error fetching users data:", error);
         } finally {
@@ -116,7 +116,7 @@ export default function AdminDashboardPage() {
             if (user) {
                 const userDocRef = doc(db, 'users', user.uid);
                 const userDoc = await getDoc(userDocRef);
-                if (userDoc.exists() && userDoc.data().role === 'admin') {
+                if (userDoc.exists() && userDoc.data().usertype === 'admin') {
                     setIsAdmin(true);
                 } else {
                     setIsAdmin(false);
