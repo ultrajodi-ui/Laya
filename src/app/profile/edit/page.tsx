@@ -1,5 +1,6 @@
 
 
+
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
@@ -278,7 +279,7 @@ export default function ProfileEditPage() {
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="Public">Public</SelectItem>
-                                    <SelectItem value="Private">Private</SelectItem>
+                                    <SelectItem value="Protected">Protected</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
@@ -663,3 +664,5 @@ export default function ProfileEditPage() {
         </AppLayout>
     );
 }
+
+    

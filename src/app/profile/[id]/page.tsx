@@ -1,5 +1,6 @@
 
 
+
 'use client';
 
 import { useState, useEffect, use } from 'react';
@@ -265,7 +266,7 @@ function ProfileContent({ id }: { id: string }) {
     }
     
     const isLiked = user.memberid ? currentUserProfile?.likes?.includes(user.memberid) : false;
-    const profileImageUrl = user.photoVisibility === 'Private' 
+    const profileImageUrl = user.photoVisibility === 'Protected' 
         ? `https://picsum.photos/seed/default-avatar/100/100`
         : user.imageUrl || `https://picsum.photos/seed/${user.id}/100/100`;
     const heightValue = user.heightFeet && user.heightInches 
@@ -407,3 +408,5 @@ export default function ProfileDetailPage({ params }: { params: { id: string } }
         </AppLayout>
     );
 }
+
+    

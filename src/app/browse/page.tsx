@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { AppLayout } from "@/components/AppLayout";
@@ -337,7 +338,7 @@ export default function BrowsePage() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                         {filteredUsers.map(user => {
                             const isLiked = currentUserProfile?.likes?.includes(user.memberid!);
-                            const profileImageUrl = user.photoVisibility === 'Private' 
+                            const profileImageUrl = user.photoVisibility === 'Protected' 
                                 ? `https://picsum.photos/seed/default-avatar/400/400`
                                 : user.imageUrl || `https://picsum.photos/seed/${user.id}/400/400`;
                             return (
@@ -399,5 +400,7 @@ export default function BrowsePage() {
         </AppLayout>
     );
 }
+
+    
 
     

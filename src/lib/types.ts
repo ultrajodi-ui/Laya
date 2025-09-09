@@ -1,4 +1,5 @@
 
+
 export type UserProfile = {
   id: string;
   name: string;
@@ -38,7 +39,7 @@ export type UserProfile = {
   coverUrl?: string;
   createdAt?: any;
   likes?: string[];
-  photoVisibility?: 'Public' | 'Private';
+  photoVisibility?: 'Public' | 'Protected';
   contactLimit?: number;
   viewedContacts?: string[];
   role?: 'admin' | 'user';
@@ -72,5 +73,7 @@ export type Conversation = {
   messages: Message[];
   lastMessage: Message;
 };
+
+    
 
     
