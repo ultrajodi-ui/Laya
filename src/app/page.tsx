@@ -1,3 +1,4 @@
+
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -73,11 +74,11 @@ export default function Home() {
                 </div>
               </div>
               <Image
-                src="https://picsum.photos/550/310"
+                src="https://images.unsplash.com/photo-1541679368093-5c967ac6de11?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxpbmRpYW4lMjBjb3VwbGV8ZW58MHx8fHwxNzU3NDExMzY4fDA&ixlib=rb-4.1.0&q=80&w=1080"
                 width="550"
                 height="310"
                 alt="AI matchmaking illustration"
-                data-ai-hint="network connection"
+                data-ai-hint="indian couple"
                 className="mx-auto aspect-video overflow-hidden rounded-xl object-cover object-center sm:w-full"
               />
             </div>
