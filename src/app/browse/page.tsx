@@ -26,6 +26,7 @@ const allInterests = ["Reading", "Traveling", "Cooking", "Foodie", "Music", "Mov
 const allLocations = ["Mumbai, India", "Delhi, India", "Bangalore, India", "Pune, India", "Hyderabad, India", "Chennai, India"];
 
 // Data for new dropdowns
+const maritalStatuses = ["Never Married", "Divorced", "Widow", "Widower"];
 const states = ["Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Puducherry", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal"];
 const motherTongues = ["Assamese", "Bengali", "Bodo", "Dogri", "English", "Gujarati", "Hindi", "Kannada", "Kashmiri", "Konkani", "Maithili", "Malayalam", "Manipuri", "Marathi", "Nepali", "Odia", "Punjabi", "Sanskrit", "Santali", "Sindhi", "Tamil", "Telugu", "Urdu", "Other"];
 const religions = ["Hindu", "Christian", "Muslim - Shia", "Muslim - Sunni", "Muslim - Other", "Sikh", "Jain - Digambar", "Jain - Shwetamber", "Jain - Others", "Parsi", "Buddhist", "Jewish", "Inter - Religion", "No Religious Belief"];
@@ -55,6 +56,7 @@ export default function BrowsePage() {
     const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
     
     // State for new filters
+    const [selectedMaritalStatus, setSelectedMaritalStatus] = useState('');
     const [selectedHomeState, setSelectedHomeState] = useState('');
     const [selectedMotherTongue, setSelectedMotherTongue] = useState('');
     const [selectedReligion, setSelectedReligion] = useState('');
@@ -233,6 +235,7 @@ export default function BrowsePage() {
                 if (selectedLocations.length === 0) return true;
                 return user.city && selectedLocations.includes(user.city);
             })
+            .filter(user => !selectedMaritalStatus || user.maritalStatus === selectedMaritalStatus)
             .filter(user => !selectedHomeState || user.homeState === selectedHomeState)
             .filter(user => !selectedMotherTongue || user.motherTongue === selectedMotherTongue)
             .filter(user => !selectedReligion || user.religion === selectedReligion)
@@ -255,7 +258,7 @@ export default function BrowsePage() {
                 if (selectedAgeRange === "Above 35") return age > 35;
                 return true;
             });
-    }, [users, searchQuery, selectedInterests, selectedLocations, selectedHomeState, selectedMotherTongue, selectedReligion, selectedCommunity, selectedSubCaste, selectedAgeRange, selectedSalary, selectedEmployed, selectedUserType, currentUserProfile]);
+    }, [users, searchQuery, selectedInterests, selectedLocations, selectedMaritalStatus, selectedHomeState, selectedMotherTongue, selectedReligion, selectedCommunity, selectedSubCaste, selectedAgeRange, selectedSalary, selectedEmployed, selectedUserType, currentUserProfile]);
 
 
     const FilterDropdown = ({ placeholder, options, value, onChange }: { placeholder: string, options: string[], value: string, onChange: (value: string) => void }) => (
@@ -308,6 +311,7 @@ export default function BrowsePage() {
                     </DropdownMenu>
                 </div>
                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                    <FilterDropdown placeholder="Marital Status" options={maritalStatuses} value={selectedMaritalStatus} onChange={(v) => setSelectedMaritalStatus(v === 'all' ? '' : v)} />
                     <FilterDropdown placeholder="Home State" options={states} value={selectedHomeState} onChange={(v) => setSelectedHomeState(v === 'all' ? '' : v)} />
                     <FilterDropdown placeholder="Mother Tongue" options={motherTongues} value={selectedMotherTongue} onChange={(v) => setSelectedMotherTongue(v === 'all' ? '' : v)} />
                     <FilterDropdown placeholder="Religion" options={religions} value={selectedReligion} onChange={(v) => setSelectedReligion(v === 'all' ? '' : v)} />
@@ -400,7 +404,3 @@ export default function BrowsePage() {
         </AppLayout>
     );
 }
-
-    
-
-    
