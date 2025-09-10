@@ -10,7 +10,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
-import { collection, doc, getDocs, query, where, arrayRemove, writeBatch } from 'firebase/firestore';
+import { collection, doc, getDocs, query, where, arrayRemove, writeBatch, onSnapshot } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import type { UserProfile } from "@/lib/types";
 import { Skeleton } from "@/components/ui/skeleton";
