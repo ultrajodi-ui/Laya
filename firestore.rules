@@ -1,52 +1,58 @@
+
 rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Helper function to determine if the requesting user is an admin.
+    // Function to check if the requesting user is an administrator.
     function isAdmin() {
-      // Check the 'role' field on the user's own document in the 'users' collection.
       return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
 
-    // Helper function to check if the user is the owner of the document.
+    // Function to check if a user is authenticated.
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Function to check if the request is from the user who owns the document.
     function isOwner(userId) {
       return request.auth.uid == userId;
     }
     
-    // A user is authenticated if their auth object is not null.
-    function isAuthenticated() {
-      return request.auth != null;
+    // Admin users have full read and write access to the entire database.
+    match /{document=**} {
+      allow read, write: if isAdmin();
     }
 
     match /users/{userId} {
-      // 1. Admins can do anything to any user document.
-      // 2. Any authenticated user can read their OWN document.
-      // 3. Any user can read any other user's profile (for browsing).
-      allow read: if isAdmin() || (isAuthenticated() && isOwner(userId)) || (isAuthenticated() && !isOwner(userId));
+      // Any signed-in user can view any user's profile (for browsing).
+      allow read: if isSignedIn();
+      
+      // A user can create their own profile document.
+      allow create: if isOwner(userId);
 
-      // 1. Admins can create/update/delete any user.
-      // 2. An authenticated user can create their own document.
-      // 3. An authenticated user can update/delete their OWN document.
-      allow write: if isAdmin() || (isAuthenticated() && isOwner(userId));
+      // A user can only update their own profile document.
+      allow update: if isOwner(userId);
+      
+      // A user can only delete their own account.
+      allow delete: if isOwner(userId);
     }
 
-    match /likesReceived/{likeId} {
-        // Admins can read/write all likes.
-        // Authenticated users can create/delete likes.
-        allow read, write: if isAdmin() || isAuthenticated();
+    match /supportQueries/{queryId} {
+        // Any signed-in user can create a support query.
+        allow create: if isSignedIn();
+        // Only admins can read support queries.
+        allow read: if isAdmin();
     }
     
-    match /supportQueries/{queryId} {
-        // Admins can read/write all queries.
-        // Authenticated users can create queries.
-        allow create: if isAuthenticated();
-        allow read, update, delete: if isAdmin();
+    match /likesReceived/{likeId} {
+        // Any signed-in user can create (like) or delete (unlike) a like record.
+        allow create, delete: if isSignedIn();
     }
-
-     match /deletedUsers/{deletedUserId} {
-      // Only admins can read or write to the deletedUsers collection.
-      allow read, write: if isAdmin();
+    
+    match /deletedUsers/{deletedId} {
+        // Only admins can create (archive) records of deleted users.
+        allow create: if isAdmin();
     }
   }
 }
