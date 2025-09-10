@@ -100,12 +100,12 @@ export default function BrowsePage() {
             let q;
 
             if (profile.role === 'admin') {
-                // Admin gets all users
+                // Admin gets all users, no status filter needed unless specified
                 q = query(usersRef);
             } else if (profile.gender) {
-                // Regular user gets opposite gender
+                // Regular user gets opposite gender with 'Active' status
                 const genderToFetch = profile.gender === 'male' ? 'female' : 'male';
-                q = query(usersRef, where("gender", "==", genderToFetch));
+                q = query(usersRef, where("gender", "==", genderToFetch), where("currentStatus", "==", "Active"));
             } else {
                 setLoading(false);
                 return;
@@ -118,6 +118,9 @@ export default function BrowsePage() {
                 const userData = doc.data() as UserProfile;
                 // Exclude current user and admins from browse list (unless current user is admin)
                 if (doc.id !== currentUserId && (profile.role === 'admin' || userData.role !== 'admin')) {
+                     if (currentUserProfile?.role !== 'admin' && userData.currentStatus !== 'Active') {
+                        return;
+                    }
                     fetchedUsers.push({ id: doc.id, ...userData });
                 }
             });
