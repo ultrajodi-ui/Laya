@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { db } from "@/lib/firebase";
 import { UserProfile } from "@/lib/types";
-import { collection, getDocs, query, doc, getDoc, orderBy } from "firebase/firestore";
+import { collection, getDocs, query, doc, getDoc, orderBy, updateDoc } from "firebase/firestore";
 import { Users, Star, Shield, Gem, User as UserIcon, Loader2, MessageSquare } from "lucide-react";
 import { useEffect, useState, useCallback } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -15,6 +15,8 @@ import { getAuth, onAuthStateChanged, User } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { format } from 'date-fns';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useToast } from "@/hooks/use-toast";
 
 type SupportQuery = {
     id: string;
@@ -25,6 +27,8 @@ type SupportQuery = {
     query?: string;
     submittedAt?: Date;
 }
+
+const statusOptions = ["Active", "Engaged", "Married", "In Active"];
 
 export default function AdminDashboardPage() {
     const [stats, setStats] = useState({
@@ -43,6 +47,7 @@ export default function AdminDashboardPage() {
     const [showUsers, setShowUsers] = useState(false);
     const auth = getAuth();
     const router = useRouter();
+    const { toast } = useToast();
 
      const fetchAdminStats = useCallback(async () => {
         try {
@@ -108,6 +113,25 @@ export default function AdminDashboardPage() {
             setLoadingQueries(false);
         }
     }, []);
+    
+    const handleStatusChange = async (userId: string, newStatus: string) => {
+        const userDocRef = doc(db, 'users', userId);
+        try {
+            await updateDoc(userDocRef, { currentStatus: newStatus });
+            setUsers(prevUsers => prevUsers.map(user => user.id === userId ? { ...user, currentStatus: newStatus as any } : user));
+            toast({
+                title: 'Status Updated',
+                description: `User status has been changed to ${newStatus}.`,
+            });
+        } catch (error) {
+            console.error("Error updating status:", error);
+             toast({
+                variant: 'destructive',
+                title: 'Update Failed',
+                description: 'Could not update user status.',
+            });
+        }
+    };
 
 
     useEffect(() => {
@@ -247,18 +271,19 @@ export default function AdminDashboardPage() {
                                         <TableHead>Email</TableHead>
                                         <TableHead>Mobile No</TableHead>
                                         <TableHead>User Type</TableHead>
+                                        <TableHead>Current Status</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
                                     {loadingData ? (
                                         <TableRow>
-                                            <TableCell colSpan={5} className="text-center">
+                                            <TableCell colSpan={6} className="text-center">
                                                 <Loader2 className="mx-auto h-6 w-6 animate-spin" />
                                             </TableCell>
                                         </TableRow>
                                     ) : users.length === 0 ? (
                                         <TableRow>
-                                            <TableCell colSpan={5} className="text-center">No users found.</TableCell>
+                                            <TableCell colSpan={6} className="text-center">No users found.</TableCell>
                                         </TableRow>
                                     ) : (
                                         users.map(user => (
@@ -271,6 +296,21 @@ export default function AdminDashboardPage() {
                                                     <Badge variant={user.usertype !== 'Basic' ? 'default' : 'secondary'}>
                                                         {user.usertype || 'Basic'}
                                                     </Badge>
+                                                </TableCell>
+                                                <TableCell>
+                                                   <Select
+                                                        value={user.currentStatus || 'Active'}
+                                                        onValueChange={(newStatus) => handleStatusChange(user.id, newStatus)}
+                                                    >
+                                                        <SelectTrigger className="w-full">
+                                                            <SelectValue placeholder="Select status" />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            {statusOptions.map(status => (
+                                                                <SelectItem key={status} value={status}>{status}</SelectItem>
+                                                            ))}
+                                                        </SelectContent>
+                                                    </Select>
                                                 </TableCell>
                                             </TableRow>
                                         ))
