@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { db } from "@/lib/firebase";
 import { UserProfile } from "@/lib/types";
-import { collection, getDocs, query, doc, getDoc, orderBy, updateDoc, deleteDoc } from "firebase/firestore";
+import { collection, getDocs, query, doc, getDoc, orderBy, updateDoc, deleteDoc, addDoc } from "firebase/firestore";
 import { Users, Star, Shield, Gem, User as UserIcon, Loader2, MessageSquare, Trash2 } from "lucide-react";
 import { useEffect, useState, useCallback } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -150,15 +150,28 @@ export default function AdminDashboardPage() {
         if (!userToDelete) return;
         setIsDeleting(true);
         try {
-            // This is a simplified deletion. In a real app, you'd use a Cloud Function
-            // to handle this securely and delete associated user data from Auth.
+            // Archive user data
+            const deletedUsersCollection = collection(db, "deletedUsers");
+            await addDoc(deletedUsersCollection, {
+                memberid: userToDelete.memberid || 'N/A',
+                fullName: userToDelete.fullName,
+                email: userToDelete.email,
+                mobileNo: userToDelete.mobileNo || 'N/A',
+                currentStatus: userToDelete.currentStatus || 'Active',
+                deletedAt: new Date(),
+            });
+
+            // Delete from users collection
             await deleteDoc(doc(db, "users", userToDelete.id));
+
+            // Note: Deleting a user from Firebase Auth cannot be done securely from the client-side
+            // for other users. This requires a Cloud Function with admin privileges.
 
             setUsers(prevUsers => prevUsers.filter(u => u.id !== userToDelete.id));
 
             toast({
-                title: "User Deleted",
-                description: `User ${userToDelete.fullName} has been deleted.`,
+                title: "User Archived and Deleted",
+                description: `User ${userToDelete.fullName} has been archived and removed from the active user list.`,
             });
         } catch (error) {
             console.error("Error deleting user:", error);
