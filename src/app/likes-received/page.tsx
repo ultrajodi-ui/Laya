@@ -169,21 +169,22 @@ function LikesReceivedContent() {
     
     const handleDislikeClick = async (targetUser: UserProfile) => {
         if (!currentUserProfile?.memberid || !targetUser?.memberid) return;
-        
+
         const dislikedUserMemberId = targetUser.memberid;
         const currentUserMemberId = currentUserProfile.memberid;
-        
-        // This is tricky. The like was created by the *other* user.
-        // So the doc ID is based on them.
+
+        // The like was created by the *other* user. So the doc ID is based on them.
         const likeReceivedDocId = `${dislikedUserMemberId}_likes_${currentUserMemberId}`;
         const likeReceivedDocRef = doc(db, 'likesReceived', likeReceivedDocId);
 
         try {
+            // First, delete the document from the `likesReceived` collection.
             await deleteDoc(likeReceivedDocRef);
-            
-            // Also remove from the other user's `likes` array
+
+            // Then, remove the current user's memberid from the other user's `likes` array.
             const otherUserQuery = query(collection(db, "users"), where("memberid", "==", dislikedUserMemberId));
             const otherUserSnapshot = await getDocs(otherUserQuery);
+
             if (!otherUserSnapshot.empty) {
                 const otherUserDoc = otherUserSnapshot.docs[0];
                 await updateDoc(otherUserDoc.ref, {
@@ -191,7 +192,9 @@ function LikesReceivedContent() {
                 });
             }
 
+            // Finally, remove the user from the local state to update the UI.
             setLikedByUsers(prev => prev.filter(u => u.id !== targetUser.id));
+
             toast({
                 title: 'Profile Removed',
                 description: "You won't see this profile in your likes again.",
@@ -298,5 +301,7 @@ export default function LikesReceivedPage() {
         </AppLayout>
     );
 }
+
+    
 
     
