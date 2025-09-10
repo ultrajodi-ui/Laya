@@ -2,31 +2,62 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
+  
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    // USERS
     match /users/{userId} {
-      // Logged-in users can read all user profiles (for browsing)
-      // and can only create/update/delete their own profile.
-      allow read;
-      allow create, update, delete: if request.auth != null && request.auth.uid == userId;
-    }
-
-    match /supportQueries/{queryId} {
-      // Logged-in users can create support queries.
-      allow create: if request.auth != null;
-    }
-
-    match /likesReceived/{likeId} {
-        // Logged-in users can create/delete their own likes.
-        allow create, delete: if request.auth != null;
+      // Anyone signed in can read any user's profile (for browsing)
+      allow get, list: if isSignedIn();
+      // A user can create their own profile, or an admin can create one
+      allow create: if isOwner(userId) || isAdmin();
+      // A user can only update their own profile, but an admin can update any
+      allow update: if isOwner(userId) || isAdmin();
+      // Only an admin can delete a user document from here (after archiving)
+      allow delete: if isAdmin();
     }
     
-    match /deletedUsers/{userId} {
-      // Only admins can write to the deletedUsers collection.
-      allow write: if request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    // DELETED USERS
+    match /deletedUsers/{docId} {
+        // Only admins can create (archive) or read/delete archived records
+        allow read, write, delete: if isAdmin();
     }
 
-    // Admin-only full access to allow reading all collections for the dashboard
+    // SUPPORT QUERIES
+    match /supportQueries/{queryId} {
+      // Any signed-in user can create a support query
+      allow create: if isSignedIn();
+      // Only an admin can read or update support queries
+      allow read, update, delete: if isAdmin();
+    }
+
+    // LIKES RECEIVED
+    match /likesReceived/{likeId} {
+      // Any signed-in user can create a like document
+      allow create: if isSignedIn();
+      // Users can delete likes they've received, or admins can.
+      // The likeId is formatted as "likerId_likes_likedId"
+      // So we check if the current user is the one who was liked.
+      allow delete: if (isSignedIn() && request.auth.uid == likeId.split('_likes_')[1]) || isAdmin();
+      // No one should be able to read all likes directly, this is handled through queries.
+      allow read, update: if false;
+    }
+
+    // Default deny all other access
     match /{document=**} {
-      allow read, write: if request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+      allow read, write: if false;
     }
   }
 }
