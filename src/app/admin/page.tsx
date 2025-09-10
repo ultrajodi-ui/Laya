@@ -28,7 +28,7 @@ type SupportQuery = {
     submittedAt?: Date;
 }
 
-const statusOptions = ["Active", "Engaged", "Married", "In Active"];
+const statusOptions = ["Active", "Engaged", "Married", "Inactive"];
 
 export default function AdminDashboardPage() {
     const [stats, setStats] = useState({
@@ -374,3 +374,4 @@ export default function AdminDashboardPage() {
     
 
     
+
