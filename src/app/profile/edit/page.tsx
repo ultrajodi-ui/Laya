@@ -1,6 +1,5 @@
 
 
-
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
@@ -16,7 +15,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Zap, CalendarIcon } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
-import { format } from 'date-fns';
+import { format, differenceInYears } from 'date-fns';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { useRouter } from 'next/navigation';
 import { Badge } from '@/components/ui/badge';
@@ -123,6 +122,25 @@ export default function ProfileEditPage() {
                 variant: "destructive",
                 title: "Missing Information",
                 description: "Please select your Marital Status.",
+            });
+            return;
+        }
+
+        if (!profileData.dob) {
+            toast({
+                variant: 'destructive',
+                title: 'Missing Information',
+                description: 'Please enter your date of birth.',
+            });
+            return;
+        }
+
+        const age = differenceInYears(new Date(), new Date(profileData.dob));
+        if (age < 18) {
+            toast({
+                variant: 'destructive',
+                title: 'Age Requirement',
+                description: 'You must be at least 18 years old to create a profile.',
             });
             return;
         }
@@ -664,5 +682,3 @@ export default function ProfileEditPage() {
         </AppLayout>
     );
 }
-
-    
