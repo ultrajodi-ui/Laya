@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { db } from "@/lib/firebase";
 import { UserProfile } from "@/lib/types";
-import { collection, getDocs, orderBy, query, doc, getDoc } from "firebase/firestore";
+import { collection, getDocs, query, doc, getDoc, orderBy } from "firebase/firestore";
 import { Users, Star, Shield, Gem, User as UserIcon, Loader2, MessageSquare } from "lucide-react";
 import { useEffect, useState, useCallback } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -77,8 +77,7 @@ export default function AdminDashboardPage() {
         setShowUsers(true);
         try {
             const usersCollection = collection(db, "users");
-            const usersQuery = query(usersCollection, orderBy("createdAt", "desc"));
-            const usersTableSnapshot = await getDocs(usersQuery);
+            const usersTableSnapshot = await getDocs(usersCollection);
             const fetchedUsers = usersTableSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as UserProfile));
             setUsers(fetchedUsers.filter(user => user.usertype !== 'admin'));
         } catch (error) {
