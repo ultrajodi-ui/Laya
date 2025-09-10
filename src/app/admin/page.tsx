@@ -356,7 +356,12 @@ export default function AdminDashboardPage() {
                                                     </TableCell>
                                                     <TableCell>
                                                         <AlertDialogTrigger asChild>
-                                                            <Button variant="ghost" size="icon" onClick={() => setUserToDelete(user)}>
+                                                            <Button 
+                                                                variant="ghost" 
+                                                                size="icon" 
+                                                                onClick={() => setUserToDelete(user)}
+                                                                disabled={(user.currentStatus || 'Active') === 'Active'}
+                                                            >
                                                                 <Trash2 className="h-4 w-4 text-destructive" />
                                                             </Button>
                                                         </AlertDialogTrigger>
