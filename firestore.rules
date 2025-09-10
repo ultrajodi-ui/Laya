@@ -2,44 +2,31 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-
-    function isAdmin() {
-      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    match /users/{userId} {
+      // Logged-in users can read all user profiles (for browsing)
+      // and can only create/update/delete their own profile.
+      allow read;
+      allow create, update, delete: if request.auth != null && request.auth.uid == userId;
     }
 
-    match /users/{userId} {
-      // Allow all authenticated users to read profiles for browsing.
-      // Admins can write to any profile.
-      // Users can only write to their own profile.
-      allow read;
-      allow create: if request.auth.uid == userId;
-      allow update, delete: if request.auth.uid == userId || isAdmin();
+    match /supportQueries/{queryId} {
+      // Logged-in users can create support queries.
+      allow create: if request.auth != null;
     }
 
     match /likesReceived/{likeId} {
-      // Users can create likes. Only the involved users (or an admin) should be able to read/delete.
-      // This is simplified: allow create for any authenticated user.
-      allow read, create: if request.auth != null;
-      // Deletion should be handled by the user who created the like, or the recipient.
-      // For simplicity, allowing any auth'd user to delete (this can be tightened later if needed).
-      allow delete: if request.auth != null || isAdmin();
+        // Logged-in users can create/delete their own likes.
+        allow create, delete: if request.auth != null;
     }
     
-    match /supportQueries/{queryId} {
-        // Logged-in users can create queries.
-        allow create: if request.auth != null;
-        // Only admins can read all queries.
-        allow read, list, update, delete: if isAdmin();
+    match /deletedUsers/{userId} {
+      // Only admins can write to the deletedUsers collection.
+      allow write: if request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
 
-    match /deletedUsers/{docId} {
-        // Only admins can write to or read from the deleted users archive.
-        allow read, write: if isAdmin();
-    }
-
-    // Default deny for any other collection
+    // Admin-only full access to allow reading all collections for the dashboard
     match /{document=**} {
-      allow read, write: if false;
+      allow read, write: if request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
   }
 }
