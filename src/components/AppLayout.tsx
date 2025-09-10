@@ -17,6 +17,7 @@ import {
   Zap,
   Info,
   LifeBuoy,
+  ThumbsUp,
 } from 'lucide-react';
 import { getAuth, onAuthStateChanged, signOut, User as FirebaseUser } from 'firebase/auth';
 import { doc, getDoc, onSnapshot, Unsubscribe } from 'firebase/firestore';
@@ -51,6 +52,7 @@ const auth = getAuth(app);
 const navItems = [
   { href: '/browse', icon: Home, label: 'Browse' },
   { href: '/matches', icon: Search, label: 'AI Matches' },
+  { href: '/your-likes', icon: ThumbsUp, label: 'Your Likes' },
   { href: '/likes-received', icon: Star, label: 'Likes Received' },
   { href: '/upgrade', icon: Zap, label: 'Premium Member Benefits' },
   { href: '/help-support', icon: LifeBuoy, label: 'Help & Support' },
@@ -321,5 +323,3 @@ export function AppLayout({ children }: { children: ReactNode }) {
     </PageTitleProvider>
   )
 }
-
-    
