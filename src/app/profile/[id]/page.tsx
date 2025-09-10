@@ -1,6 +1,5 @@
 
 
-
 'use client';
 
 import { useState, useEffect, use } from 'react';
@@ -11,7 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Heart, Calendar, Sparkles, MapPin, Eye, Star, Shield, Gem } from "lucide-react";
+import { Heart, Calendar, Sparkles, MapPin, Eye, Star, Shield, Gem, Users } from "lucide-react";
 import Image from "next/image";
 import { Skeleton } from '@/components/ui/skeleton';
 import type { UserProfile } from '@/lib/types';
@@ -300,8 +299,9 @@ function ProfileContent({ id }: { id: string }) {
                         <CardDescription className="!mt-1 text-base text-muted-foreground">
                             ID: {user.memberid}
                         </CardDescription>
-                        <CardDescription className="flex items-center gap-4 text-base">
+                         <CardDescription className="flex items-center gap-4 text-base flex-wrap">
                              <span className="flex items-center gap-1"><MapPin className="w-4 h-4" /> {user.city}</span>
+                             {user.profileBy && <span className="flex items-center gap-1"><Users className="w-4 h-4" /> Profile by {user.profileBy}</span>}
                              {user.createdAt && <span className="flex items-center gap-1"><Calendar className="w-4 h-4" /> Joined {format(user.createdAt.toDate(), "MMMM yyyy")}</span>}
                         </CardDescription>
                     </CardHeader>
@@ -408,5 +408,3 @@ export default function ProfileDetailPage({ params }: { params: { id: string } }
         </AppLayout>
     );
 }
-
-    
