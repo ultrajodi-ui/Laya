@@ -1,36 +1,52 @@
-
 rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Helper function to check if the requesting user is an admin.
+    // Helper function to determine if the requesting user is an admin.
     function isAdmin() {
+      // Check the 'role' field on the user's own document in the 'users' collection.
       return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
 
-    // Allow admins to read and write any document in the database.
-    match /{document=**} {
-      allow read, write: if request.auth != null && isAdmin();
+    // Helper function to check if the user is the owner of the document.
+    function isOwner(userId) {
+      return request.auth.uid == userId;
     }
     
+    // A user is authenticated if their auth object is not null.
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
     match /users/{userId} {
-      // Allow users to read and update their own profile.
-      allow read, update: if request.auth != null && request.auth.uid == userId;
-      // Allow logged-in users to read other user profiles, but not admin profiles.
-      allow read: if request.auth != null && resource.data.role != 'admin';
-       // Allow anyone to create their own user document (on signup).
-      allow create: if request.auth != null && request.auth.uid == userId;
+      // 1. Admins can do anything to any user document.
+      // 2. Any authenticated user can read their OWN document.
+      // 3. Any user can read any other user's profile (for browsing).
+      allow read: if isAdmin() || (isAuthenticated() && isOwner(userId)) || (isAuthenticated() && !isOwner(userId));
+
+      // 1. Admins can create/update/delete any user.
+      // 2. An authenticated user can create their own document.
+      // 3. An authenticated user can update/delete their OWN document.
+      allow write: if isAdmin() || (isAuthenticated() && isOwner(userId));
     }
 
     match /likesReceived/{likeId} {
-        // Allow any authenticated user to create or delete likes.
-        allow create, delete, read: if request.auth != null;
+        // Admins can read/write all likes.
+        // Authenticated users can create/delete likes.
+        allow read, write: if isAdmin() || isAuthenticated();
     }
     
     match /supportQueries/{queryId} {
-        // Allow any authenticated user to create support queries.
-        allow create: if request.auth != null;
+        // Admins can read/write all queries.
+        // Authenticated users can create queries.
+        allow create: if isAuthenticated();
+        allow read, update, delete: if isAdmin();
+    }
+
+     match /deletedUsers/{deletedUserId} {
+      // Only admins can read or write to the deletedUsers collection.
+      allow read, write: if isAdmin();
     }
   }
 }
