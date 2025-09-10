@@ -1,45 +1,45 @@
-
 rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-
+    
     // Helper function to check if a user is an admin
     function isAdmin() {
-      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+      return exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    // Admins have full access to everything
+    match /{document=**} {
+      allow read, write: if isAdmin();
     }
 
     // Rules for the 'users' collection
     match /users/{userId} {
-      // Allow read access for any authenticated user. This is needed for browsing profiles
-      // and for a user to read their own profile.
-      allow read: if request.auth != null;
-
-      // Allow a user to create, update, or delete their OWN document.
-      allow write: if request.auth.uid == userId;
-
-      // Additionally, allow an admin to update or delete any user document.
-      allow update, delete: if isAdmin();
+      // Allow any authenticated user to read profiles (for browsing, etc.)
+      allow get, list: if request.auth != null;
+      // A user can only create, update, or delete their own document
+      allow create, update, delete: if request.auth.uid == userId;
     }
 
-    // Rules for 'likesReceived' collection
+    // Rules for likes
     match /likesReceived/{likeId} {
-      // Allow read/write for any authenticated user.
-      // More specific rules could be added if needed, e.g., based on the likeId format.
-      allow read, write: if request.auth != null;
+      // A user can create a "like"
+      allow create: if request.auth != null;
+      // Only the user who was liked or the user who gave the like can delete it
+      // Note: This is complex and might be better handled by a Cloud Function for security.
+      // For now, only the creator can delete.
+      allow delete: if request.auth.uid == resource.data.likedBy;
+    }
+
+    // Rules for support queries
+    match /supportQueries/{queryId} {
+      // Any authenticated user can submit a query
+      allow create: if request.auth != null;
     }
     
-    // Rules for 'supportQueries' collection
-    match /supportQueries/{queryId} {
-        // Logged-in users can create queries
-        allow create: if request.auth != null;
-        // Admins can read all queries
-        allow read: if isAdmin();
-    }
-
-    // Rules for 'deletedUsers' collection
+    // Admins can manage the 'deletedUsers' collection
     match /deletedUsers/{deletedUserId} {
-        // Only admins can write to or read from the deleted users archive
         allow read, write: if isAdmin();
     }
   }
