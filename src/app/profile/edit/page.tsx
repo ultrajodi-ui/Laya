@@ -5,7 +5,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { getAuth, onAuthStateChanged, User, updateProfile } from 'firebase/auth';
 import { doc, getDoc, setDoc, getCountFromServer, collection, where, query } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { db, storage } from '@/lib/firebase';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -34,6 +35,7 @@ export default function ProfileEditPage() {
     const [profileData, setProfileData] = useState<Partial<UserProfile>>({ gender: 'female', photoVisibility: 'Public', interests: [] });
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
+    const [isUploading, setIsUploading] = useState(false);
     const [isCalendarOpen, setIsCalendarOpen] = useState(false);
     const fatherNameRef = useRef<HTMLInputElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -86,17 +88,43 @@ export default function ProfileEditPage() {
         fileInputRef.current?.click();
     };
 
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files && e.target.files[0]) {
+    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0] && user) {
             const file = e.target.files[0];
-            // Here you would typically upload the file to a storage service (like Firebase Storage)
-            // and then update the profileData with the new imageUrl.
-            // For now, we can just log it.
-            console.log('Selected file:', file);
-            toast({
-                title: 'File Selected',
-                description: 'In a real app, this would be uploaded.',
-            });
+            if (file.size > 1024 * 1024) {
+                 toast({
+                    variant: "destructive",
+                    title: 'File too large',
+                    description: 'Please upload an image smaller than 1MB.',
+                });
+                return;
+            }
+            
+            setIsUploading(true);
+            const storageRef = ref(storage, `profile-photos/${user.uid}/${file.name}`);
+
+            try {
+                const snapshot = await uploadBytes(storageRef, file);
+                const downloadURL = await getDownloadURL(snapshot.ref);
+                
+                setProfileData(prev => ({...prev, imageUrl: downloadURL}));
+                await updateProfile(user, { photoURL: downloadURL });
+
+                toast({
+                    title: 'Photo Uploaded',
+                    description: 'Your new profile photo is ready. Save changes to make it permanent.',
+                });
+
+            } catch (error) {
+                console.error("Error uploading photo:", error);
+                 toast({
+                    variant: "destructive",
+                    title: 'Upload Failed',
+                    description: 'Could not upload your photo. Please try again.',
+                });
+            } finally {
+                setIsUploading(false);
+            }
         }
     };
     
@@ -147,7 +175,7 @@ export default function ProfileEditPage() {
 
         setIsSaving(true);
         try {
-            const dataToSave = { ...profileData };
+            const dataToSave: Partial<UserProfile> = { ...profileData };
 
             // Generate memberid and set contact limit if it's a new user
             if (!dataToSave.memberid) {
@@ -157,17 +185,18 @@ export default function ProfileEditPage() {
                 dataToSave.contactLimit = 3; // Set default contact limit
                 dataToSave.currentStatus = 'Active'; // Set default status for new users
                 dataToSave.profileVisible = true; // Set default visibility for new users
+                dataToSave.createdAt = new Date(); // Set creation timestamp for new users
             }
 
             if (auth.currentUser && auth.currentUser.displayName !== dataToSave.fullName) {
                 await updateProfile(auth.currentUser, {
                     displayName: dataToSave.fullName,
+                    photoURL: dataToSave.imageUrl
                 });
             }
 
             const userDocRef = doc(db, "users", user.uid);
-            const { imageUrl, ...finalData } = dataToSave;
-            await setDoc(userDocRef, { ...finalData, usertype: finalData.usertype || 'Basic' }, { merge: true });
+            await setDoc(userDocRef, { ...dataToSave, usertype: dataToSave.usertype || 'Basic' }, { merge: true });
             
             toast({
                 title: "Profile Updated",
@@ -276,18 +305,21 @@ export default function ProfileEditPage() {
                     <CardContent className="grid gap-6">
                         <div className="flex items-center gap-4">
                             <span className="relative flex h-24 w-24 shrink-0 overflow-hidden rounded-full">
-                                <img className="aspect-square h-full w-full" alt={profileData.fullName || 'User'} src={profileData.imageUrl || `https://picsum.photos/seed/${user?.uid}/100/100`} />
+                                <img className="aspect-square h-full w-full object-cover" alt={profileData.fullName || 'User'} src={profileData.imageUrl || `https://picsum.photos/seed/${user?.uid}/100/100`} />
                             </span>
                             <div className="grid gap-1.5">
-                                <Button onClick={handlePhotoChangeClick}>Change Photo</Button>
+                                <Button onClick={handlePhotoChangeClick} disabled={isUploading}>
+                                    {isUploading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                    {isUploading ? 'Uploading...' : 'Change Photo'}
+                                </Button>
                                 <input
                                     type="file"
                                     ref={fileInputRef}
                                     onChange={handleFileChange}
                                     className="hidden"
-                                    accept="image/png, image/jpeg, image/gif"
+                                    accept="image/png, image/jpeg"
                                 />
-                                <p className="text-sm text-muted-foreground">JPG, GIF or PNG. 1MB max.</p>
+                                <p className="text-sm text-muted-foreground">JPG or PNG. 1MB max.</p>
                             </div>
                         </div>
                         
@@ -670,11 +702,11 @@ export default function ProfileEditPage() {
                         </div>
 
                          <div className="flex gap-2 justify-self-start">
-                            <Button onClick={handleSaveChanges} className="bg-primary hover:bg-primary/90" disabled={isSaving}>
+                            <Button onClick={handleSaveChanges} className="bg-primary hover:bg-primary/90" disabled={isSaving || isUploading}>
                                 {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                 {isSaving ? 'Saving...' : 'Save Changes'}
                             </Button>
-                            <Button variant="outline" onClick={() => router.push('/profile/view')} disabled={isSaving}>
+                            <Button variant="outline" onClick={() => router.push('/profile/view')} disabled={isSaving || isUploading}>
                                 Cancel
                             </Button>
                         </div>
@@ -684,5 +716,3 @@ export default function ProfileEditPage() {
         </AppLayout>
     );
 }
-
-    

@@ -17,9 +17,9 @@ const plans = [
         features: [
             "Create profile",
             "Browse matches",
-            "Send limited Likes",
+            "Send 10 Likes per Month",
             "View 3 Contact Numbers of Basic Profile Only",
-            "x:Cannot watch all Protected Photos."
+            "x:Cannot watch all Protected Photos"
         ],
         isCurrent: true,
     },
@@ -28,8 +28,9 @@ const plans = [
         price: "₹700",
         duration: "/ 3 months",
         features: [
+            "Watch 5 Gold Profile, 10 Silver Profile and 15 Basic Profile Contact Numbers",
             "Send 50 likes per Month",
-            "Watch 3 Gold Profile, 10 Silver Profile and 15 Basic Profile Contact Numbers per Month",
+            "Watch 10 Gold, 15 Silver, 20 Basic Profile User's Protected Photos",
             "Get better visibility",
         ],
     },
@@ -38,10 +39,11 @@ const plans = [
         price: "₹1700",
         duration: "/ 6 months",
         features: [
-            "All Silver benefits",
-            "Profile highlighted to matches",
-            "Access to premium matches",
-            "See who viewed your profile",
+            "Watch 5 Diamond profile, 15 Gold Profile, 20 Silver Profile and 40 Basic Profile Contact numbers",
+            "Send 100 likes per Month",
+            "Watch 5 Diamond, 15 Gold, 20 Silver, 40 Basic Profile User’s Protected Photos",
+            "Get better visibility",
+            "Priority customer support"
         ],
         isPopular: true,
     },
@@ -50,9 +52,11 @@ const plans = [
         price: "₹3700",
         duration: "/ 12 months",
         features: [
-            "All Gold benefits",
+            "Watch 25 Diamond profile, 35 Gold Profile, 50 Silver Profile and 80 Basic Profile Contact Numbers",
             "Personalized matchmaking assistance",
-            "Profile boost once a month",
+            "Send 200 likes per Month",
+            "Watch 25 Diamond, 35 Gold, 50 Silver, 80 Basic Profile User’s Protected Photos",
+            "Get better visibility",
             "Priority customer support",
         ],
     }
