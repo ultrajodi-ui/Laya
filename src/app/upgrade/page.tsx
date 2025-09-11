@@ -29,7 +29,7 @@ const plans = [
         duration: "/ 3 months",
         features: [
             "Send 50 likes per Month",
-            "Watch 10 Silver Profile and 20 Basic Profile Contact Numbers per Month",
+            "Watch 3 Gold Profile, 10 Silver Profile and 15 Basic Profile Contact Numbers per Month",
             "Get better visibility",
         ],
     },
