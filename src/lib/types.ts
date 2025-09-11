@@ -52,6 +52,7 @@ export type UserProfile = {
   smokingHabit?: 'Non-Smoker' | 'Light Smoker' | 'Moderate Smoker' | 'Heavy Smoker';
   profileBy?: "Self" | "Parents" | "Sibling" | "Guardian" | "Friends" | "Relatives";
   currentStatus?: 'Active' | 'Engaged' | 'Married' | 'Inactive';
+  profileVisible?: boolean;
 };
 
 export type Connection = {

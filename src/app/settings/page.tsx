@@ -19,11 +19,12 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { getAuth, onAuthStateChanged, User, deleteUser } from 'firebase/auth';
-import { doc, deleteDoc } from 'firebase/firestore';
+import { doc, deleteDoc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
+import { UserProfile } from '@/lib/types';
 
 
 export default function SettingsPage() {
@@ -31,14 +32,53 @@ export default function SettingsPage() {
     const router = useRouter();
     const { toast } = useToast();
     const [user, setUser] = useState<User | null>(null);
+    const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-            setUser(currentUser);
+        const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+            if (currentUser) {
+                setUser(currentUser);
+                const userDocRef = doc(db, 'users', currentUser.uid);
+                const userDoc = await getDoc(userDocRef);
+                if (userDoc.exists()) {
+                    setUserProfile({ id: userDoc.id, ...userDoc.data() } as UserProfile);
+                }
+            } else {
+                router.push('/login');
+            }
+            setIsLoading(false);
         });
         return () => unsubscribe();
-    }, [auth]);
+    }, [auth, router]);
+    
+    const handleVisibilityChange = async (isVisible: boolean) => {
+        if (!user) return;
+
+        const userDocRef = doc(db, "users", user.uid);
+        const newStatus = isVisible ? 'Active' : 'Inactive';
+
+        try {
+            await updateDoc(userDocRef, {
+                profileVisible: isVisible,
+                currentStatus: newStatus
+            });
+            setUserProfile(prev => prev ? { ...prev, profileVisible: isVisible, currentStatus: newStatus as any } : null);
+            toast({
+                title: "Settings Updated",
+                description: `Your profile is now ${isVisible ? 'visible' : 'hidden'} and your status is ${newStatus}.`,
+            });
+        } catch (error) {
+            console.error("Error updating visibility:", error);
+            toast({
+                variant: 'destructive',
+                title: 'Update Failed',
+                description: 'Could not update your visibility settings.',
+            });
+        }
+    };
+
 
     const handleDeleteAccount = async () => {
         if (!user) {
@@ -77,6 +117,24 @@ export default function SettingsPage() {
             setIsDeleting(false);
         }
     };
+    
+    if (isLoading) {
+        return (
+            <AppLayout>
+                <div className="mx-auto grid max-w-4xl gap-6">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="font-headline">Settings</CardTitle>
+                            <CardDescription>Manage your account settings and preferences.</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                             <div className="h-20 w-full animate-pulse rounded-lg border bg-muted" />
+                        </CardContent>
+                    </Card>
+                </div>
+            </AppLayout>
+        );
+    }
 
     return (
         <AppLayout>
@@ -91,10 +149,14 @@ export default function SettingsPage() {
                             <div className="space-y-0.5">
                                 <Label htmlFor="profile-visibility" className="text-base">Profile Visibility</Label>
                                 <p className="text-sm text-muted-foreground">
-                                    Control whether your profile is visible to others in search results.
+                                    Control whether your profile is visible to others. Turning this off will also set your status to "Inactive".
                                 </p>
                             </div>
-                            <Switch id="profile-visibility" defaultChecked />
+                            <Switch 
+                                id="profile-visibility" 
+                                checked={userProfile?.profileVisible ?? true}
+                                onCheckedChange={handleVisibilityChange}
+                             />
                         </div>
 
                         <div className="flex items-center justify-between space-x-2 rounded-lg border p-4">
