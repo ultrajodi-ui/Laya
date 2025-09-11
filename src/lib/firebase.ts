@@ -16,9 +16,7 @@ const firebaseConfig = {
 
 // Initialize Firebase for client-side
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-const auth = initializeAuth(app, {
-    persistence: browserLocalPersistence
-});
+const auth = getAuth(app);
 const db = getFirestore(app);
 
 export { app, auth, db };

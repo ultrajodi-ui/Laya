@@ -1,9 +1,59 @@
 
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import Image from 'next/image';
+import { Skeleton } from '@/components/ui/skeleton';
+import { app } from '@/lib/firebase';
 
 export default function Home() {
+  const router = useRouter();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const auth = getAuth(app);
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // User is signed in, redirect to browse page.
+        router.push('/browse');
+      } else {
+        // No user is signed in, show the landing page.
+        setLoading(false);
+      }
+    });
+
+    // Cleanup subscription on unmount
+    return () => unsubscribe();
+  }, [router]);
+
+  if (loading) {
+    return (
+      <div className="flex flex-col min-h-screen">
+        <Skeleton className="h-16 w-full" />
+        <main className="flex-1">
+          <Skeleton className="w-full h-[80vh] min-h-[600px]" />
+          <div className="w-full py-12 md:py-24 lg:py-32">
+             <div className="container px-4 md:px-6">
+                 <div className="grid items-center gap-6 lg:grid-cols-[1fr_500px] lg:gap-12 xl:grid-cols-[1fr_550px]">
+                    <div className="flex flex-col justify-center space-y-4">
+                        <Skeleton className="h-8 w-1/3" />
+                        <Skeleton className="h-12 w-3/4" />
+                        <Skeleton className="h-24 w-full" />
+                    </div>
+                     <Skeleton className="aspect-video w-full" />
+                </div>
+            </div>
+          </div>
+        </main>
+         <Skeleton className="h-20 w-full" />
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col min-h-screen">
       <header className="px-4 lg:px-6 h-16 flex items-center bg-background/80 backdrop-blur-sm fixed top-0 w-full z-10" style={{ backgroundColor: '#3B2F2F' }}>
