@@ -155,6 +155,8 @@ export default function ProfileEditPage() {
                 const uniqueId = Date.now().toString().slice(-6);
                 dataToSave.memberid = `${memberIdPrefix}${uniqueId}`;
                 dataToSave.contactLimit = 3; // Set default contact limit
+                dataToSave.currentStatus = 'Active'; // Set default status for new users
+                dataToSave.profileVisible = true; // Set default visibility for new users
             }
 
             if (auth.currentUser && auth.currentUser.displayName !== dataToSave.fullName) {
@@ -682,3 +684,5 @@ export default function ProfileEditPage() {
         </AppLayout>
     );
 }
+
+    
