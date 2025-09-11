@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { usePageTitle } from "@/hooks/use-page-title";
 import { cn } from "@/lib/utils";
-import { Check, Star } from "lucide-react";
+import { Check, Star, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
@@ -18,7 +18,8 @@ const plans = [
             "Create profile",
             "Browse matches",
             "Send limited Likes",
-            "View 3 Contact Numbers of Basic Profile Only"
+            "View 3 Contact Numbers of Basic Profile Only",
+            "x:Cannot watch all Protected Photos."
         ],
         isCurrent: true,
     },
@@ -82,12 +83,20 @@ function PricingCard({ plan }: { plan: typeof plans[0] }) {
             </CardHeader>
             <CardContent className="flex-1 space-y-4">
                 <ul className="space-y-2 text-muted-foreground">
-                    {plan.features.map(feature => (
-                        <li key={feature} className="flex items-start">
-                            <Check className="w-4 h-4 mr-2 mt-1 text-green-500 flex-shrink-0" />
-                            <span>{feature}</span>
-                        </li>
-                    ))}
+                    {plan.features.map(feature => {
+                        const isNegative = feature.startsWith('x:');
+                        const featureText = isNegative ? feature.substring(2) : feature;
+                        return (
+                            <li key={feature} className="flex items-start">
+                                {isNegative ? (
+                                    <X className="w-4 h-4 mr-2 mt-1 text-red-500 flex-shrink-0" />
+                                ) : (
+                                    <Check className="w-4 h-4 mr-2 mt-1 text-green-500 flex-shrink-0" />
+                                )}
+                                <span>{featureText}</span>
+                            </li>
+                        )
+                    })}
                 </ul>
             </CardContent>
             <div className="p-6 pt-0">
