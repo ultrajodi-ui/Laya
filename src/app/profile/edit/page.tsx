@@ -96,15 +96,6 @@ export default function ProfileEditPage() {
             toast({ variant: 'destructive', title: 'You must be logged in to upload a photo.' });
             return;
         }
-        
-        if (!profileData.fullName) {
-             toast({
-                variant: 'destructive',
-                title: 'Save Profile First',
-                description: 'Please save your full name before uploading a photo.',
-            });
-            return;
-        }
 
         if (file.size > 1024 * 1024) {
             toast({
@@ -124,10 +115,6 @@ export default function ProfileEditPage() {
             
             setProfileData(prev => ({...prev, imageUrl: downloadURL}));
             
-            if (auth.currentUser) {
-                await updateProfile(auth.currentUser, { photoURL: downloadURL });
-            }
-
             toast({
                 title: 'Photo Uploaded',
                 description: 'Your new profile photo is ready. Save changes to make it permanent.',
@@ -560,11 +547,11 @@ export default function ProfileEditPage() {
                                         <SelectValue placeholder="Select range" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="<3LPA">Less than 3 LPA</SelectItem>
+                                        <SelectItem value="&lt;3LPA">Less than 3 LPA</SelectItem>
                                         <SelectItem value="3-5LPA">3-5 LPA</SelectItem>
                                         <SelectItem value="5-10LPA">5-10 LPA</SelectItem>
                                         <SelectItem value="10-20LPA">10-20 LPA</SelectItem>
-                                        <SelectItem value=">20LPA">More than 20 LPA</SelectItem>
+                                        <SelectItem value="&gt;20LPA">More than 20 LPA</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
@@ -733,5 +720,7 @@ export default function ProfileEditPage() {
         </AppLayout>
     );
 }
+
+    
 
     

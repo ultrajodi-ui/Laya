@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import type { ReactNode } from 'react';
@@ -256,7 +257,7 @@ function AppLayoutContent({ children }: { children: ReactNode }) {
                 <SidebarMenuItem>
                     <SidebarMenuButton onClick={handleLogout} tooltip={{children: "Logout"}}>
                          <Avatar className="h-8 w-8">
-                            <AvatarImage src={user?.photoURL || "https://picsum.photos/seed/user-avatar/100/100"} alt={user?.displayName || "User"} />
+                            <AvatarImage src={user?.photoURL || userProfile?.imageUrl || "https://picsum.photos/seed/user-avatar/100/100"} alt={user?.displayName || "User"} />
                             <AvatarFallback>{user?.displayName?.charAt(0) || 'U'}</AvatarFallback>
                         </Avatar>
                         <span>Logout</span>
@@ -281,7 +282,7 @@ function AppLayoutContent({ children }: { children: ReactNode }) {
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="icon" className="rounded-full">
                        <Avatar className="h-8 w-8">
-                          <AvatarImage src={user?.photoURL || "https://picsum.photos/seed/user-avatar/100/100"} alt={user?.displayName || "User"} />
+                          <AvatarImage src={user?.photoURL || userProfile?.imageUrl || "https://picsum.photos/seed/user-avatar/100/100"} alt={user?.displayName || "User"} />
                           <AvatarFallback>{user?.displayName?.charAt(0) || 'U'}</AvatarFallback>
                       </Avatar>
                       <span className="sr-only">Toggle user menu</span>
@@ -323,3 +324,5 @@ export function AppLayout({ children }: { children: ReactNode }) {
     </PageTitleProvider>
   )
 }
+
+    
