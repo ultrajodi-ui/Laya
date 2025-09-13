@@ -7,12 +7,12 @@ import { getStorage } from 'firebase/storage';
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: 'AIzaSyDQyJmUDiYXIRaRn-Q7ByVUpVSD8jGBMRE',
-  authDomain: 'ultra-jodi-wxhoi.firebaseapp.com',
-  projectId: 'ultra-jodi-wxhoi',
-  storageBucket: 'ultra-jodi-wxhoi.appspot.com',
-  messagingSenderId: '919030326656',
-  appId: '1:919030326656:web:3805fc12c3a29d30350d65',
+  "projectId": "ultra-jodi-wxhoi",
+  "appId": "1:919030326656:web:575ef44228abd511350d65",
+  "storageBucket": "ultra-jodi-wxhoi.appspot.com",
+  "apiKey": "AIzaSyDQyJmUDiYXIRaRn-Q7ByVUpVSD8jGBMRE",
+  "authDomain": "ultra-jodi-wxhoi.firebaseapp.com",
+  "messagingSenderId": "919030326656"
 };
 
 // Initialize Firebase for client-side
