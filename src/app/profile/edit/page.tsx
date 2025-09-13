@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
@@ -93,10 +92,10 @@ export default function ProfileEditPage() {
         const file = e.target.files[0];
 
         if (!user) {
-            toast({ variant: 'destructive', title: 'You must be logged in.' });
+            toast({ variant: 'destructive', title: 'You must be logged in to upload a photo.' });
             return;
         }
-        
+
         if (file.size > 1024 * 1024) {
             toast({
                 variant: "destructive",
