@@ -53,6 +53,7 @@ export type UserProfile = {
   profileBy?: "Self" | "Parents" | "Sibling" | "Guardian" | "Friends" | "Relatives";
   currentStatus?: 'Active' | 'Engaged' | 'Married' | 'Inactive';
   profileVisible?: boolean;
+  additionalPhotoUrls?: string[];
 };
 
 export type Connection = {
@@ -75,7 +76,3 @@ export type Conversation = {
   messages: Message[];
   lastMessage: Message;
 };
-
-    
-
-    

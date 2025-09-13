@@ -10,7 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Heart, Calendar, Sparkles, MapPin, Eye, Star, Shield, Gem, Users } from "lucide-react";
+import { Heart, Calendar, Sparkles, MapPin, Eye, Star, Shield, Gem, Users, Camera } from "lucide-react";
 import Image from "next/image";
 import { Skeleton } from '@/components/ui/skeleton';
 import type { UserProfile } from '@/lib/types';
@@ -345,6 +345,27 @@ function ProfileContent({ id }: { id: string }) {
                                             <Eye className="mr-2 h-4 w-4" /> View
                                         </Button>
                                     )}
+                                </div>
+                            </div>
+                        )}
+
+                        {user.additionalPhotoUrls && user.additionalPhotoUrls.length > 0 && (
+                            <div>
+                                <h3 className="text-lg font-semibold font-headline mb-2 flex items-center gap-2">
+                                    <Camera className="w-5 h-5 text-primary" />
+                                    Photo Gallery
+                                </h3>
+                                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                                    {user.additionalPhotoUrls.map((url, index) => (
+                                        <div key={index} className="relative aspect-square w-full h-auto rounded-lg overflow-hidden">
+                                            <Image 
+                                                src={url} 
+                                                alt={`Gallery photo ${index + 1}`} 
+                                                layout="fill"
+                                                className="object-cover"
+                                            />
+                                        </div>
+                                    ))}
                                 </div>
                             </div>
                         )}

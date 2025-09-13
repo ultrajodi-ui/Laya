@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Zap, CalendarIcon } from 'lucide-react';
+import { Loader2, Zap, CalendarIcon, Upload } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { format, differenceInYears } from 'date-fns';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
@@ -27,18 +27,21 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import Link from 'next/link';
 import { UserProfile } from '@/lib/types';
 import { Checkbox } from '@/components/ui/checkbox';
+import Image from 'next/image';
 
 export default function ProfileEditPage() {
     const { toast } = useToast();
     const router = useRouter();
     const [user, setUser] = useState<User | null>(null);
-    const [profileData, setProfileData] = useState<Partial<UserProfile>>({ gender: 'female', photoVisibility: 'Public', interests: [] });
+    const [profileData, setProfileData] = useState<Partial<UserProfile>>({ gender: 'female', photoVisibility: 'Public', interests: [], additionalPhotoUrls: [] });
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
+    const [isUploadingAdditional, setIsUploadingAdditional] = useState(false);
     const [isCalendarOpen, setIsCalendarOpen] = useState(false);
     const fatherNameRef = useRef<HTMLInputElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const additionalFileInputRef = useRef<HTMLInputElement>(null);
     const auth = getAuth();
 
     useEffect(() => {
@@ -55,10 +58,11 @@ export default function ProfileEditPage() {
                         dob: dob,
                         photoVisibility: data.photoVisibility || 'Public',
                         interests: data.interests || [],
+                        additionalPhotoUrls: data.additionalPhotoUrls || [],
                     });
                 } else {
                     // New user, pre-fill email
-                    setProfileData((prev: any) => ({ ...prev, email: currentUser.email, interests: [] }));
+                    setProfileData((prev: any) => ({ ...prev, email: currentUser.email, interests: [], additionalPhotoUrls: [] }));
                 }
             } else {
                 setUser(null);
@@ -115,6 +119,8 @@ export default function ProfileEditPage() {
             
             setProfileData(prev => ({...prev, imageUrl: downloadURL}));
             
+            await updateProfile(auth.currentUser!, { photoURL: downloadURL });
+            
             toast({
                 title: 'Photo Uploaded',
                 description: 'Your new profile photo is ready. Save changes to make it permanent.',
@@ -132,6 +138,62 @@ export default function ProfileEditPage() {
         }
     };
     
+    const handleAddPhotosClick = () => {
+        additionalFileInputRef.current?.click();
+    };
+
+    const handleAdditionalPhotosChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (!e.target.files || e.target.files.length === 0) return;
+        const files = Array.from(e.target.files);
+
+        if (!user) {
+            toast({ variant: 'destructive', title: 'You must be logged in to upload photos.' });
+            return;
+        }
+        
+        setIsUploadingAdditional(true);
+        let uploadedUrls: string[] = profileData.additionalPhotoUrls || [];
+        let uploadFailed = false;
+
+        for (const file of files) {
+            if (file.size > 1024 * 1024) {
+                toast({
+                    variant: "destructive",
+                    title: `File too large: ${file.name}`,
+                    description: 'Please upload images smaller than 1MB.',
+                });
+                continue; // Skip this file
+            }
+            
+            const storageRef = ref(storage, `additional-photos/${user.uid}/${file.name}`);
+
+            try {
+                const snapshot = await uploadBytes(storageRef, file);
+                const downloadURL = await getDownloadURL(snapshot.ref);
+                uploadedUrls.push(downloadURL);
+            } catch (error) {
+                uploadFailed = true;
+                console.error(`Error uploading ${file.name}:`, error);
+                toast({
+                    variant: "destructive",
+                    title: `Upload Failed for ${file.name}`,
+                    description: 'Could not upload this photo. Please try again.',
+                });
+            }
+        }
+        
+        setProfileData(prev => ({ ...prev, additionalPhotoUrls: uploadedUrls }));
+
+        setIsUploadingAdditional(false);
+        if (!uploadFailed && files.length > 0) {
+             toast({
+                title: 'Photos Uploaded',
+                description: 'Your new photos are ready. Save changes to add them to your gallery.',
+            });
+        }
+    };
+
+
     const handleInterestChange = (interest: string) => {
         setProfileData((prev) => {
             const interests = prev.interests ? [...prev.interests] : [];
@@ -314,7 +376,7 @@ export default function ProfileEditPage() {
                             <div className="grid gap-1.5">
                                 <Button onClick={handlePhotoChangeClick} disabled={isUploading}>
                                     {isUploading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                    {isUploading ? 'Uploading...' : 'Change Photo'}
+                                    {isUploading ? 'Uploading...' : 'Change Profile Photo'}
                                 </Button>
                                 <input
                                     type="file"
@@ -338,6 +400,31 @@ export default function ProfileEditPage() {
                                     <SelectItem value="Protected">Protected</SelectItem>
                                 </SelectContent>
                             </Select>
+                        </div>
+                        
+                        <div className="grid gap-4">
+                            <Label>Additional Photos</Label>
+                            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2">
+                                {profileData.additionalPhotoUrls?.map((url, index) => (
+                                    <div key={index} className="relative aspect-square">
+                                        <Image src={url} alt={`Additional photo ${index + 1}`} layout="fill" className="rounded-md object-cover" />
+                                    </div>
+                                ))}
+                            </div>
+                            <Button onClick={handleAddPhotosClick} disabled={isUploadingAdditional} variant="outline">
+                                {isUploadingAdditional && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                <Upload className="mr-2 h-4 w-4" />
+                                {isUploadingAdditional ? 'Uploading...' : 'Add Photos'}
+                            </Button>
+                            <input
+                                type="file"
+                                ref={additionalFileInputRef}
+                                onChange={handleAdditionalPhotosChange}
+                                className="hidden"
+                                accept="image/png, image/jpeg"
+                                multiple
+                            />
+                            <p className="text-sm text-muted-foreground">Upload up to 5 more photos to your gallery.</p>
                         </div>
 
 
@@ -547,11 +634,11 @@ export default function ProfileEditPage() {
                                         <SelectValue placeholder="Select range" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="&lt;3LPA">Less than 3 LPA</SelectItem>
+                                        <SelectItem value="<3LPA">Less than 3 LPA</SelectItem>
                                         <SelectItem value="3-5LPA">3-5 LPA</SelectItem>
                                         <SelectItem value="5-10LPA">5-10 LPA</SelectItem>
                                         <SelectItem value="10-20LPA">10-20 LPA</SelectItem>
-                                        <SelectItem value="&gt;20LPA">More than 20 LPA</SelectItem>
+                                        <SelectItem value=">20LPA">More than 20 LPA</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
@@ -706,11 +793,11 @@ export default function ProfileEditPage() {
                         </div>
 
                          <div className="flex gap-2 justify-self-start">
-                            <Button onClick={handleSaveChanges} className="bg-primary hover:bg-primary/90" disabled={isSaving || isUploading}>
+                            <Button onClick={handleSaveChanges} className="bg-primary hover:bg-primary/90" disabled={isSaving || isUploading || isUploadingAdditional}>
                                 {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                 {isSaving ? 'Saving...' : 'Save Changes'}
                             </Button>
-                            <Button variant="outline" onClick={() => router.push('/profile/view')} disabled={isSaving || isUploading}>
+                            <Button variant="outline" onClick={() => router.push('/profile/view')} disabled={isSaving || isUploading || isUploadingAdditional}>
                                 Cancel
                             </Button>
                         </div>
@@ -720,7 +807,3 @@ export default function ProfileEditPage() {
         </AppLayout>
     );
 }
-
-    
-
-    
