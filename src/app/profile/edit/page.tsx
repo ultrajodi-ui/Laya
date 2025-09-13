@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
@@ -254,7 +255,7 @@ export default function ProfileEditPage() {
     const educationLevels = ["SSLC", "HSC", "ITI", "Diploma", "Bachelors", "PG", "Engineering", "MBBS"];
     const religions = ["Hindu", "Christian", "Muslim - Shia", "Muslim - Sunni", "Muslim - Other", "Sikh", "Jain - Digambar", "Jain - Shwetamber", "Jain - Others", "Parsi", "Buddhist", "Jewish", "Inter - Religion", "No Religious Belief"];
     const communities = ["OC", "FC", "MBC", "BC", "SC", "ST", "Other"];
-    const states = ["Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Puducherry", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal"];
+    const states = ["Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Delhi", "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Puducherry", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal"];
     const interests = ["Reading", "Traveling", "Cooking", "Foodie", "Music", "Movies", "Hiking", "Fitness", "Yoga", "Sports", "Dancing", "Singing", "Acting", "Photography", "Painting", "Writing", "Pets", "Fashion", "Meditation", "Shopping", "cycling", "Swimming", "Gaming", "Volunteering", "Family Time", "Temple Visit", "Prayers", "Gardening", "Storytelling", "Helping Others", "Celebrations"];
     const profileByOptions = ["Self", "Parents", "Sibling", "Guardian", "Friends", "Relatives"];
 
