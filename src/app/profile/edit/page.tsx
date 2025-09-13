@@ -370,7 +370,7 @@ export default function ProfileEditPage() {
                                 <Input id="fullName" value={profileData.fullName || ''} onChange={handleInputChange} />
                             </div>
                             <div className="grid gap-2">
-                                <Label htmlFor="dob">Date of Birth</Label>
+                                <Label htmlFor="dob">Date of Birth<span className="text-red-500">*</span></Label>
                                  <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
                                   <PopoverTrigger asChild>
                                       <Button
