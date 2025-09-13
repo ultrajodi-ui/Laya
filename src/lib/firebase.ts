@@ -9,7 +9,7 @@ import { getStorage } from 'firebase/storage';
 const firebaseConfig = {
   "projectId": "ultra-jodi-wxhoi",
   "appId": "1:919030326656:web:575ef44228abd511350d65",
-  "storageBucket": "ultra-jodi-wxhoi.appspot.com",
+  "storageBucket": "ultra-jodi-wxhoi.firebasestorage.app",
   "apiKey": "AIzaSyDQyJmUDiYXIRaRn-Q7ByVUpVSD8jGBMRE",
   "authDomain": "ultra-jodi-wxhoi.firebaseapp.com",
   "messagingSenderId": "919030326656"

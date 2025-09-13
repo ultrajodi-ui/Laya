@@ -95,6 +95,15 @@ export default function ProfileEditPage() {
             toast({ variant: 'destructive', title: 'You must be logged in to upload a photo.' });
             return;
         }
+        
+        if (!profileData.fullName) {
+             toast({
+                variant: 'destructive',
+                title: 'Save Profile First',
+                description: 'Please save your full name before uploading a photo.',
+            });
+            return;
+        }
 
         if (file.size > 1024 * 1024) {
             toast({
@@ -113,7 +122,10 @@ export default function ProfileEditPage() {
             const downloadURL = await getDownloadURL(snapshot.ref);
             
             setProfileData(prev => ({...prev, imageUrl: downloadURL}));
-            await updateProfile(user, { photoURL: downloadURL });
+            
+            if (auth.currentUser) {
+                await updateProfile(auth.currentUser, { photoURL: downloadURL });
+            }
 
             toast({
                 title: 'Photo Uploaded',
@@ -192,7 +204,7 @@ export default function ProfileEditPage() {
                 dataToSave.createdAt = new Date(); // Set creation timestamp for new users
             }
 
-            if (auth.currentUser && auth.currentUser.displayName !== dataToSave.fullName) {
+            if (auth.currentUser) {
                 await updateProfile(auth.currentUser, {
                     displayName: dataToSave.fullName,
                     photoURL: dataToSave.imageUrl
@@ -720,3 +732,5 @@ export default function ProfileEditPage() {
         </AppLayout>
     );
 }
+
+    
