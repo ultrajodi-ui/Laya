@@ -89,48 +89,56 @@ export default function ProfileEditPage() {
     };
 
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files && e.target.files[0] && user && profileData.memberid) {
-            const file = e.target.files[0];
-            if (file.size > 1024 * 1024) {
-                 toast({
-                    variant: "destructive",
-                    title: 'File too large',
-                    description: 'Please upload an image smaller than 1MB.',
-                });
-                return;
-            }
-            
-            setIsUploading(true);
-            const storageRef = ref(storage, `profile-photos/${profileData.memberid}/${file.name}`);
+        if (!e.target.files || e.target.files.length === 0) return;
+        const file = e.target.files[0];
 
-            try {
-                const snapshot = await uploadBytes(storageRef, file);
-                const downloadURL = await getDownloadURL(snapshot.ref);
-                
-                setProfileData(prev => ({...prev, imageUrl: downloadURL}));
-                await updateProfile(user, { photoURL: downloadURL });
+        if (!user) {
+            toast({ variant: 'destructive', title: 'You must be logged in.' });
+            return;
+        }
 
-                toast({
-                    title: 'Photo Uploaded',
-                    description: 'Your new profile photo is ready. Save changes to make it permanent.',
-                });
-
-            } catch (error) {
-                console.error("Error uploading photo:", error);
-                 toast({
-                    variant: "destructive",
-                    title: 'Upload Failed',
-                    description: 'Could not upload your photo. Please try again.',
-                });
-            } finally {
-                setIsUploading(false);
-            }
-        } else {
-             toast({
+        if (!profileData.memberid) {
+            toast({
                 variant: 'destructive',
-                title: 'Cannot Upload Photo',
-                description: 'Please save your profile first to get a Member ID before uploading a photo.',
+                title: 'Please Save Profile First',
+                description: 'You need to save your profile to get a Member ID before uploading a photo.',
             });
+            return;
+        }
+        
+        if (file.size > 1024 * 1024) {
+            toast({
+                variant: "destructive",
+                title: 'File too large',
+                description: 'Please upload an image smaller than 1MB.',
+            });
+            return;
+        }
+        
+        setIsUploading(true);
+        const storageRef = ref(storage, `profile-photos/${profileData.memberid}/${file.name}`);
+
+        try {
+            const snapshot = await uploadBytes(storageRef, file);
+            const downloadURL = await getDownloadURL(snapshot.ref);
+            
+            setProfileData(prev => ({...prev, imageUrl: downloadURL}));
+            await updateProfile(user, { photoURL: downloadURL });
+
+            toast({
+                title: 'Photo Uploaded',
+                description: 'Your new profile photo is ready. Save changes to make it permanent.',
+            });
+
+        } catch (error) {
+            console.error("Error uploading photo:", error);
+            toast({
+                variant: "destructive",
+                title: 'Upload Failed',
+                description: 'Could not upload your photo. Please try again.',
+            });
+        } finally {
+            setIsUploading(false);
         }
     };
     
@@ -722,3 +730,5 @@ export default function ProfileEditPage() {
         </AppLayout>
     );
 }
+
+    
