@@ -96,15 +96,6 @@ export default function ProfileEditPage() {
             toast({ variant: 'destructive', title: 'You must be logged in.' });
             return;
         }
-
-        if (!profileData.memberid) {
-            toast({
-                variant: 'destructive',
-                title: 'Please Save Profile First',
-                description: 'You need to save your profile to get a Member ID before uploading a photo.',
-            });
-            return;
-        }
         
         if (file.size > 1024 * 1024) {
             toast({
@@ -116,7 +107,7 @@ export default function ProfileEditPage() {
         }
         
         setIsUploading(true);
-        const storageRef = ref(storage, `profile-photos/${profileData.memberid}/${file.name}`);
+        const storageRef = ref(storage, `profile-photos/${user.uid}/${file.name}`);
 
         try {
             const snapshot = await uploadBytes(storageRef, file);
