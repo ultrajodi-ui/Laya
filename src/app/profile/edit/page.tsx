@@ -413,7 +413,7 @@ export default function ProfileEditPage() {
                                     </div>
                                 ))}
                             </div>
-                            <Button onClick={handleAddPhotosClick} disabled={isUploadingAdditional} variant="outline">
+                            <Button onClick={handleAddPhotosClick} disabled={isUploadingAdditional || (profileData.additionalPhotoUrls?.length ?? 0) >= 4} variant="outline">
                                 {isUploadingAdditional && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                 <Upload className="mr-2 h-4 w-4" />
                                 {isUploadingAdditional ? 'Uploading...' : 'Add Photos'}
@@ -425,6 +425,7 @@ export default function ProfileEditPage() {
                                 className="hidden"
                                 accept="image/png, image/jpeg"
                                 multiple
+                                disabled={(profileData.additionalPhotoUrls?.length ?? 0) >= 4}
                             />
                             <p className="text-sm text-muted-foreground">Upload up to 4 more photos to your gallery.</p>
                         </div>
