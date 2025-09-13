@@ -119,7 +119,9 @@ export default function ProfileEditPage() {
             
             setProfileData(prev => ({...prev, imageUrl: downloadURL}));
             
-            await updateProfile(auth.currentUser!, { photoURL: downloadURL });
+            if (auth.currentUser) {
+              await updateProfile(auth.currentUser, { photoURL: downloadURL });
+            }
             
             toast({
                 title: 'Photo Uploaded',
@@ -424,7 +426,7 @@ export default function ProfileEditPage() {
                                 accept="image/png, image/jpeg"
                                 multiple
                             />
-                            <p className="text-sm text-muted-foreground">Upload up to 5 more photos to your gallery.</p>
+                            <p className="text-sm text-muted-foreground">Upload up to 4 more photos to your gallery.</p>
                         </div>
 
 
