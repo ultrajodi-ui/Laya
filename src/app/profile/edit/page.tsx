@@ -89,7 +89,7 @@ export default function ProfileEditPage() {
     };
 
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files && e.target.files[0] && user) {
+        if (e.target.files && e.target.files[0] && user && profileData.memberid) {
             const file = e.target.files[0];
             if (file.size > 1024 * 1024) {
                  toast({
@@ -101,7 +101,7 @@ export default function ProfileEditPage() {
             }
             
             setIsUploading(true);
-            const storageRef = ref(storage, `profile-photos/${user.uid}/${file.name}`);
+            const storageRef = ref(storage, `profile-photos/${profileData.memberid}/${file.name}`);
 
             try {
                 const snapshot = await uploadBytes(storageRef, file);
@@ -125,6 +125,12 @@ export default function ProfileEditPage() {
             } finally {
                 setIsUploading(false);
             }
+        } else {
+             toast({
+                variant: 'destructive',
+                title: 'Cannot Upload Photo',
+                description: 'Please save your profile first to get a Member ID before uploading a photo.',
+            });
         }
     };
     
