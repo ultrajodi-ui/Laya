@@ -5,7 +5,7 @@ import { useState, useEffect, useRef } from 'react';
 import { getAuth, onAuthStateChanged, User, updateProfile } from 'firebase/auth';
 import { doc, getDoc, setDoc, getCountFromServer, collection, where, query } from 'firebase/firestore';
 import { db, storage } from '@/lib/firebase';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -104,7 +104,7 @@ export default function ProfileEditPage() {
             toast({
                 variant: "destructive",
                 title: 'File too large',
-                description: 'Photo size should be less than or equal to 200KB.',
+                description: 'photo size should be less than or equal to 200KB.',
             });
             return;
         }
@@ -194,12 +194,34 @@ export default function ProfileEditPage() {
         }
     };
     
-    const handleDeleteAdditionalPhoto = (index: number) => {
-        setProfileData((prev) => {
-            const newUrls = [...(prev.additionalPhotoUrls || [])];
-            newUrls.splice(index, 1);
-            return { ...prev, additionalPhotoUrls: newUrls };
-        });
+    const handleDeleteAdditionalPhoto = async (urlToDelete: string) => {
+        if (!user) return;
+
+        // Create a reference to the file to delete
+        const photoRef = ref(storage, urlToDelete);
+
+        try {
+            // Delete the file
+            await deleteObject(photoRef);
+
+            // Update the state to remove the photo URL
+            setProfileData((prev) => ({
+                ...prev,
+                additionalPhotoUrls: (prev.additionalPhotoUrls || []).filter(url => url !== urlToDelete),
+            }));
+
+            toast({
+                title: "Photo Deleted",
+                description: "The photo has been removed from your gallery.",
+            });
+        } catch (error) {
+            console.error("Error deleting photo:", error);
+            toast({
+                variant: "destructive",
+                title: "Deletion Failed",
+                description: "Could not delete the photo. Please try again.",
+            });
+        }
     };
 
 
@@ -421,7 +443,7 @@ export default function ProfileEditPage() {
                                             variant="destructive"
                                             size="icon"
                                             className="absolute top-1 right-1 h-6 w-6"
-                                            onClick={() => handleDeleteAdditionalPhoto(index)}
+                                            onClick={() => handleDeleteAdditionalPhoto(url)}
                                         >
                                             <X className="h-4 w-4" />
                                         </Button>
@@ -825,5 +847,7 @@ export default function ProfileEditPage() {
         </AppLayout>
     );
 }
+
+    
 
     
