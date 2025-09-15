@@ -10,7 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Heart, Calendar, Sparkles, MapPin, Eye, Star, Shield, Gem, Users, Camera } from "lucide-react";
+import { Heart, Calendar, Sparkles, MapPin, Eye, Star, Shield, Gem, Users, Camera, X } from "lucide-react";
 import Image from "next/image";
 import { Skeleton } from '@/components/ui/skeleton';
 import type { UserProfile } from '@/lib/types';
@@ -55,6 +55,7 @@ function ProfileContent({ id }: { id: string }) {
     const router = useRouter();
     const [isContactVisible, setIsContactVisible] = useState(false);
     const [showUpgradeAlert, setShowUpgradeAlert] = useState(false);
+    const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
 
 
     useEffect(() => {
@@ -283,148 +284,175 @@ function ProfileContent({ id }: { id: string }) {
 
 
     return (
-         <AlertDialog open={showUpgradeAlert} onOpenChange={setShowUpgradeAlert}>
-            <div className="max-w-4xl mx-auto space-y-6">
-                <Card className="overflow-hidden">
-                    <div className="relative h-64 md:h-80 bg-muted">
-                        {galleryImages.length > 0 ? (
-                            <Carousel className="w-full h-full">
-                                <CarouselContent>
-                                    {galleryImages.map((url, index) => (
-                                        <CarouselItem key={index}>
-                                            <div className="relative w-full h-64 md:h-80">
-                                                <Image 
-                                                    src={url} 
-                                                    alt={`Photo ${index + 1}`} 
-                                                    fill 
-                                                    className="object-cover"
-                                                />
-                                            </div>
-                                        </CarouselItem>
-                                    ))}
-                                </CarouselContent>
-                                {galleryImages.length > 1 && (
-                                    <>
-                                        <CarouselPrevious className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-black/50 text-white border-none hover:bg-black/70" />
-                                        <CarouselNext className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-black/50 text-white border-none hover:bg-black/70" />
-                                    </>
-                                )}
-                            </Carousel>
-                        ) : (
-                            <Image 
-                                src={user.coverUrl || `https://picsum.photos/seed/${user.id}-cover/1200/400`} 
-                                alt={`${user.fullName}'s cover photo`} 
-                                fill 
-                                className="object-cover" 
-                                data-ai-hint="romantic landscape" 
-                            />
-                        )}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                        <div className="absolute bottom-4 left-6">
-                            <Avatar className="w-24 h-24 md:w-32 md:h-32 border-4 border-background">
-                                <AvatarImage src={profileImageUrl} alt={user.fullName} />
-                                <AvatarFallback>{user.fullName?.charAt(0)}</AvatarFallback>
-                            </Avatar>
-                        </div>
-                    </div>
-                    <CardHeader className="pt-20 md:pt-24 relative">
-                        <div className="absolute top-4 right-4">
-                            <Button className="bg-accent text-accent-foreground hover:bg-accent/90" onClick={handleLikeClick}>
-                                <Heart className={cn("mr-2 h-4 w-4", isLiked && "fill-red-500 text-red-500")} /> Like
-                            </Button>
-                        </div>
-                        <CardTitle className="text-3xl font-headline flex items-center">
-                            <span>{user.fullName}, {calculateAge(user.dob)}</span>
-                            <UserTypeIcon usertype={user.usertype} />
-                        </CardTitle>
-                        <CardDescription className="!mt-1 text-base text-muted-foreground">
-                            ID: {user.memberid}
-                        </CardDescription>
-                         <CardDescription className="flex items-center gap-4 text-base flex-wrap">
-                             <span className="flex items-center gap-1"><MapPin className="w-4 h-4" /> {user.city}</span>
-                             {user.profileBy && <span className="flex items-center gap-1"><Users className="w-4 h-4" /> Profile by {user.profileBy}</span>}
-                             {user.createdAt && <span className="flex items-center gap-1"><Calendar className="w-4 h-4" /> Joined {format(user.createdAt.toDate(), "MMMM yyyy")}</span>}
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-6">
-                        <div>
-                            <h3 className="text-lg font-semibold font-headline mb-2">About Me</h3>
-                             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 text-muted-foreground">
-                                <p><span className="font-semibold text-foreground">Father:</span> {user.fatherName}</p>
-                                <p><span className="font-semibold text-foreground">Mother:</span> {user.motherName}</p>
-                                <p><span className="font-semibold text-foreground">Date of Birth:</span> {user.dob ? format(user.dob.toDate(), 'PPP') : '-'}</p>
-                                <p><span className="font-semibold text-foreground">Marital Status:</span> {user.maritalStatus}</p>
-                                <p><span className="font-semibold text-foreground">Mother Tongue:</span> {user.motherTongue}</p>
-                                <p><span className="font-semibold text-foreground">Home State:</span> {user.homeState}</p>
-                                <p><span className="font-semibold text-foreground">Occupation:</span> {user.occupation}</p>
-                                <p><span className="font-semibold text-foreground">Salary:</span> {user.salary}</p>
-                                <p><span className="font-semibold text-foreground">Location:</span> {user.workingPlace}</p>
-                                <p><span className="font-semibold text-foreground">Religion:</span> {user.religion}</p>
-                                <p><span className="font-semibold text-foreground">Community:</span> {user.community}</p>
-                                <p><span className="font-semibold text-foreground">Sub-caste:</span> {user.subCaste}</p>
-                                <p><span className="font-semibold text-foreground">Zodiac Sign:</span> {user.zodiacSign}</p>
-                                <p><span className="font-semibold text-foreground">Star Sign:</span> {user.starSign}</p>
-                                <p><span className="font-semibold text-foreground">Complexion:</span> {user.complexion}</p>
-                                <p><span className="font-semibold text-foreground">Body Type:</span> {user.bodyType}</p>
-                                <p><span className="font-semibold text-foreground">Diet:</span> {user.diet}</p>
-                                <p><span className="font-semibold text-foreground">Height:</span> {heightValue}</p>
-                                <p><span className="font-semibold text-foreground">Drinking Habit:</span> {user.drinkingHabit}</p>
-                                <p><span className="font-semibold text-foreground">Smoking Habit:</span> {user.smokingHabit}</p>
-                            </div>
-                        </div>
-
-                        {user.mobileNo && (
-                            <div>
-                                <h3 className="text-lg font-semibold font-headline mb-2">Contact Details</h3>
-                                <div className="flex items-center gap-2 p-4 border rounded-lg bg-secondary/50">
-                                    <span className="text-muted-foreground">Contact Number:</span>
-                                    <span className={cn("font-mono", !isContactVisible && "filter blur-sm select-none")}>
-                                        {user.mobileNo}
-                                    </span>
-                                    {!isContactVisible && (
-                                        <Button variant="outline" size="sm" className="ml-auto bg-background" onClick={handleViewContact}>
-                                            <Eye className="mr-2 h-4 w-4" /> View
-                                        </Button>
+         <>
+            <AlertDialog open={showUpgradeAlert} onOpenChange={setShowUpgradeAlert}>
+                <div className="max-w-4xl mx-auto space-y-6">
+                    <Card className="overflow-hidden">
+                        <div className="relative h-64 md:h-80 bg-muted">
+                            {galleryImages.length > 0 ? (
+                                <Carousel className="w-full h-full">
+                                    <CarouselContent>
+                                        {galleryImages.map((url, index) => (
+                                            <CarouselItem key={index} onClick={() => setFullscreenImage(url)} className="cursor-pointer">
+                                                <div className="relative w-full h-64 md:h-80">
+                                                    <Image 
+                                                        src={url} 
+                                                        alt={`Photo ${index + 1}`} 
+                                                        fill 
+                                                        className="object-cover"
+                                                    />
+                                                </div>
+                                            </CarouselItem>
+                                        ))}
+                                    </CarouselContent>
+                                    {galleryImages.length > 1 && (
+                                        <>
+                                            <CarouselPrevious className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-black/50 text-white border-none hover:bg-black/70" />
+                                            <CarouselNext className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-black/50 text-white border-none hover:bg-black/70" />
+                                        </>
                                     )}
-                                </div>
+                                </Carousel>
+                            ) : (
+                                <Image 
+                                    src={user.coverUrl || `https://picsum.photos/seed/${user.id}-cover/1200/400`} 
+                                    alt={`${user.fullName}'s cover photo`} 
+                                    fill 
+                                    className="object-cover" 
+                                    data-ai-hint="romantic landscape" 
+                                />
+                            )}
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                            <div className="absolute bottom-4 left-6">
+                                <Avatar className="w-24 h-24 md:w-32 md:h-32 border-4 border-background">
+                                    <AvatarImage src={profileImageUrl} alt={user.fullName} />
+                                    <AvatarFallback>{user.fullName?.charAt(0)}</AvatarFallback>
+                                </Avatar>
                             </div>
-                        )}
-
-                         {user.interests && user.interests.length > 0 && (
+                        </div>
+                        <CardHeader className="pt-20 md:pt-24 relative">
+                            <div className="absolute top-4 right-4">
+                                <Button className="bg-accent text-accent-foreground hover:bg-accent/90" onClick={handleLikeClick}>
+                                    <Heart className={cn("mr-2 h-4 w-4", isLiked && "fill-red-500 text-red-500")} /> Like
+                                </Button>
+                            </div>
+                            <CardTitle className="text-3xl font-headline flex items-center">
+                                <span>{user.fullName}, {calculateAge(user.dob)}</span>
+                                <UserTypeIcon usertype={user.usertype} />
+                            </CardTitle>
+                            <CardDescription className="!mt-1 text-base text-muted-foreground">
+                                ID: {user.memberid}
+                            </CardDescription>
+                            <CardDescription className="flex items-center gap-4 text-base flex-wrap">
+                                <span className="flex items-center gap-1"><MapPin className="w-4 h-4" /> {user.city}</span>
+                                {user.profileBy && <span className="flex items-center gap-1"><Users className="w-4 h-4" /> Profile by {user.profileBy}</span>}
+                                {user.createdAt && <span className="flex items-center gap-1"><Calendar className="w-4 h-4" /> Joined {format(user.createdAt.toDate(), "MMMM yyyy")}</span>}
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-6">
                             <div>
-                                <h3 className="text-lg font-semibold font-headline mb-2">Interests</h3>
-                                <div className="flex flex-wrap gap-2">
-                                    {user.interests.map(interest => (
-                                        <Badge key={interest} variant="secondary" className="text-sm px-3 py-1">{interest}</Badge>
-                                    ))}
+                                <h3 className="text-lg font-semibold font-headline mb-2">About Me</h3>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 text-muted-foreground">
+                                    <p><span className="font-semibold text-foreground">Father:</span> {user.fatherName}</p>
+                                    <p><span className="font-semibold text-foreground">Mother:</span> {user.motherName}</p>
+                                    <p><span className="font-semibold text-foreground">Date of Birth:</span> {user.dob ? format(user.dob.toDate(), 'PPP') : '-'}</p>
+                                    <p><span className="font-semibold text-foreground">Marital Status:</span> {user.maritalStatus}</p>
+                                    <p><span className="font-semibold text-foreground">Mother Tongue:</span> {user.motherTongue}</p>
+                                    <p><span className="font-semibold text-foreground">Home State:</span> {user.homeState}</p>
+                                    <p><span className="font-semibold text-foreground">Occupation:</span> {user.occupation}</p>
+                                    <p><span className="font-semibold text-foreground">Salary:</span> {user.salary}</p>
+                                    <p><span className="font-semibold text-foreground">Location:</span> {user.workingPlace}</p>
+                                    <p><span className="font-semibold text-foreground">Religion:</span> {user.religion}</p>
+                                    <p><span className="font-semibold text-foreground">Community:</span> {user.community}</p>
+                                    <p><span className="font-semibold text-foreground">Sub-caste:</span> {user.subCaste}</p>
+                                    <p><span className="font-semibold text-foreground">Zodiac Sign:</span> {user.zodiacSign}</p>
+                                    <p><span className="font-semibold text-foreground">Star Sign:</span> {user.starSign}</p>
+                                    <p><span className="font-semibold text-foreground">Complexion:</span> {user.complexion}</p>
+                                    <p><span className="font-semibold text-foreground">Body Type:</span> {user.bodyType}</p>
+                                    <p><span className="font-semibold text-foreground">Diet:</span> {user.diet}</p>
+                                    <p><span className="font-semibold text-foreground">Height:</span> {heightValue}</p>
+                                    <p><span className="font-semibold text-foreground">Drinking Habit:</span> {user.drinkingHabit}</p>
+                                    <p><span className="font-semibold text-foreground">Smoking Habit:</span> {user.smokingHabit}</p>
                                 </div>
                             </div>
-                        )}
-                         {user.lookingFor && (
-                             <div>
-                                <h3 className="text-lg font-semibold font-headline mb-2 flex items-center gap-2">
-                                    <Sparkles className="w-5 h-5 text-primary" />
-                                    What I'm Looking For
-                                </h3>
-                                <p className="text-muted-foreground italic">"{user.lookingFor}"</p>
-                            </div>
-                         )}
-                    </CardContent>
-                </Card>
-            </div>
-            <AlertDialogContent>
-                <AlertDialogHeader>
-                    <AlertDialogTitle>Upgrade Required</AlertDialogTitle>
-                    <AlertDialogDescription>
-                        You need to upgrade your plan to view this user's contact details. Please upgrade your plan to view more contacts and enjoy other premium benefits.
-                    </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                     <Button variant="outline" onClick={() => setShowUpgradeAlert(false)}>Cancel</Button>
-                     <Button onClick={() => router.push('/upgrade')}>Upgrade Now</Button>
-                </AlertDialogFooter>
-            </AlertDialogContent>
-        </AlertDialog>
+
+                            {user.mobileNo && (
+                                <div>
+                                    <h3 className="text-lg font-semibold font-headline mb-2">Contact Details</h3>
+                                    <div className="flex items-center gap-2 p-4 border rounded-lg bg-secondary/50">
+                                        <span className="text-muted-foreground">Contact Number:</span>
+                                        <span className={cn("font-mono", !isContactVisible && "filter blur-sm select-none")}>
+                                            {user.mobileNo}
+                                        </span>
+                                        {!isContactVisible && (
+                                            <Button variant="outline" size="sm" className="ml-auto bg-background" onClick={handleViewContact}>
+                                                <Eye className="mr-2 h-4 w-4" /> View
+                                            </Button>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+
+                            {user.interests && user.interests.length > 0 && (
+                                <div>
+                                    <h3 className="text-lg font-semibold font-headline mb-2">Interests</h3>
+                                    <div className="flex flex-wrap gap-2">
+                                        {user.interests.map(interest => (
+                                            <Badge key={interest} variant="secondary" className="text-sm px-3 py-1">{interest}</Badge>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                            {user.lookingFor && (
+                                <div>
+                                    <h3 className="text-lg font-semibold font-headline mb-2 flex items-center gap-2">
+                                        <Sparkles className="w-5 h-5 text-primary" />
+                                        What I'm Looking For
+                                    </h3>
+                                    <p className="text-muted-foreground italic">"{user.lookingFor}"</p>
+                                </div>
+                            )}
+                        </CardContent>
+                    </Card>
+                </div>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Upgrade Required</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            You need to upgrade your plan to view this user's contact details. Please upgrade your plan to view more contacts and enjoy other premium benefits.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <Button variant="outline" onClick={() => setShowUpgradeAlert(false)}>Cancel</Button>
+                        <Button onClick={() => router.push('/upgrade')}>Upgrade Now</Button>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+
+            {fullscreenImage && (
+                <div 
+                    className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center animate-in fade-in-50"
+                    onClick={() => setFullscreenImage(null)}
+                >
+                    <div className="relative max-w-4xl max-h-[90vh]">
+                        <Image 
+                            src={fullscreenImage} 
+                            alt="Fullscreen" 
+                            width={1920} 
+                            height={1080}
+                            className="object-contain w-full h-full"
+                        />
+                        <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className="absolute top-4 right-4 text-white hover:text-white bg-black/50 hover:bg-black/70 rounded-full"
+                            onClick={() => setFullscreenImage(null)}
+                        >
+                            <X className="w-6 h-6" />
+                        </Button>
+                    </div>
+                </div>
+            )}
+        </>
     );
 }
 
@@ -448,3 +476,4 @@ export default function ProfileDetailPage({ params }: { params: { id: string } }
         </AppLayout>
     );
 }
+
