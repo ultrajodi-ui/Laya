@@ -207,6 +207,19 @@ function ProfileContent({ id }: { id: string }) {
         }
     };
 
+    const handleShowPhotos = () => {
+        if (!currentUserProfile) {
+            toast({ variant: 'destructive', title: 'Please log in to view photos.' });
+            return;
+        }
+        const isCurrentUserBasic = !currentUserProfile.usertype || currentUserProfile.usertype === 'Basic';
+        if (isCurrentUserBasic) {
+            setShowUpgradeAlert(true);
+        } else {
+            // Logic for premium users to see photos can be added here
+            toast({ title: 'Coming Soon!', description: 'This feature is being developed for premium users.' });
+        }
+    };
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -356,7 +369,7 @@ function ProfileContent({ id }: { id: string }) {
                                         <Lock className="w-4 h-4" />
                                         <p className="font-medium">Photos are Protected</p>
                                     </div>
-                                    <Button variant="outline" size="sm" className="bg-background">Show</Button>
+                                    <Button variant="outline" size="sm" className="bg-background" onClick={handleShowPhotos}>Show</Button>
                                 </div>
                             )}
 
