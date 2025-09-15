@@ -21,7 +21,7 @@ import {
   ThumbsUp,
 } from 'lucide-react';
 import { getAuth, onAuthStateChanged, signOut, User as FirebaseUser } from 'firebase/auth';
-import { doc, getDoc, onSnapshot, Unsubscribe } from 'firebase/firestore';
+import { doc, getDoc, onSnapshot, Unsubscribe, updateDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 
 import {
@@ -89,10 +89,29 @@ function AppLayoutContent({ children }: { children: ReactNode }) {
         setUser(authUser);
         const userDocRef = doc(db, 'users', authUser.uid);
         
-        unsubscribeSnapshot = onSnapshot(userDocRef, (doc) => {
+        unsubscribeSnapshot = onSnapshot(userDocRef, async (doc) => {
           if (doc.exists()) {
             const profile = doc.data() as UserProfile;
             setUserProfile(profile);
+
+             // Check for plan expiration
+            if (profile.usertype !== 'Basic' && profile.planEndDate) {
+                const endDate = profile.planEndDate.toDate();
+                if (new Date() > endDate) {
+                    await updateDoc(userDocRef, {
+                        usertype: 'Basic',
+                        photoViewLimits: { basic: 0, silver: 0, gold: 0, diamond: 0 },
+                        contactLimit: 3,
+                    });
+                    toast({
+                        title: 'Subscription Expired',
+                        description: 'Your premium plan has expired. You are now on the Basic plan.',
+                    });
+                    // The onSnapshot listener will update the userProfile state automatically
+                }
+            }
+
+
             // Profile completion check
             const profileIsMinimal = Object.keys(profile).length < 5;
             if (profileIsMinimal && pathname !== '/profile/edit') {

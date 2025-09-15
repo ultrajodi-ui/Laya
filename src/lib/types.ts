@@ -61,6 +61,8 @@ export type UserProfile = {
     diamond: number;
   };
   viewedPhotos?: string[];
+  planStartDate?: any;
+  planEndDate?: any;
 };
 
 export type Connection = {
