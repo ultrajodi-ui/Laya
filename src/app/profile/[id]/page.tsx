@@ -289,7 +289,15 @@ function ProfileContent({ id }: { id: string }) {
                 <div className="max-w-4xl mx-auto space-y-6">
                     <Card className="overflow-hidden">
                         <div className="relative h-64 md:h-80 bg-muted">
-                            {galleryImages.length > 0 ? (
+                             {user.photoVisibility === 'Protected' || galleryImages.length === 0 ? (
+                                <Image 
+                                    src={user.coverUrl || `https://picsum.photos/seed/${user.id}-cover/1200/400`} 
+                                    alt={`${user.fullName}'s cover photo`} 
+                                    fill 
+                                    className="object-cover" 
+                                    data-ai-hint="romantic landscape" 
+                                />
+                            ) : (
                                 <Carousel className="w-full h-full">
                                     <CarouselContent>
                                         {galleryImages.map((url, index) => (
@@ -313,14 +321,6 @@ function ProfileContent({ id }: { id: string }) {
                                         </>
                                     )}
                                 </Carousel>
-                            ) : (
-                                <Image 
-                                    src={user.coverUrl || `https://picsum.photos/seed/${user.id}-cover/1200/400`} 
-                                    alt={`${user.fullName}'s cover photo`} 
-                                    fill 
-                                    className="object-cover" 
-                                    data-ai-hint="romantic landscape" 
-                                />
                             )}
                             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                             <div className="absolute bottom-4 left-6">
@@ -479,5 +479,6 @@ export default function ProfileDetailPage({ params }: { params: { id: string } }
         </AppLayout>
     );
 }
+
 
 
