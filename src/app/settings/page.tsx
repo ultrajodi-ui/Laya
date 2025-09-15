@@ -191,7 +191,7 @@ export default function SettingsPage() {
                                 <Label className="text-base">Current Plan</Label>
                                 <p className="text-2xl font-bold">{userProfile?.usertype || 'Basic'}</p>
                             </div>
-                            <Button asChild>
+                            <Button asChild disabled={userProfile?.usertype === 'Diamond'}>
                                 <Link href="/upgrade"><Zap className="mr-2 h-4 w-4" /> Upgrade Plan</Link>
                             </Button>
                         </div>
