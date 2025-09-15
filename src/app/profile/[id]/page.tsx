@@ -3,7 +3,7 @@
 'use client';
 
 import { useState, useEffect, use } from 'react';
-import { collection, doc, getDoc, updateDoc, arrayUnion, arrayRemove, onSnapshot, writeBatch, increment } from 'firebase/firestore';
+import { collection, doc, getDoc, updateDoc, arrayUnion, arrayRemove, onSnapshot, writeBatch, increment, setDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { AppLayout } from "@/components/AppLayout";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -90,8 +90,7 @@ function ProfileContent({ id }: { id: string }) {
             if (hasViewedContact) {
                 setIsContactVisible(true);
             }
-            const hasViewedPhotos = currentUserProfile.viewedPhotos?.includes(user.memberid!);
-            if (hasViewedPhotos) {
+             if (currentUserProfile.viewedPhotos && currentUserProfile.viewedPhotos.includes(user.memberid!)) {
                 setArePhotosVisible(true);
             }
         }
@@ -221,32 +220,69 @@ function ProfileContent({ id }: { id: string }) {
             setArePhotosVisible(true);
             return;
         }
-        
-        // check if already viewed
-        if (currentUserProfile.viewedPhotos && currentUserProfile.viewedPhotos.includes(user.memberid)) {
+
+        if (currentUserProfile.viewedPhotos?.includes(user.memberid)) {
             setArePhotosVisible(true);
             return;
         }
 
-        const isCurrentUserBasic = !currentUserProfile.usertype || currentUserProfile.usertype === 'Basic';
-        if (isCurrentUserBasic) {
+        const currentUserType = currentUserProfile.usertype || 'Basic';
+        const targetUserType = (user.usertype || 'basic').toLowerCase() as keyof NonNullable<UserProfile['photoViewLimits']>;
+        const userDocRef = doc(db, 'users', currentUser.uid);
+
+        if (currentUserType === 'Basic') {
             setShowUpgradeAlert(true);
             return;
         }
-        
-        const targetUserType = (user.usertype || 'basic').toLowerCase() as keyof NonNullable<UserProfile['photoViewLimits']>;
-        const limits = currentUserProfile.photoViewLimits;
 
+        if (currentUserType === 'Diamond') {
+            let limits = currentUserProfile.diamondLimits;
+            // If limits don't exist, create them
+            if (!limits) {
+                limits = { diamond: 25, gold: 35, silver: 50, basic: 80 };
+                try {
+                    await setDoc(userDocRef, { diamondLimits: limits }, { merge: true });
+                    // Refresh profile to get the new limits
+                    const updatedDoc = await getDoc(userDocRef);
+                    if (updatedDoc.exists()) {
+                         setCurrentUserProfile({ id: updatedDoc.id, ...updatedDoc.data() } as UserProfile);
+                    }
+                } catch (e) {
+                     console.error("Error creating diamond limits:", e);
+                     toast({ variant: 'destructive', title: 'Could not set up your limits.' });
+                     return;
+                }
+            }
+
+            if (limits && limits[targetUserType] > 0) {
+                 try {
+                    await updateDoc(userDocRef, {
+                        [`diamondLimits.${targetUserType}`]: increment(-1),
+                        viewedPhotos: arrayUnion(user.memberid)
+                    });
+                    setArePhotosVisible(true);
+                    toast({ title: 'Photos Unlocked', description: `You can now view this user's photos. ${limits[targetUserType] - 1} views remaining for ${user.usertype} members.` });
+                } catch (e) {
+                    console.error("Error updating diamond limit:", e);
+                    toast({ variant: 'destructive', title: 'Could not unlock photos.' });
+                }
+            } else {
+                 toast({ variant: 'destructive', title: 'Limit Reached', description: `Your photo view limit for ${user.usertype || 'Basic'} members is over.` });
+            }
+            return;
+        }
+
+
+        // Handle Silver and Gold
+        const limits = currentUserProfile.photoViewLimits;
         if (limits && limits[targetUserType] > 0) {
-            const userDocRef = doc(db, 'users', currentUser.uid);
             try {
-                const newLimit = increment(-1);
                 await updateDoc(userDocRef, {
-                    [`photoViewLimits.${targetUserType}`]: newLimit,
+                    [`photoViewLimits.${targetUserType}`]: increment(-1),
                     viewedPhotos: arrayUnion(user.memberid)
                 });
                 setArePhotosVisible(true);
-                toast({ title: 'Photos Unlocked', description: `You can now view this user's photos. ${limits[targetUserType] -1} views remaining for ${user.usertype} members.` });
+                toast({ title: 'Photos Unlocked', description: `You can now view this user's photos. ${limits[targetUserType] - 1} views remaining for ${user.usertype} members.` });
             } catch (e) {
                 console.error("Error updating photo view limit:", e);
                 toast({ variant: 'destructive', title: 'Could not unlock photos.' });
@@ -284,44 +320,48 @@ function ProfileContent({ id }: { id: string }) {
 
     if (loading) {
         return (
-            <div className="max-w-4xl mx-auto space-y-6">
-                <Card className="overflow-hidden">
-                    <Skeleton className="h-48 md:h-64 w-full" />
-                    <CardHeader className="pt-20 md:pt-24 relative">
-                        <Skeleton className="absolute bottom-4 left-6 w-24 h-24 md:w-32 md:h-32 rounded-full border-4 border-background" />
-                         <Skeleton className="h-8 w-1/2" />
-                         <Skeleton className="h-5 w-1/3" />
-                    </CardHeader>
-                    <CardContent className="space-y-6">
-                        <div className="space-y-2">
-                            <Skeleton className="h-6 w-1/4" />
-                            <Skeleton className="h-4 w-full" />
-                            <Skeleton className="h-4 w-5/6" />
-                        </div>
-                        <div className="space-y-2">
-                            <Skeleton className="h-6 w-1/4" />
-                            <div className="flex flex-wrap gap-2">
-                                <Skeleton className="h-8 w-20" />
-                                <Skeleton className="h-8 w-24" />
-                                <Skeleton className="h-8 w-16" />
+            <AppLayout>
+                <div className="max-w-4xl mx-auto space-y-6">
+                    <Card className="overflow-hidden">
+                        <Skeleton className="h-48 md:h-64 w-full" />
+                        <CardHeader className="pt-20 md:pt-24 relative">
+                            <Skeleton className="absolute bottom-4 left-6 w-24 h-24 md:w-32 md:h-32 rounded-full border-4 border-background" />
+                            <Skeleton className="h-8 w-1/2" />
+                            <Skeleton className="h-5 w-1/3" />
+                        </CardHeader>
+                        <CardContent className="space-y-6">
+                            <div className="space-y-2">
+                                <Skeleton className="h-6 w-1/4" />
+                                <Skeleton className="h-4 w-full" />
+                                <Skeleton className="h-4 w-5/6" />
                             </div>
-                        </div>
-                         <div className="space-y-2">
-                            <Skeleton className="h-6 w-1/3" />
-                            <Skeleton className="h-4 w-full" />
-                        </div>
-                    </CardContent>
-                </Card>
-            </div>
+                            <div className="space-y-2">
+                                <Skeleton className="h-6 w-1/4" />
+                                <div className="flex flex-wrap gap-2">
+                                    <Skeleton className="h-8 w-20" />
+                                    <Skeleton className="h-8 w-24" />
+                                    <Skeleton className="h-8 w-16" />
+                                </div>
+                            </div>
+                            <div className="space-y-2">
+                                <Skeleton className="h-6 w-1/3" />
+                                <Skeleton className="h-4 w-full" />
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
+            </AppLayout>
         )
     }
 
     if (!user) {
         return (
-            <div className="text-center">
-                <h2 className="text-2xl font-bold">User not found</h2>
-                <p>The profile you are looking for does not exist.</p>
-            </div>
+            <AppLayout>
+                <div className="text-center">
+                    <h2 className="text-2xl font-bold">User not found</h2>
+                    <p>The profile you are looking for does not exist.</p>
+                </div>
+            </AppLayout>
         );
     }
     
