@@ -61,6 +61,7 @@ const navItems = [
 ];
 
 const settingsNavItems = [
+    { href: '/settings', icon: Settings, label: 'My Account' },
     { href: '/profile', icon: User, label: 'My Profile' },
     { href: '/settings', icon: Settings, label: 'Settings' },
 ]
