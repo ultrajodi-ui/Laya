@@ -279,10 +279,7 @@ function ProfileContent({ id }: { id: string }) {
         ? `${user.heightFeet}' ${user.heightInches}"` 
         : '-';
     
-    const galleryImages = [
-        user.imageUrl,
-        ...(user.additionalPhotoUrls || [])
-    ].filter(Boolean) as string[];
+    const galleryImages = (user.additionalPhotoUrls || []).filter(Boolean) as string[];
 
 
     return (
@@ -453,3 +450,4 @@ export default function ProfileDetailPage({ params }: { params: { id: string } }
         </AppLayout>
     );
 }
+
