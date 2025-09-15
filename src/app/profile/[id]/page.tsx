@@ -221,6 +221,12 @@ function ProfileContent({ id }: { id: string }) {
             setArePhotosVisible(true);
             return;
         }
+        
+        // check if already viewed
+        if (currentUserProfile.viewedPhotos && currentUserProfile.viewedPhotos.includes(user.memberid)) {
+            setArePhotosVisible(true);
+            return;
+        }
 
         const isCurrentUserBasic = !currentUserProfile.usertype || currentUserProfile.usertype === 'Basic';
         if (isCurrentUserBasic) {
@@ -382,7 +388,7 @@ function ProfileContent({ id }: { id: string }) {
                             </div>
                         </div>
 
-                         {showProtectedView && (
+                         {user.photoVisibility === 'Protected' && (
                             <div className="flex items-center justify-between gap-2 p-3 border-t bg-secondary/50 text-muted-foreground">
                                 <div className="flex items-center gap-2">
                                     <Lock className="w-4 h-4" />
