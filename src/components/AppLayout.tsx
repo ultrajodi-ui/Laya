@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import type { ReactNode } from 'react';
@@ -287,7 +286,7 @@ function AppLayoutContent({ children }: { children: ReactNode }) {
         </Sidebar>
         <SidebarInset>
             <header className="w-full sticky top-0 z-30 border-b" style={{ backgroundColor: '#4A313E' }}>
-                <div className="flex h-14 items-center gap-4 px-4 lg:h-[60px] lg:px-6">
+                <div className="flex h-14 items-center gap-4 px-4 lg:h-[60px] lg:px-6 w-full">
                     <SidebarTrigger className="md:hidden text-white"/>
                     <div className="flex-1">
                         <h1 className="font-headline text-lg font-semibold md:text-2xl capitalize text-white">{pageTitle}</h1>
@@ -330,7 +329,7 @@ function AppLayoutContent({ children }: { children: ReactNode }) {
                     </DropdownMenu>
                 </div>
             </header>
-            <main className="flex-1 p-4 sm:p-6">{children}</main>
+            <main className="flex-1 p-4 sm:p-6" style={{ background: 'linear-gradient(90deg, hsla(308, 100%, 97%, 1) 0%, hsla(313, 100%, 98%, 1) 100%)' }}>{children}</main>
         </SidebarInset>
       </div>
     </SidebarProvider>
