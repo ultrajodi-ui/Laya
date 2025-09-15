@@ -293,13 +293,14 @@ function ProfileContent({ id }: { id: string }) {
                                 <Carousel className="w-full h-full">
                                     <CarouselContent>
                                         {galleryImages.map((url, index) => (
-                                            <CarouselItem key={index} onClick={() => setFullscreenImage(url)} className="cursor-pointer">
+                                            <CarouselItem key={index}>
                                                 <div className="relative w-full h-64 md:h-80">
                                                     <Image 
                                                         src={url} 
                                                         alt={`Photo ${index + 1}`} 
                                                         fill 
-                                                        className="object-cover"
+                                                        className="object-cover cursor-pointer"
+                                                        onClick={() => setFullscreenImage(url)}
                                                     />
                                                 </div>
                                             </CarouselItem>
@@ -433,19 +434,21 @@ function ProfileContent({ id }: { id: string }) {
                     className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center animate-in fade-in-50"
                     onClick={() => setFullscreenImage(null)}
                 >
-                    <div className="relative max-w-4xl max-h-[90vh]">
+                    <div className="relative w-full h-full max-w-4xl max-h-[90vh] p-4">
                         <Image 
                             src={fullscreenImage} 
                             alt="Fullscreen" 
-                            width={1920} 
-                            height={1080}
-                            className="object-contain w-full h-full"
+                            layout="fill"
+                            className="object-contain"
                         />
                         <Button 
                             variant="ghost" 
                             size="icon" 
                             className="absolute top-4 right-4 text-white hover:text-white bg-black/50 hover:bg-black/70 rounded-full"
-                            onClick={() => setFullscreenImage(null)}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setFullscreenImage(null);
+                            }}
                         >
                             <X className="w-6 h-6" />
                         </Button>
@@ -476,4 +479,5 @@ export default function ProfileDetailPage({ params }: { params: { id: string } }
         </AppLayout>
     );
 }
+
 
