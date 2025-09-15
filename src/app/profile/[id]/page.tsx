@@ -287,40 +287,38 @@ function ProfileContent({ id }: { id: string }) {
             <div className="max-w-4xl mx-auto space-y-6">
                 <Card className="overflow-hidden">
                     <div className="relative h-64 md:h-80 bg-muted">
-                        <Carousel className="w-full h-full">
-                            <CarouselContent>
-                                {galleryImages.length > 0 ? galleryImages.map((url, index) => (
-                                    <CarouselItem key={index}>
-                                        <div className="relative w-full h-64 md:h-80">
-                                            <Image 
-                                                src={url} 
-                                                alt={`Photo ${index + 1}`} 
-                                                fill 
-                                                className="object-cover"
-                                            />
-                                        </div>
-                                    </CarouselItem>
-                                )) : (
-                                     <CarouselItem>
-                                        <div className="relative w-full h-64 md:h-80">
-                                            <Image 
-                                                src={user.coverUrl || `https://picsum.photos/seed/${user.id}-cover/1200/400`} 
-                                                alt={`${user.fullName}'s cover photo`} 
-                                                fill 
-                                                className="object-cover" 
-                                                data-ai-hint="romantic landscape" 
-                                            />
-                                        </div>
-                                    </CarouselItem>
+                        {galleryImages.length > 0 ? (
+                            <Carousel className="w-full h-full">
+                                <CarouselContent>
+                                    {galleryImages.map((url, index) => (
+                                        <CarouselItem key={index}>
+                                            <div className="relative w-full h-64 md:h-80">
+                                                <Image 
+                                                    src={url} 
+                                                    alt={`Photo ${index + 1}`} 
+                                                    fill 
+                                                    className="object-cover"
+                                                />
+                                            </div>
+                                        </CarouselItem>
+                                    ))}
+                                </CarouselContent>
+                                {galleryImages.length > 1 && (
+                                    <>
+                                        <CarouselPrevious className="left-4" />
+                                        <CarouselNext className="right-4" />
+                                    </>
                                 )}
-                            </CarouselContent>
-                             {galleryImages.length > 1 && (
-                                <>
-                                    <CarouselPrevious className="left-4" />
-                                    <CarouselNext className="right-4" />
-                                </>
-                            )}
-                        </Carousel>
+                            </Carousel>
+                        ) : (
+                            <Image 
+                                src={user.coverUrl || `https://picsum.photos/seed/${user.id}-cover/1200/400`} 
+                                alt={`${user.fullName}'s cover photo`} 
+                                fill 
+                                className="object-cover" 
+                                data-ai-hint="romantic landscape" 
+                            />
+                        )}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                         <div className="absolute bottom-4 left-6">
                             <Avatar className="w-24 h-24 md:w-32 md:h-32 border-4 border-background">
@@ -450,4 +448,3 @@ export default function ProfileDetailPage({ params }: { params: { id: string } }
         </AppLayout>
     );
 }
-
