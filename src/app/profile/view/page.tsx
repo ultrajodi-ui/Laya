@@ -10,11 +10,19 @@ import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Pencil } from 'lucide-react';
+import { Loader2, Pencil, Camera } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { format } from 'date-fns';
 import { useRouter } from 'next/navigation';
 import { Badge } from '@/components/ui/badge';
+import Image from 'next/image';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel"
 
 export default function ProfileViewPage() {
     const { toast } = useToast();
@@ -140,6 +148,38 @@ export default function ProfileViewPage() {
                                  )}
                              </div>
                         </div>
+
+                         {profileData.additionalPhotoUrls && profileData.additionalPhotoUrls.length > 0 && (
+                            <div>
+                                <h3 className="text-lg font-semibold font-headline mb-4 flex items-center justify-center gap-2">
+                                    <Camera className="w-5 h-5 text-primary" />
+                                    Photo Gallery
+                                </h3>
+                                <Carousel className="w-full max-w-xs sm:max-w-sm md:max-w-xl mx-auto">
+                                    <CarouselContent>
+                                        {profileData.additionalPhotoUrls.map((url: string, index: number) => (
+                                        <CarouselItem key={index}>
+                                            <div className="p-1">
+                                            <Card>
+                                                <CardContent className="flex aspect-square items-center justify-center p-0 rounded-lg overflow-hidden">
+                                                    <Image 
+                                                        src={url} 
+                                                        alt={`Gallery photo ${index + 1}`} 
+                                                        width={500}
+                                                        height={500}
+                                                        className="object-cover w-full h-full"
+                                                    />
+                                                </CardContent>
+                                            </Card>
+                                            </div>
+                                        </CarouselItem>
+                                        ))}
+                                    </CarouselContent>
+                                    <CarouselPrevious />
+                                    <CarouselNext />
+                                </Carousel>
+                            </div>
+                        )}
 
                         <div className="grid sm:grid-cols-2 gap-6">
                             <ProfileDetail label="Profile By" value={profileData.profileBy} />
