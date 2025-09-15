@@ -40,7 +40,12 @@ export type UserProfile = {
   createdAt?: any;
   likes?: string[];
   photoVisibility?: 'Public' | 'Protected';
-  contactLimit?: number;
+  contactLimit?: {
+    basic: number;
+    silver: number;
+    gold: number;
+    diamond: number;
+  };
   viewedContacts?: string[];
   role?: 'admin' | 'user';
   bodyType?: 'Slim' | 'Normal' | 'Little Fat';

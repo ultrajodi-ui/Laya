@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { Suspense, useState, useEffect } from 'react';
@@ -51,23 +52,23 @@ function PaymentForm() {
         setIsLoading(true);
 
         let photoViewLimits: UserProfile['photoViewLimits'] = { basic: 0, silver: 0, gold: 0, diamond: 0 };
-        let contactLimit = 0;
+        let contactLimit: UserProfile['contactLimit'] = { basic: 0, silver: 0, gold: 0, diamond: 0 };
         let planDuration: Duration = {};
 
         switch (plan) {
             case 'Silver':
                 photoViewLimits = { basic: 20, silver: 15, gold: 10, diamond: 0 };
-                contactLimit = 15 + 10 + 20;
+                contactLimit = { basic: 20, silver: 15, gold: 10, diamond: 0 };
                 planDuration = { months: 3 };
                 break;
             case 'Gold':
                 photoViewLimits = { basic: 40, silver: 20, gold: 15, diamond: 5 };
-                contactLimit = 40 + 20 + 15 + 5;
+                contactLimit = { basic: 40, silver: 20, gold: 15, diamond: 5 };
                 planDuration = { months: 6 };
                 break;
             case 'Diamond':
                  photoViewLimits = { basic: 80, silver: 50, gold: 35, diamond: 25 };
-                contactLimit = 80 + 50 + 35 + 25;
+                contactLimit = { basic: 80, silver: 50, gold: 35, diamond: 25 };
                 planDuration = { months: 12 };
                 break;
         }

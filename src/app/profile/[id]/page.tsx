@@ -86,8 +86,7 @@ function ProfileContent({ id }: { id: string }) {
                 setArePhotosVisible(true);
                 return;
             }
-            const hasViewedContact = currentUserProfile.viewedContacts?.includes(user.memberid!);
-            if (hasViewedContact) {
+            if (currentUserProfile.viewedContacts && currentUserProfile.viewedContacts.includes(user.memberid!)) {
                 setIsContactVisible(true);
             }
              if (currentUserProfile.viewedPhotos && currentUserProfile.viewedPhotos.includes(user.memberid!)) {
@@ -171,42 +170,45 @@ function ProfileContent({ id }: { id: string }) {
             return;
         }
 
-        if (currentUserProfile.role === 'admin') {
+        if (currentUserProfile.role === 'admin' || isContactVisible) {
+            setIsContactVisible(true);
+            return;
+        }
+        
+        if (currentUserProfile.viewedContacts && currentUserProfile.viewedContacts.includes(user.memberid)) {
             setIsContactVisible(true);
             return;
         }
 
-        const isCurrentUserBasic = !currentUserProfile.usertype || currentUserProfile.usertype === 'Basic';
-        const isTargetUserPremium = user.usertype && user.usertype !== 'Basic';
-
-        if (isCurrentUserBasic && isTargetUserPremium) {
+        const currentUserType = currentUserProfile.usertype || 'Basic';
+        if (currentUserType === 'Basic') {
             setShowUpgradeAlert(true);
             return;
         }
 
-        const hasViewed = currentUserProfile.viewedContacts?.includes(user.memberid);
-        if (hasViewed) {
-             setIsContactVisible(true);
-             return;
-        }
+        const targetUserType = (user.usertype || 'basic').toLowerCase() as keyof NonNullable<UserProfile['contactLimit']>;
+        const userDocRef = doc(db, 'users', currentUser.uid);
 
-        const contactLimit = currentUserProfile.contactLimit ?? 0;
-
-        if (contactLimit > 0) {
-            const userDocRef = doc(db, 'users', currentUser.uid);
+        const limits = currentUserProfile.contactLimit;
+        
+        if (limits && limits[targetUserType] > 0) {
             try {
                 await updateDoc(userDocRef, {
-                    contactLimit: increment(-1),
+                    [`contactLimit.${targetUserType}`]: increment(-1),
                     viewedContacts: arrayUnion(user.memberid)
                 });
                 setIsContactVisible(true);
-                toast({ title: 'Contact revealed', description: `You have ${contactLimit - 1} views remaining.` });
-            } catch (error) {
-                console.error("Error updating contact limit:", error);
-                toast({ variant: 'destructive', title: 'Could not update contact limit.' });
+                toast({ title: 'Contact Revealed', description: `You have ${limits[targetUserType] - 1} views remaining for ${user.usertype} members.` });
+            } catch (e) {
+                console.error("Error updating contact limit:", e);
+                toast({ variant: 'destructive', title: 'Could not reveal contact.' });
             }
         } else {
-             setShowUpgradeAlert(true);
+            toast({
+                variant: 'destructive',
+                title: 'Limit Reached',
+                description: `Your contact view limit for ${user.usertype || 'Basic'} members is over. Please upgrade your plan for more contacts.`,
+            });
         }
     };
 
