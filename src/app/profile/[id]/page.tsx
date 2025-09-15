@@ -305,8 +305,8 @@ function ProfileContent({ id }: { id: string }) {
                                 </CarouselContent>
                                 {galleryImages.length > 1 && (
                                     <>
-                                        <CarouselPrevious className="left-4" />
-                                        <CarouselNext className="right-4" />
+                                        <CarouselPrevious className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-black/50 text-white border-none hover:bg-black/70" />
+                                        <CarouselNext className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-black/50 text-white border-none hover:bg-black/70" />
                                     </>
                                 )}
                             </Carousel>
