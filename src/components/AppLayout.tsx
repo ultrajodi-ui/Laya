@@ -286,8 +286,8 @@ function AppLayoutContent({ children }: { children: ReactNode }) {
           </SidebarFooter>
         </Sidebar>
         <SidebarInset>
-            <header className="flex h-14 items-center border-b sticky top-0 z-30" style={{ backgroundColor: '#3B2F2F' }}>
-                <div className="flex h-14 items-center gap-4 px-4 lg:h-[60px] lg:px-6 w-full">
+            <header className="w-full sticky top-0 z-30 border-b" style={{ backgroundColor: '#4A313E' }}>
+                <div className="flex h-14 items-center gap-4 px-4 lg:h-[60px] lg:px-6">
                     <SidebarTrigger className="md:hidden text-white"/>
                     <div className="flex-1">
                         <h1 className="font-headline text-lg font-semibold md:text-2xl capitalize text-white">{pageTitle}</h1>
@@ -345,3 +345,5 @@ export function AppLayout({ children }: { children: ReactNode }) {
     </PageTitleProvider>
   )
 }
+
+    
