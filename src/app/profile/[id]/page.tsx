@@ -289,7 +289,7 @@ function ProfileContent({ id }: { id: string }) {
                 <div className="max-w-4xl mx-auto space-y-6">
                     <Card className="overflow-hidden">
                         <div className="relative h-64 md:h-80 bg-muted">
-                             {user.photoVisibility === 'Protected' || galleryImages.length === 0 ? (
+                             {(user.photoVisibility === 'Protected' || galleryImages.length === 0) ? (
                                 <Image 
                                     src={user.coverUrl || `https://picsum.photos/seed/${user.id}-cover/1200/400`} 
                                     alt={`${user.fullName}'s cover photo`} 
@@ -351,9 +351,12 @@ function ProfileContent({ id }: { id: string }) {
                         </CardHeader>
                         <CardContent className="space-y-6">
                             {user.photoVisibility === 'Protected' && (
-                                <div className="flex items-center justify-center gap-2 p-3 border rounded-lg bg-secondary/50 text-muted-foreground">
-                                    <Lock className="w-4 h-4" />
-                                    <p className="font-medium">Photos are Protected</p>
+                                <div className="flex items-center justify-between gap-2 p-3 border rounded-lg bg-secondary/50 text-muted-foreground">
+                                    <div className="flex items-center gap-2">
+                                        <Lock className="w-4 h-4" />
+                                        <p className="font-medium">Photos are Protected</p>
+                                    </div>
+                                    <Button variant="outline" size="sm" className="bg-background">Show</Button>
                                 </div>
                             )}
 
@@ -445,7 +448,7 @@ function ProfileContent({ id }: { id: string }) {
                         <Image 
                             src={fullscreenImage} 
                             alt="Fullscreen" 
-                            layout="fill"
+                            fill
                             className="object-contain"
                         />
                         <Button 
