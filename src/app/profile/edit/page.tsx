@@ -105,7 +105,7 @@ export default function ProfileEditPage() {
             toast({
                 variant: "destructive",
                 title: 'File too large',
-                description: 'Please upload an image smaller than 200KB.',
+                description: 'Photo size should be less than or equal to 200KB.',
             });
             return;
         }
