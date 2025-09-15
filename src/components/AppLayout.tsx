@@ -285,7 +285,7 @@ function AppLayoutContent({ children }: { children: ReactNode }) {
           </SidebarFooter>
         </Sidebar>
         <SidebarInset>
-            <header className="w-full sticky top-0 z-30 border-b" style={{ backgroundColor: '#4A313E' }}>
+            <header className="w-full sticky top-0 z-30 border-b" style={{ backgroundColor: '#7D2552' }}>
                 <div className="flex h-14 items-center gap-4 px-4 lg:h-[60px] lg:px-6 w-full">
                     <SidebarTrigger className="md:hidden text-white"/>
                     <div className="flex-1">
