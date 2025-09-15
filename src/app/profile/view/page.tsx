@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -23,12 +22,13 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel"
+import { UserProfile } from '@/lib/types';
 
 export default function ProfileViewPage() {
     const { toast } = useToast();
     const router = useRouter();
     const [user, setUser] = useState<User | null>(null);
-    const [profileData, setProfileData] = useState<any | null>(null);
+    const [profileData, setProfileData] = useState<UserProfile | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [age, setAge] = useState<number | undefined>();
     const auth = getAuth();
@@ -40,7 +40,7 @@ export default function ProfileViewPage() {
                 const docRef = doc(db, "users", currentUser.uid);
                 const docSnap = await getDoc(docRef);
                 if (docSnap.exists()) {
-                    const data = docSnap.data();
+                    const data = docSnap.data() as UserProfile;
                     const dob = data.dob?.toDate();
                     if (dob) {
                         const today = new Date();
@@ -106,14 +106,14 @@ export default function ProfileViewPage() {
     const ProfileDetail = ({ label, value }: { label: string, value: string | undefined | string[] }) => (
         <div className="grid gap-1">
             <p className="text-sm font-medium text-muted-foreground">{label}</p>
-            {Array.isArray(value) ? (
+            {Array.isArray(value) && value.length > 0 ? (
                 <div className="flex flex-wrap gap-2">
                     {value.map((item) => (
                         <Badge key={item} variant="secondary">{item}</Badge>
                     ))}
                 </div>
             ) : (
-                <p className="text-base">{value || '-'}</p>
+                <p className="text-base">{value && !Array.isArray(value) ? value : '-'}</p>
             )}
         </div>
     );
@@ -137,7 +137,13 @@ export default function ProfileViewPage() {
                     <CardContent className="grid gap-6">
                          <div className="flex flex-col items-center gap-4">
                             <span className="relative flex h-24 w-24 shrink-0 overflow-hidden rounded-full">
-                                <img className="aspect-square h-full w-full" alt={profileData.fullName || 'User'} src={profileData.imageUrl || `https://picsum.photos/seed/${user?.uid}/100/100`} />
+                                <Image 
+                                    className="aspect-square h-full w-full object-cover" 
+                                    alt={profileData.fullName || 'User'} 
+                                    src={profileData.imageUrl || `https://picsum.photos/seed/${user?.uid}/100/100`} 
+                                    width={96}
+                                    height={96}
+                                />
                             </span>
                              <div className="grid gap-1.5 text-center">
                                  <h2 className="text-2xl font-bold">{profileData.fullName}</h2>
@@ -225,3 +231,5 @@ export default function ProfileViewPage() {
         </AppLayout>
     );
 }
+
+    
