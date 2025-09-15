@@ -101,11 +101,11 @@ export default function ProfileEditPage() {
             return;
         }
 
-        if (file.size > 1024 * 1024) {
+        if (file.size > 200 * 1024) {
             toast({
                 variant: "destructive",
                 title: 'File too large',
-                description: 'Please upload an image smaller than 1MB.',
+                description: 'Please upload an image smaller than 200KB.',
             });
             return;
         }
@@ -158,11 +158,11 @@ export default function ProfileEditPage() {
         let uploadFailed = false;
 
         for (const file of files) {
-            if (file.size > 1024 * 1024) {
+            if (file.size > 200 * 1024) {
                 toast({
                     variant: "destructive",
                     title: `File too large: ${file.name}`,
-                    description: 'Please upload images smaller than 1MB.',
+                    description: 'Please upload images smaller than 200KB.',
                 });
                 continue; // Skip this file
             }
@@ -387,7 +387,7 @@ export default function ProfileEditPage() {
                                     className="hidden"
                                     accept="image/png, image/jpeg"
                                 />
-                                <p className="text-sm text-muted-foreground">JPG or PNG. 1MB max.</p>
+                                <p className="text-sm text-muted-foreground">JPG or PNG. 200KB max.</p>
                             </div>
                         </div>
                         
