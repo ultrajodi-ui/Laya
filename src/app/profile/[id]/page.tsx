@@ -21,6 +21,13 @@ import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
 import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { useRouter } from 'next/navigation';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel"
 
 const calculateAge = (dob: any) => {
     if (!dob) return 0;
@@ -271,13 +278,52 @@ function ProfileContent({ id }: { id: string }) {
     const heightValue = user.heightFeet && user.heightInches 
         ? `${user.heightFeet}' ${user.heightInches}"` 
         : '-';
+    
+    const galleryImages = [
+        user.imageUrl,
+        ...(user.additionalPhotoUrls || [])
+    ].filter(Boolean) as string[];
+
 
     return (
          <AlertDialog open={showUpgradeAlert} onOpenChange={setShowUpgradeAlert}>
             <div className="max-w-4xl mx-auto space-y-6">
                 <Card className="overflow-hidden">
-                    <div className="relative h-48 md:h-64 bg-muted">
-                        <Image src={user.coverUrl || `https://picsum.photos/seed/${user.id}-cover/1200/400`} alt={`${user.fullName}'s cover photo`} fill style={{objectFit: "cover"}} data-ai-hint="romantic landscape" />
+                    <div className="relative h-64 md:h-80 bg-muted">
+                        <Carousel className="w-full h-full">
+                            <CarouselContent>
+                                {galleryImages.length > 0 ? galleryImages.map((url, index) => (
+                                    <CarouselItem key={index}>
+                                        <div className="relative w-full h-64 md:h-80">
+                                            <Image 
+                                                src={url} 
+                                                alt={`Photo ${index + 1}`} 
+                                                fill 
+                                                className="object-cover"
+                                            />
+                                        </div>
+                                    </CarouselItem>
+                                )) : (
+                                     <CarouselItem>
+                                        <div className="relative w-full h-64 md:h-80">
+                                            <Image 
+                                                src={user.coverUrl || `https://picsum.photos/seed/${user.id}-cover/1200/400`} 
+                                                alt={`${user.fullName}'s cover photo`} 
+                                                fill 
+                                                className="object-cover" 
+                                                data-ai-hint="romantic landscape" 
+                                            />
+                                        </div>
+                                    </CarouselItem>
+                                )}
+                            </CarouselContent>
+                             {galleryImages.length > 1 && (
+                                <>
+                                    <CarouselPrevious className="left-4" />
+                                    <CarouselNext className="right-4" />
+                                </>
+                            )}
+                        </Carousel>
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                         <div className="absolute bottom-4 left-6">
                             <Avatar className="w-24 h-24 md:w-32 md:h-32 border-4 border-background">
@@ -348,28 +394,6 @@ function ProfileContent({ id }: { id: string }) {
                                 </div>
                             </div>
                         )}
-
-                        {user.additionalPhotoUrls && user.additionalPhotoUrls.length > 0 && (
-                            <div>
-                                <h3 className="text-lg font-semibold font-headline mb-2 flex items-center gap-2">
-                                    <Camera className="w-5 h-5 text-primary" />
-                                    Photo Gallery
-                                </h3>
-                                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                                    {user.additionalPhotoUrls.map((url, index) => (
-                                        <div key={index} className="relative aspect-square w-full h-auto rounded-lg overflow-hidden">
-                                            <Image 
-                                                src={url} 
-                                                alt={`Gallery photo ${index + 1}`} 
-                                                layout="fill"
-                                                className="object-cover"
-                                            />
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-
 
                          {user.interests && user.interests.length > 0 && (
                             <div>
