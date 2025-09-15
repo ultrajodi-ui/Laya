@@ -18,7 +18,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { format, differenceInYears } from 'date-fns';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { useRouter } from 'next/navigation';
-import { Badge } from '@/components/ui/badge';
+import { Badge } from "@/components/ui/badge";
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
@@ -166,7 +166,7 @@ export default function ProfileEditPage() {
                 continue; // Skip this file
             }
             
-            const storageRef = ref(storage, `additional-photos/${user.uid}/${file.name}`);
+            const storageRef = ref(storage, `additional-photos/${user.uid}/${Date.now()}-${file.name}`);
 
             try {
                 const snapshot = await uploadBytes(storageRef, file);
@@ -847,7 +847,3 @@ export default function ProfileEditPage() {
         </AppLayout>
     );
 }
-
-    
-
-    
