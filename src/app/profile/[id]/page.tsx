@@ -10,7 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Heart, Calendar, Sparkles, MapPin, Eye, Star, Shield, Gem, Users, Camera, X } from "lucide-react";
+import { Heart, Calendar, Sparkles, MapPin, Eye, Star, Shield, Gem, Users, Camera, X, Lock } from "lucide-react";
 import Image from "next/image";
 import { Skeleton } from '@/components/ui/skeleton';
 import type { UserProfile } from '@/lib/types';
@@ -350,6 +350,13 @@ function ProfileContent({ id }: { id: string }) {
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-6">
+                            {user.photoVisibility === 'Protected' && (
+                                <div className="flex items-center justify-center gap-2 p-3 border rounded-lg bg-secondary/50 text-muted-foreground">
+                                    <Lock className="w-4 h-4" />
+                                    <p className="font-medium">Photos are Protected</p>
+                                </div>
+                            )}
+
                             <div>
                                 <h3 className="text-lg font-semibold font-headline mb-2">About Me</h3>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 text-muted-foreground">
@@ -479,6 +486,3 @@ export default function ProfileDetailPage({ params }: { params: { id: string } }
         </AppLayout>
     );
 }
-
-
-
