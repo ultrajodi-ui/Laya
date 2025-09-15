@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
@@ -14,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Zap, CalendarIcon, Upload } from 'lucide-react';
+import { Loader2, Zap, CalendarIcon, Upload, X } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { format, differenceInYears } from 'date-fns';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
@@ -193,6 +192,14 @@ export default function ProfileEditPage() {
                 description: 'Your new photos are ready. Save changes to add them to your gallery.',
             });
         }
+    };
+    
+    const handleDeleteAdditionalPhoto = (index: number) => {
+        setProfileData((prev) => {
+            const newUrls = [...(prev.additionalPhotoUrls || [])];
+            newUrls.splice(index, 1);
+            return { ...prev, additionalPhotoUrls: newUrls };
+        });
     };
 
 
@@ -410,6 +417,14 @@ export default function ProfileEditPage() {
                                 {profileData.additionalPhotoUrls?.map((url, index) => (
                                     <div key={index} className="relative aspect-square">
                                         <Image src={url} alt={`Additional photo ${index + 1}`} layout="fill" className="rounded-md object-cover" />
+                                        <Button
+                                            variant="destructive"
+                                            size="icon"
+                                            className="absolute top-1 right-1 h-6 w-6"
+                                            onClick={() => handleDeleteAdditionalPhoto(index)}
+                                        >
+                                            <X className="h-4 w-4" />
+                                        </Button>
                                     </div>
                                 ))}
                             </div>
@@ -427,7 +442,7 @@ export default function ProfileEditPage() {
                                 multiple
                                 disabled={(profileData.additionalPhotoUrls?.length ?? 0) >= 4}
                             />
-                            <p className="text-sm text-muted-foreground">Upload up to 4 more photos to your gallery.</p>
+                            <p className="text-sm text-muted-foreground">Upload up to 4 more photos to your gallery. Each photo must be 200KB or less.</p>
                         </div>
 
 
@@ -637,11 +652,11 @@ export default function ProfileEditPage() {
                                         <SelectValue placeholder="Select range" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="<3LPA">Less than 3 LPA</SelectItem>
+                                        <SelectItem value="&lt;3LPA">Less than 3 LPA</SelectItem>
                                         <SelectItem value="3-5LPA">3-5 LPA</SelectItem>
                                         <SelectItem value="5-10LPA">5-10 LPA</SelectItem>
                                         <SelectItem value="10-20LPA">10-20 LPA</SelectItem>
-                                        <SelectItem value=">20LPA">More than 20 LPA</SelectItem>
+                                        <SelectItem value="&gt;20LPA">More than 20 LPA</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
@@ -810,3 +825,5 @@ export default function ProfileEditPage() {
         </AppLayout>
     );
 }
+
+    
