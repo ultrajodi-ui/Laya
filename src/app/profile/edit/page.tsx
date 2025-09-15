@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
@@ -58,10 +59,11 @@ export default function ProfileEditPage() {
                         photoVisibility: data.photoVisibility || 'Public',
                         interests: data.interests || [],
                         additionalPhotoUrls: data.additionalPhotoUrls || [],
+                        viewedPhotos: data.viewedPhotos || [],
                     });
                 } else {
                     // New user, pre-fill email
-                    setProfileData((prev: any) => ({ ...prev, email: currentUser.email, interests: [], additionalPhotoUrls: [] }));
+                    setProfileData((prev: any) => ({ ...prev, email: currentUser.email, interests: [], additionalPhotoUrls: [], viewedPhotos: [] }));
                 }
             } else {
                 setUser(null);
@@ -100,11 +102,11 @@ export default function ProfileEditPage() {
             return;
         }
 
-        if (file.size > 50 * 1024) {
+        if (file.size > 200 * 1024) { // 200KB
             toast({
                 variant: "destructive",
                 title: 'File too large',
-                description: 'photo size should be less than or equal to 50KB.',
+                description: 'Photo size should be less than or equal to 200KB.',
             });
             return;
         }
@@ -157,11 +159,11 @@ export default function ProfileEditPage() {
         let uploadFailed = false;
 
         for (const file of files) {
-            if (file.size > 50 * 1024) {
+            if (file.size > 200 * 1024) { // 200KB
                 toast({
                     variant: "destructive",
                     title: `File too large: ${file.name}`,
-                    description: 'Please upload images smaller than 50KB.',
+                    description: 'Please upload images smaller than 200KB.',
                 });
                 continue; // Skip this file
             }
@@ -201,14 +203,19 @@ export default function ProfileEditPage() {
         const photoRef = ref(storage, urlToDelete);
 
         try {
-            // Delete the file
+            // Delete the file from storage
             await deleteObject(photoRef);
 
             // Update the state to remove the photo URL
+            const updatedUrls = (profileData.additionalPhotoUrls || []).filter(url => url !== urlToDelete);
             setProfileData((prev) => ({
                 ...prev,
-                additionalPhotoUrls: (prev.additionalPhotoUrls || []).filter(url => url !== urlToDelete),
+                additionalPhotoUrls: updatedUrls,
             }));
+             // Also update in Firestore immediately
+            const userDocRef = doc(db, "users", user.uid);
+            await setDoc(userDocRef, { additionalPhotoUrls: updatedUrls }, { merge: true });
+
 
             toast({
                 title: "Photo Deleted",
@@ -274,15 +281,17 @@ export default function ProfileEditPage() {
         try {
             const dataToSave: Partial<UserProfile> = { ...profileData };
 
-            // Generate memberid and set contact limit if it's a new user
+            // Generate memberid and set limits if it's a new user
             if (!dataToSave.memberid) {
                 const memberIdPrefix = dataToSave.gender === 'male' ? 'UJM' : 'UJF';
                 const uniqueId = Date.now().toString().slice(-6);
                 dataToSave.memberid = `${memberIdPrefix}${uniqueId}`;
-                dataToSave.contactLimit = 3; // Set default contact limit
-                dataToSave.currentStatus = 'Active'; // Set default status for new users
-                dataToSave.profileVisible = true; // Set default visibility for new users
-                dataToSave.createdAt = new Date(); // Set creation timestamp for new users
+                dataToSave.contactLimit = 3; 
+                dataToSave.currentStatus = 'Active';
+                dataToSave.profileVisible = true;
+                dataToSave.createdAt = new Date();
+                dataToSave.usertype = 'Basic';
+                dataToSave.photoViewLimits = { basic: 0, silver: 0, gold: 0, diamond: 0 };
             }
 
             if (auth.currentUser) {
@@ -293,7 +302,7 @@ export default function ProfileEditPage() {
             }
 
             const userDocRef = doc(db, "users", user.uid);
-            await setDoc(userDocRef, { ...dataToSave, usertype: dataToSave.usertype || 'Basic' }, { merge: true });
+            await setDoc(userDocRef, dataToSave, { merge: true });
             
             toast({
                 title: "Profile Updated",
@@ -416,7 +425,7 @@ export default function ProfileEditPage() {
                                     className="hidden"
                                     accept="image/png, image/jpeg"
                                 />
-                                <p className="text-sm text-muted-foreground">JPG or PNG. 50KB max.</p>
+                                <p className="text-sm text-muted-foreground">JPG or PNG. 200KB max.</p>
                             </div>
                         </div>
                         
@@ -464,7 +473,7 @@ export default function ProfileEditPage() {
                                 multiple
                                 disabled={(profileData.additionalPhotoUrls?.length ?? 0) >= 4}
                             />
-                            <p className="text-sm text-muted-foreground">Upload up to 4 more photos to your gallery. Each photo must be 50KB or less.</p>
+                            <p className="text-sm text-muted-foreground">Upload up to 4 more photos to your gallery. Each photo must be 200KB or less.</p>
                         </div>
 
 

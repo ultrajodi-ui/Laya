@@ -19,7 +19,7 @@ import { usePageTitle } from '@/hooks/use-page-title';
 import { cn } from '@/lib/utils';
 import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
-import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { useRouter } from 'next/navigation';
 import {
   Carousel,
@@ -54,6 +54,7 @@ function ProfileContent({ id }: { id: string }) {
     const { toast } = useToast();
     const router = useRouter();
     const [isContactVisible, setIsContactVisible] = useState(false);
+    const [arePhotosVisible, setArePhotosVisible] = useState(false);
     const [showUpgradeAlert, setShowUpgradeAlert] = useState(false);
     const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
 
@@ -82,11 +83,16 @@ function ProfileContent({ id }: { id: string }) {
         if (currentUserProfile && user) {
              if (currentUserProfile.role === 'admin') {
                 setIsContactVisible(true);
+                setArePhotosVisible(true);
                 return;
             }
-            const hasViewed = currentUserProfile.viewedContacts?.includes(user.memberid!);
-            if (hasViewed) {
+            const hasViewedContact = currentUserProfile.viewedContacts?.includes(user.memberid!);
+            if (hasViewedContact) {
                 setIsContactVisible(true);
+            }
+            const hasViewedPhotos = currentUserProfile.viewedPhotos?.includes(user.memberid!);
+            if (hasViewedPhotos) {
+                setArePhotosVisible(true);
             }
         }
     }, [currentUserProfile, user]);
@@ -166,13 +172,11 @@ function ProfileContent({ id }: { id: string }) {
             return;
         }
 
-        // Admin check
         if (currentUserProfile.role === 'admin') {
             setIsContactVisible(true);
             return;
         }
 
-        // Rule: Basic users cannot see premium users' contact details
         const isCurrentUserBasic = !currentUserProfile.usertype || currentUserProfile.usertype === 'Basic';
         const isTargetUserPremium = user.usertype && user.usertype !== 'Basic';
 
@@ -207,19 +211,49 @@ function ProfileContent({ id }: { id: string }) {
         }
     };
 
-    const handleShowPhotos = () => {
-        if (!currentUserProfile) {
-            toast({ variant: 'destructive', title: 'Please log in to view photos.' });
+    const handleShowPhotos = async () => {
+        if (!currentUser || !currentUserProfile || !user?.memberid) {
+            toast({ variant: 'destructive', title: 'Please log in.' });
             return;
         }
+
+        if (currentUserProfile.role === 'admin' || arePhotosVisible) {
+            setArePhotosVisible(true);
+            return;
+        }
+
         const isCurrentUserBasic = !currentUserProfile.usertype || currentUserProfile.usertype === 'Basic';
         if (isCurrentUserBasic) {
             setShowUpgradeAlert(true);
+            return;
+        }
+        
+        const targetUserType = (user.usertype || 'basic').toLowerCase() as keyof NonNullable<UserProfile['photoViewLimits']>;
+        const limits = currentUserProfile.photoViewLimits;
+
+        if (limits && limits[targetUserType] > 0) {
+            const userDocRef = doc(db, 'users', currentUser.uid);
+            try {
+                const newLimit = increment(-1);
+                await updateDoc(userDocRef, {
+                    [`photoViewLimits.${targetUserType}`]: newLimit,
+                    viewedPhotos: arrayUnion(user.memberid)
+                });
+                setArePhotosVisible(true);
+                toast({ title: 'Photos Unlocked', description: `You can now view this user's photos. ${limits[targetUserType] -1} views remaining for ${user.usertype} members.` });
+            } catch (e) {
+                console.error("Error updating photo view limit:", e);
+                toast({ variant: 'destructive', title: 'Could not unlock photos.' });
+            }
         } else {
-            // Logic for premium users to see photos can be added here
-            toast({ title: 'Coming Soon!', description: 'This feature is being developed for premium users.' });
+            toast({
+                variant: 'destructive',
+                title: 'Limit Reached',
+                description: `Your photo view limit for ${user.usertype || 'Basic'} members is over.`,
+            });
         }
     };
+
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -286,9 +320,13 @@ function ProfileContent({ id }: { id: string }) {
     }
     
     const isLiked = user.memberid ? currentUserProfile?.likes?.includes(user.memberid) : false;
-    const profileImageUrl = user.photoVisibility === 'Protected' 
+    
+    const showProtectedView = user.photoVisibility === 'Protected' && !arePhotosVisible;
+
+    const profileImageUrl = showProtectedView
         ? `https://picsum.photos/seed/default-avatar/100/100`
         : user.imageUrl || `https://picsum.photos/seed/${user.id}/100/100`;
+
     const heightValue = user.heightFeet && user.heightInches 
         ? `${user.heightFeet}' ${user.heightInches}"` 
         : '-';
@@ -302,7 +340,7 @@ function ProfileContent({ id }: { id: string }) {
                 <div className="max-w-4xl mx-auto space-y-6">
                     <Card className="overflow-hidden">
                         <div className="relative h-64 md:h-80 bg-muted">
-                             {(user.photoVisibility === 'Protected' || galleryImages.length === 0) ? (
+                             {(showProtectedView || galleryImages.length === 0) ? (
                                 <Image 
                                     src={user.coverUrl || `https://picsum.photos/seed/${user.id}-cover/1200/400`} 
                                     alt={`${user.fullName}'s cover photo`} 
@@ -343,7 +381,18 @@ function ProfileContent({ id }: { id: string }) {
                                 </Avatar>
                             </div>
                         </div>
-                        <CardHeader className="pt-20 md:pt-24 relative">
+
+                         {showProtectedView && (
+                            <div className="flex items-center justify-between gap-2 p-3 border-t bg-secondary/50 text-muted-foreground">
+                                <div className="flex items-center gap-2">
+                                    <Lock className="w-4 h-4" />
+                                    <p className="font-medium">Photos are Protected</p>
+                                </div>
+                                <Button variant="outline" size="sm" className="bg-background" onClick={handleShowPhotos}>Show</Button>
+                            </div>
+                        )}
+                        
+                        <CardHeader className="pt-8 md:pt-8 relative">
                             <div className="absolute top-4 right-4">
                                 <Button className="bg-accent text-accent-foreground hover:bg-accent/90" onClick={handleLikeClick}>
                                     <Heart className={cn("mr-2 h-4 w-4", isLiked && "fill-red-500 text-red-500")} /> Like
@@ -363,16 +412,6 @@ function ProfileContent({ id }: { id: string }) {
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-6">
-                            {user.photoVisibility === 'Protected' && (
-                                <div className="flex items-center justify-between gap-2 p-3 border rounded-lg bg-secondary/50 text-muted-foreground">
-                                    <div className="flex items-center gap-2">
-                                        <Lock className="w-4 h-4" />
-                                        <p className="font-medium">Photos are Protected</p>
-                                    </div>
-                                    <Button variant="outline" size="sm" className="bg-background" onClick={handleShowPhotos}>Show</Button>
-                                </div>
-                            )}
-
                             <div>
                                 <h3 className="text-lg font-semibold font-headline mb-2">About Me</h3>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 text-muted-foreground">
@@ -442,7 +481,7 @@ function ProfileContent({ id }: { id: string }) {
                     <AlertDialogHeader>
                         <AlertDialogTitle>Upgrade Required</AlertDialogTitle>
                         <AlertDialogDescription>
-                            You need to upgrade your plan to view this user's contact details. Please upgrade your plan to view more contacts and enjoy other premium benefits.
+                            You need to upgrade your plan to view this user's details. Please upgrade your plan to view more contacts and enjoy other premium benefits.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>

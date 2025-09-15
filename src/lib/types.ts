@@ -54,6 +54,13 @@ export type UserProfile = {
   currentStatus?: 'Active' | 'Engaged' | 'Married' | 'Inactive';
   profileVisible?: boolean;
   additionalPhotoUrls?: string[];
+  photoViewLimits?: {
+    basic: number;
+    silver: number;
+    gold: number;
+    diamond: number;
+  };
+  viewedPhotos?: string[];
 };
 
 export type Connection = {

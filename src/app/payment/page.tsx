@@ -1,8 +1,8 @@
 
 'use client';
 
-import { Suspense, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { Suspense, useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,28 +11,88 @@ import { Label } from "@/components/ui/label";
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, CreditCard } from 'lucide-react';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { cn } from '@/lib/utils';
+import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
+import { doc, updateDoc } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
+import type { UserProfile } from '@/lib/types';
+
 
 function PaymentForm() {
+    const router = useRouter();
     const searchParams = useSearchParams();
-    const plan = searchParams.get('plan');
+    const plan = searchParams.get('plan') as UserProfile['usertype'];
     const price = searchParams.get('price');
     const { toast } = useToast();
     const [isLoading, setIsLoading] = useState(false);
     const [paymentMethod, setPaymentMethod] = useState('credit-card');
+    const [currentUser, setCurrentUser] = useState<User | null>(null);
+    const auth = getAuth();
 
-    const handlePayment = (e: React.FormEvent) => {
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            if (user) {
+                setCurrentUser(user);
+            } else {
+                router.push('/login');
+            }
+        });
+        return () => unsubscribe();
+    }, [auth, router]);
+    
+
+    const handlePayment = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (!currentUser || !plan) {
+            toast({ variant: 'destructive', title: 'Error', description: 'Could not process payment. User or plan not found.' });
+            return;
+        }
+
         setIsLoading(true);
 
+        let photoViewLimits: UserProfile['photoViewLimits'] = { basic: 0, silver: 0, gold: 0, diamond: 0 };
+        let contactLimit = 0;
+
+        switch (plan) {
+            case 'Silver':
+                photoViewLimits = { basic: 20, silver: 15, gold: 10, diamond: 0 };
+                contactLimit = 5 + 10 + 15; // From plan description
+                break;
+            case 'Gold':
+                photoViewLimits = { basic: 40, silver: 20, gold: 15, diamond: 5 };
+                contactLimit = 5 + 15 + 20 + 40; // From plan description
+                break;
+            case 'Diamond':
+                 photoViewLimits = { basic: 80, silver: 50, gold: 35, diamond: 25 };
+                contactLimit = 25 + 35 + 50 + 80; // From plan description
+                break;
+        }
+
         // Simulate payment processing
-        setTimeout(() => {
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        try {
+            const userDocRef = doc(db, 'users', currentUser.uid);
+            await updateDoc(userDocRef, {
+                usertype: plan,
+                photoViewLimits: photoViewLimits,
+                contactLimit: contactLimit,
+            });
+            
             setIsLoading(false);
             toast({
                 title: "Payment Successful!",
                 description: `You have successfully subscribed to the ${plan} plan.`,
             });
-        }, 2000);
+            router.push('/browse');
+        } catch (error) {
+            console.error("Failed to update user plan:", error);
+             toast({
+                variant: 'destructive',
+                title: 'Update Failed',
+                description: 'Your payment was successful, but we failed to update your plan. Please contact support.',
+            });
+            setIsLoading(false);
+        }
     }
 
     const UpiIcon = () => (
