@@ -23,9 +23,18 @@ import { doc, deleteDoc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Zap } from 'lucide-react';
 import { UserProfile } from '@/lib/types';
+import { Badge } from '@/components/ui/badge';
+import { format } from 'date-fns';
+import Link from 'next/link';
 
+const LimitDetail = ({ label, value }: { label: string, value: number }) => (
+    <div className="flex justify-between items-center text-sm">
+        <span className="text-muted-foreground">{label}</span>
+        <span className="font-medium">{value}</span>
+    </div>
+);
 
 export default function SettingsPage() {
     const auth = getAuth();
@@ -124,8 +133,8 @@ export default function SettingsPage() {
                 <div className="mx-auto grid max-w-4xl gap-6">
                     <Card>
                         <CardHeader>
-                            <CardTitle className="font-headline">Settings</CardTitle>
-                            <CardDescription>Manage your account settings and preferences.</CardDescription>
+                            <CardTitle className="font-headline">My Account</CardTitle>
+                            <CardDescription>Manage your account settings, subscription, and preferences.</CardDescription>
                         </CardHeader>
                         <CardContent>
                              <div className="h-20 w-full animate-pulse rounded-lg border bg-muted" />
@@ -141,8 +150,8 @@ export default function SettingsPage() {
             <div className="mx-auto grid max-w-4xl gap-6">
                  <Card>
                     <CardHeader>
-                        <CardTitle className="font-headline">Settings</CardTitle>
-                        <CardDescription>Manage your account settings and preferences.</CardDescription>
+                        <CardTitle className="font-headline">My Account</CardTitle>
+                        <CardDescription>Manage your account settings, subscription, and preferences.</CardDescription>
                     </CardHeader>
                     <CardContent className="grid gap-6">
                         <div className="flex items-center justify-between space-x-2 rounded-lg border p-4">
@@ -170,6 +179,60 @@ export default function SettingsPage() {
                         </div>
                     </CardContent>
                 </Card>
+
+                 <Card>
+                    <CardHeader>
+                        <CardTitle className="font-headline">My Subscription</CardTitle>
+                        <CardDescription>View your current plan details and limits.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                         <div className="flex items-center justify-between rounded-lg border p-4">
+                            <div>
+                                <Label className="text-base">Current Plan</Label>
+                                <p className="text-2xl font-bold">{userProfile?.usertype || 'Basic'}</p>
+                            </div>
+                            <Button asChild>
+                                <Link href="/upgrade"><Zap className="mr-2 h-4 w-4" /> Upgrade Plan</Link>
+                            </Button>
+                        </div>
+                        
+                        {userProfile?.usertype !== 'Basic' && userProfile?.planStartDate && userProfile?.planEndDate && (
+                            <div className="rounded-lg border p-4 text-center">
+                                <Label className="text-sm text-muted-foreground">Plan Validity</Label>
+                                <p className="font-semibold">{format(userProfile.planStartDate.toDate(), 'PP')} &mdash; {format(userProfile.planEndDate.toDate(), 'PP')}</p>
+                            </div>
+                        )}
+
+                        {userProfile?.usertype !== 'Basic' && (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="space-y-2 rounded-lg border p-4">
+                                    <Label>Contact View Limits</Label>
+                                    {userProfile?.contactLimit ? (
+                                        <div className="space-y-1">
+                                            <LimitDetail label="Diamond Profiles" value={userProfile.contactLimit.diamond} />
+                                            <LimitDetail label="Gold Profiles" value={userProfile.contactLimit.gold} />
+                                            <LimitDetail label="Silver Profiles" value={userProfile.contactLimit.silver} />
+                                            <LimitDetail label="Basic Profiles" value={userProfile.contactLimit.basic} />
+                                        </div>
+                                    ) : <p className="text-sm text-muted-foreground">No limits set.</p>}
+                                </div>
+                                <div className="space-y-2 rounded-lg border p-4">
+                                    <Label>Photo View Limits</Label>
+                                     {userProfile?.photoViewLimits ? (
+                                        <div className="space-y-1">
+                                            <LimitDetail label="Diamond Profiles" value={userProfile.photoViewLimits.diamond} />
+                                            <LimitDetail label="Gold Profiles" value={userProfile.photoViewLimits.gold} />
+                                            <LimitDetail label="Silver Profiles" value={userProfile.photoViewLimits.silver} />
+                                            <LimitDetail label="Basic Profiles" value={userProfile.photoViewLimits.basic} />
+                                        </div>
+                                    ) : <p className="text-sm text-muted-foreground">No limits set.</p>}
+                                </div>
+                            </div>
+                        )}
+
+                    </CardContent>
+                </Card>
+
                  <Card>
                     <CardHeader>
                         <CardTitle className="font-headline text-destructive">Danger Zone</CardTitle>
