@@ -267,49 +267,51 @@ function AppLayoutContent({ children }: { children: ReactNode }) {
           </SidebarFooter>
         </Sidebar>
         <SidebarInset>
-            <header className="flex h-14 items-center gap-4 border-b px-4 lg:h-[60px] lg:px-6 sticky top-0 z-30" style={{ backgroundColor: '#3B2F2F' }}>
-                <SidebarTrigger className="md:hidden text-white"/>
-                <div className="flex-1">
-                    <h1 className="font-headline text-lg font-semibold md:text-2xl capitalize text-white">{pageTitle}</h1>
-                </div>
-                 <Button variant="ghost" size="icon" className="rounded-full text-white hover:bg-white/20 hover:text-white" asChild>
-                    <Link href="/browse">
-                        <Home className="h-5 w-5" />
-                        <span className="sr-only">Home</span>
-                    </Link>
-                </Button>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="rounded-full">
-                       <Avatar className="h-8 w-8">
-                          <AvatarImage src={user?.photoURL || userProfile?.imageUrl || "https://picsum.photos/seed/user-avatar/100/100"} alt={user?.displayName || "User"} />
-                          <AvatarFallback>{user?.displayName?.charAt(0) || 'U'}</AvatarFallback>
-                      </Avatar>
-                      <span className="sr-only">Toggle user menu</span>
+            <header className="flex h-14 items-center border-b sticky top-0 z-30" style={{ backgroundColor: '#3B2F2F' }}>
+                <div className="flex h-14 items-center gap-4 px-4 lg:h-[60px] lg:px-6 w-full">
+                    <SidebarTrigger className="md:hidden text-white"/>
+                    <div className="flex-1">
+                        <h1 className="font-headline text-lg font-semibold md:text-2xl capitalize text-white">{pageTitle}</h1>
+                    </div>
+                    <Button variant="ghost" size="icon" className="rounded-full text-white hover:bg-white/20 hover:text-white" asChild>
+                        <Link href="/browse">
+                            <Home className="h-5 w-5" />
+                            <span className="sr-only">Home</span>
+                        </Link>
                     </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem asChild>
-                       <Link href="/profile">
-                          <User className="mr-2 h-4 w-4" />
-                          <span>My Profile</span>
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild disabled={userProfile?.usertype === 'Diamond'}>
-                       <Link href="/upgrade">
-                          <Star className="mr-2 h-4 w-4" />
-                          <span>Upgrade Plan</span>
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={handleLogout}>
-                      <LogOut className="mr-2 h-4 w-4" />
-                      <span>Logout</span>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                    <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon" className="rounded-full">
+                        <Avatar className="h-8 w-8">
+                            <AvatarImage src={user?.photoURL || userProfile?.imageUrl || "https://picsum.photos/seed/user-avatar/100/100"} alt={user?.displayName || "User"} />
+                            <AvatarFallback>{user?.displayName?.charAt(0) || 'U'}</AvatarFallback>
+                        </Avatar>
+                        <span className="sr-only">Toggle user menu</span>
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                        <DropdownMenuItem asChild>
+                        <Link href="/profile">
+                            <User className="mr-2 h-4 w-4" />
+                            <span>My Profile</span>
+                        </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild disabled={userProfile?.usertype === 'Diamond'}>
+                        <Link href="/upgrade">
+                            <Star className="mr-2 h-4 w-4" />
+                            <span>Upgrade Plan</span>
+                        </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={handleLogout}>
+                        <LogOut className="mr-2 h-4 w-4" />
+                        <span>Logout</span>
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
             </header>
-            <main className="flex-1 p-0 sm:p-0">{children}</main>
+            <main className="flex-1 p-4 sm:p-6">{children}</main>
         </SidebarInset>
       </div>
     </SidebarProvider>
@@ -324,5 +326,3 @@ export function AppLayout({ children }: { children: ReactNode }) {
     </PageTitleProvider>
   )
 }
-
-    
