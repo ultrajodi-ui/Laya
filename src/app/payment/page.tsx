@@ -55,15 +55,15 @@ function PaymentForm() {
         switch (plan) {
             case 'Silver':
                 photoViewLimits = { basic: 20, silver: 15, gold: 10, diamond: 0 };
-                contactLimit = 5 + 10 + 15; // From plan description
+                contactLimit = 15 + 10 + 20;
                 break;
             case 'Gold':
                 photoViewLimits = { basic: 40, silver: 20, gold: 15, diamond: 5 };
-                contactLimit = 5 + 15 + 20 + 40; // From plan description
+                contactLimit = 40 + 20 + 15 + 5;
                 break;
             case 'Diamond':
                  photoViewLimits = { basic: 80, silver: 50, gold: 35, diamond: 25 };
-                contactLimit = 25 + 35 + 50 + 80; // From plan description
+                contactLimit = 80 + 50 + 35 + 25;
                 break;
         }
 

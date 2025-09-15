@@ -60,12 +60,6 @@ export type UserProfile = {
     gold: number;
     diamond: number;
   };
-  diamondLimits?: {
-    basic: number;
-    silver: number;
-    gold: number;
-    diamond: number;
-  };
   viewedPhotos?: string[];
 };
 

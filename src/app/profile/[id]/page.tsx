@@ -215,66 +215,30 @@ function ProfileContent({ id }: { id: string }) {
             toast({ variant: 'destructive', title: 'Please log in.' });
             return;
         }
-
+    
         if (currentUserProfile.role === 'admin' || arePhotosVisible) {
             setArePhotosVisible(true);
             return;
         }
-
-        if (currentUserProfile.viewedPhotos?.includes(user.memberid)) {
+    
+        if (currentUserProfile.viewedPhotos && currentUserProfile.viewedPhotos.includes(user.memberid)) {
             setArePhotosVisible(true);
             return;
         }
-
+    
         const currentUserType = currentUserProfile.usertype || 'Basic';
-        const targetUserType = (user.usertype || 'basic').toLowerCase() as keyof NonNullable<UserProfile['photoViewLimits']>;
-        const userDocRef = doc(db, 'users', currentUser.uid);
-
+    
         if (currentUserType === 'Basic') {
             setShowUpgradeAlert(true);
             return;
         }
-
-        if (currentUserType === 'Diamond') {
-            let limits = currentUserProfile.diamondLimits;
-            // If limits don't exist, create them
-            if (!limits) {
-                limits = { diamond: 25, gold: 35, silver: 50, basic: 80 };
-                try {
-                    await setDoc(userDocRef, { diamondLimits: limits }, { merge: true });
-                    // Refresh profile to get the new limits
-                    const updatedDoc = await getDoc(userDocRef);
-                    if (updatedDoc.exists()) {
-                         setCurrentUserProfile({ id: updatedDoc.id, ...updatedDoc.data() } as UserProfile);
-                    }
-                } catch (e) {
-                     console.error("Error creating diamond limits:", e);
-                     toast({ variant: 'destructive', title: 'Could not set up your limits.' });
-                     return;
-                }
-            }
-
-            if (limits && limits[targetUserType] > 0) {
-                 try {
-                    await updateDoc(userDocRef, {
-                        [`diamondLimits.${targetUserType}`]: increment(-1),
-                        viewedPhotos: arrayUnion(user.memberid)
-                    });
-                    setArePhotosVisible(true);
-                    toast({ title: 'Photos Unlocked', description: `You can now view this user's photos. ${limits[targetUserType] - 1} views remaining for ${user.usertype} members.` });
-                } catch (e) {
-                    console.error("Error updating diamond limit:", e);
-                    toast({ variant: 'destructive', title: 'Could not unlock photos.' });
-                }
-            } else {
-                 toast({ variant: 'destructive', title: 'Limit Reached', description: `Your photo view limit for ${user.usertype || 'Basic'} members is over.` });
-            }
-            return;
-        }
-
-
-        // Handle Silver and Gold
+    
+        const targetUserType = (user.usertype || 'basic').toLowerCase() as keyof NonNullable<UserProfile['photoViewLimits']>;
+        const userDocRef = doc(db, 'users', currentUser.uid);
+    
+        // This handles Silver, Gold, and Diamond
         const limits = currentUserProfile.photoViewLimits;
+        
         if (limits && limits[targetUserType] > 0) {
             try {
                 await updateDoc(userDocRef, {
