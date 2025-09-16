@@ -286,7 +286,7 @@ function AppLayoutContent({ children }: { children: ReactNode }) {
         </Sidebar>
         <SidebarInset>
             <header className="w-full sticky top-0 z-30 border-b">
-                <div className="flex h-14 items-center gap-4 px-4 lg:h-[60px] lg:px-6 w-full" style={{ backgroundColor: '#0083B0' }}>
+                <div className="flex h-14 items-center gap-4 w-full" style={{ backgroundColor: '#0083B0' }}>
                     <SidebarTrigger className="md:hidden text-white"/>
                     <div className="flex-1">
                         <h1 className="font-headline text-lg font-semibold md:text-2xl capitalize text-white">{pageTitle}</h1>
