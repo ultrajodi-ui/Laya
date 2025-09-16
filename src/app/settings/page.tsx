@@ -130,7 +130,7 @@ export default function SettingsPage() {
     if (isLoading) {
         return (
             <AppLayout>
-                <div className="mx-auto grid max-w-4xl gap-6">
+                <div className="mx-auto grid max-w-4xl gap-6 p-4 sm:p-6">
                     <Card>
                         <CardHeader>
                             <CardTitle className="font-headline">My Account</CardTitle>
@@ -147,7 +147,7 @@ export default function SettingsPage() {
 
     return (
         <AppLayout>
-            <div className="mx-auto grid max-w-4xl gap-6">
+            <div className="mx-auto grid max-w-4xl gap-6 p-4 sm:p-6">
                  <Card>
                     <CardHeader>
                         <CardTitle className="font-headline">My Account</CardTitle>
@@ -283,5 +283,7 @@ export default function SettingsPage() {
         </AppLayout>
     );
 }
+
+    
 
     
