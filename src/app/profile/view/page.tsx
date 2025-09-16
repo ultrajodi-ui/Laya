@@ -78,7 +78,7 @@ export default function ProfileViewPage() {
                             <Skeleton className="h-8 w-1/4" />
                             <Skeleton className="h-4 w-1/2" />
                         </CardHeader>
-                        <CardContent className="grid gap-6">
+                        <CardContent className="grid gap-6 p-6">
                              <div className="grid sm:grid-cols-2 gap-4">
                                 <div className="grid gap-2">
                                      <Skeleton className="h-5 w-16" />
@@ -135,7 +135,7 @@ export default function ProfileViewPage() {
                             Edit Profile
                         </Button>
                     </CardHeader>
-                    <CardContent className="grid gap-6">
+                    <CardContent className="grid gap-6 p-6">
                          <div className="flex flex-col items-center gap-4">
                             <span className="relative flex h-24 w-24 shrink-0 overflow-hidden rounded-full">
                                 <Image 
@@ -236,4 +236,5 @@ export default function ProfileViewPage() {
 }
 
     
+
 
