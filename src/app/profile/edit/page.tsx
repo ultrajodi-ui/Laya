@@ -814,6 +814,18 @@ export default function ProfileEditPage() {
                                 </SelectContent>
                             </Select>
                         </div>
+                         <div className="grid gap-2">
+                            <Label htmlFor="anyDisability">Any Disability</Label>
+                            <Select value={profileData.anyDisability || ''} onValueChange={(value) => handleSelectChange('anyDisability', value)}>
+                                <SelectTrigger id="anyDisability">
+                                    <SelectValue placeholder="Select an option" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="Yes">Yes</SelectItem>
+                                    <SelectItem value="No">No</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
                         </div>
                         
                         <div className="grid gap-4">
@@ -857,3 +869,4 @@ export default function ProfileEditPage() {
         </AppLayout>
     );
 }
+

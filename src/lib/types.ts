@@ -55,6 +55,7 @@ export type UserProfile = {
   diet?: 'Vegetarian' | 'Non-Vegetarian' | 'Eggetarian';
   drinkingHabit?: 'Non-Drinker' | 'Social Drinker' | 'Moderate drinker' | 'Heavy drinkers';
   smokingHabit?: 'Non-Smoker' | 'Light Smoker' | 'Moderate Smoker' | 'Heavy Smoker';
+  anyDisability?: 'Yes' | 'No';
   profileBy?: "Self" | "Parents" | "Sibling" | "Guardian" | "Friends" | "Relatives";
   currentStatus?: 'Active' | 'Engaged' | 'Married' | 'Inactive';
   profileVisible?: boolean;
@@ -91,3 +92,4 @@ export type Conversation = {
   messages: Message[];
   lastMessage: Message;
 };
+
