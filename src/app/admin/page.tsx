@@ -9,7 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { db } from "@/lib/firebase";
 import { UserProfile } from "@/lib/types";
 import { collection, getDocs, query, doc, getDoc, orderBy, updateDoc, deleteDoc, addDoc } from "firebase/firestore";
-import { Users, Star, Shield, Gem, User as UserIcon, Loader2, MessageSquare, Trash2 } from "lucide-react";
+import { Users, Star, Shield, Gem, User as UserIcon, Loader2, MessageSquare, Trash2, Search } from "lucide-react";
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getAuth, onAuthStateChanged, User, deleteUser } from "firebase/auth";
@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import { format } from 'date-fns';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import { Input } from "@/components/ui/input";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -60,6 +61,7 @@ export default function AdminDashboardPage() {
     const [showUsers, setShowUsers] = useState(false);
     const [genderFilter, setGenderFilter] = useState('all');
     const [userTypeFilter, setUserTypeFilter] = useState('all');
+    const [searchQuery, setSearchQuery] = useState('');
     const auth = getAuth();
     const router = useRouter();
     const { toast } = useToast();
@@ -191,10 +193,20 @@ export default function AdminDashboardPage() {
     };
 
     const filteredUsers = useMemo(() => {
+        const lowercasedQuery = searchQuery.toLowerCase();
         return users
             .filter(user => genderFilter === 'all' || user.gender === genderFilter)
-            .filter(user => userTypeFilter === 'all' || (user.usertype || 'Basic') === userTypeFilter);
-    }, [users, genderFilter, userTypeFilter]);
+            .filter(user => userTypeFilter === 'all' || (user.usertype || 'Basic') === userTypeFilter)
+            .filter(user => {
+                if (!lowercasedQuery) return true;
+                return (
+                    user.fullName?.toLowerCase().includes(lowercasedQuery) ||
+                    user.memberid?.toLowerCase().includes(lowercasedQuery) ||
+                    user.mobileNo?.toLowerCase().includes(lowercasedQuery) ||
+                    user.email?.toLowerCase().includes(lowercasedQuery)
+                );
+            });
+    }, [users, genderFilter, userTypeFilter, searchQuery]);
 
 
     useEffect(() => {
@@ -263,7 +275,7 @@ export default function AdminDashboardPage() {
     return (
         <AppLayout>
              <AlertDialog onOpenChange={(open) => !open && setUserToDelete(null)}>
-                <div className="space-y-8">
+                <div className="space-y-8 p-4 sm:p-6">
                     <div className="flex flex-col gap-4">
                         <h1 className="text-3xl font-headline font-bold">Admin Dashboard</h1>
                         <p className="text-muted-foreground">An overview of your application's activity.</p>
@@ -319,13 +331,23 @@ export default function AdminDashboardPage() {
 
                     <Card>
                         <CardHeader>
-                            <div className="flex justify-between items-start">
+                            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                                 <div>
                                     <CardTitle>All Users</CardTitle>
                                     <CardDescription>A list of all registered users in the system.</CardDescription>
                                 </div>
-                                <div className="flex gap-2">
-                                    <div className="w-48">
+                                <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
+                                    <div className="relative flex-1 md:flex-initial">
+                                        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                                        <Input
+                                            type="search"
+                                            placeholder="Search..."
+                                            className="pl-8 w-full"
+                                            value={searchQuery}
+                                            onChange={(e) => setSearchQuery(e.target.value)}
+                                        />
+                                    </div>
+                                    <div className="w-full md:w-48">
                                         <Select value={genderFilter} onValueChange={setGenderFilter}>
                                             <SelectTrigger>
                                                 <SelectValue placeholder="Filter by gender" />
@@ -337,7 +359,7 @@ export default function AdminDashboardPage() {
                                             </SelectContent>
                                         </Select>
                                     </div>
-                                    <div className="w-48">
+                                    <div className="w-full md:w-48">
                                         <Select value={userTypeFilter} onValueChange={setUserTypeFilter}>
                                             <SelectTrigger>
                                                 <SelectValue placeholder="Filter by user type" />
