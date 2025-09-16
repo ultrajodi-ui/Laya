@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { AppLayout } from "@/components/AppLayout";
@@ -9,7 +10,7 @@ import { db } from "@/lib/firebase";
 import { UserProfile } from "@/lib/types";
 import { collection, getDocs, query, doc, getDoc, orderBy, updateDoc, deleteDoc, addDoc } from "firebase/firestore";
 import { Users, Star, Shield, Gem, User as UserIcon, Loader2, MessageSquare, Trash2 } from "lucide-react";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getAuth, onAuthStateChanged, User, deleteUser } from "firebase/auth";
 import { useRouter } from "next/navigation";
@@ -56,6 +57,7 @@ export default function AdminDashboardPage() {
     const [loadingQueries, setLoadingQueries] = useState(true);
     const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
     const [showUsers, setShowUsers] = useState(false);
+    const [genderFilter, setGenderFilter] = useState('all');
     const auth = getAuth();
     const router = useRouter();
     const { toast } = useToast();
@@ -186,6 +188,13 @@ export default function AdminDashboardPage() {
         }
     };
 
+    const filteredUsers = useMemo(() => {
+        if (genderFilter === 'all') {
+            return users;
+        }
+        return users.filter(user => user.gender === genderFilter);
+    }, [users, genderFilter]);
+
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -309,8 +318,24 @@ export default function AdminDashboardPage() {
 
                     <Card>
                         <CardHeader>
-                            <CardTitle>All Users</CardTitle>
-                            <CardDescription>A list of all registered users in the system.</CardDescription>
+                            <div className="flex justify-between items-center">
+                                <div>
+                                    <CardTitle>All Users</CardTitle>
+                                    <CardDescription>A list of all registered users in the system.</CardDescription>
+                                </div>
+                                <div className="w-48">
+                                    <Select value={genderFilter} onValueChange={setGenderFilter}>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Filter by gender" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="all">All Genders</SelectItem>
+                                            <SelectItem value="male">Male</SelectItem>
+                                            <SelectItem value="female">Female</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            </div>
                         </CardHeader>
                         <CardContent>
                             {!showUsers && (
@@ -322,6 +347,7 @@ export default function AdminDashboardPage() {
                                         <TableRow>
                                             <TableHead>Member Id</TableHead>
                                             <TableHead>User name</TableHead>
+                                            <TableHead>Gender</TableHead>
                                             <TableHead>Email</TableHead>
                                             <TableHead>Mobile No</TableHead>
                                             <TableHead>User Type</TableHead>
@@ -332,19 +358,20 @@ export default function AdminDashboardPage() {
                                     <TableBody>
                                         {loadingData ? (
                                             <TableRow>
-                                                <TableCell colSpan={7} className="text-center">
+                                                <TableCell colSpan={8} className="text-center">
                                                     <Loader2 className="mx-auto h-6 w-6 animate-spin" />
                                                 </TableCell>
                                             </TableRow>
-                                        ) : users.length === 0 ? (
+                                        ) : filteredUsers.length === 0 ? (
                                             <TableRow>
-                                                <TableCell colSpan={7} className="text-center">No users found.</TableCell>
+                                                <TableCell colSpan={8} className="text-center">No users found.</TableCell>
                                             </TableRow>
                                         ) : (
-                                            users.map(user => (
+                                            filteredUsers.map(user => (
                                                 <TableRow key={user.id}>
                                                     <TableCell>{user.memberid || 'N/A'}</TableCell>
                                                     <TableCell className="font-medium">{user.fullName}</TableCell>
+                                                    <TableCell className="capitalize">{user.gender || 'N/A'}</TableCell>
                                                     <TableCell>{user.email}</TableCell>
                                                     <TableCell>{user.mobileNo || 'N/A'}</TableCell>
                                                     <TableCell>
@@ -452,5 +479,7 @@ export default function AdminDashboardPage() {
         </AppLayout>
     );
 }
+
+    
 
     
