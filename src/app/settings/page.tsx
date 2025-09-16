@@ -211,33 +211,38 @@ export default function SettingsPage() {
                             </div>
                         )}
 
-                        {userProfile?.usertype !== 'Basic' && (
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="space-y-2 rounded-lg border p-4">
-                                    <Label>Contact View Limits</Label>
-                                    {userProfile?.contactLimit ? (
-                                        <div className="space-y-1">
-                                            <LimitDetail label="Diamond Profiles" value={userProfile.contactLimit.diamond} />
-                                            <LimitDetail label="Gold Profiles" value={userProfile.contactLimit.gold} />
-                                            <LimitDetail label="Silver Profiles" value={userProfile.contactLimit.silver} />
-                                            <LimitDetail label="Basic Profiles" value={userProfile.contactLimit.basic} />
-                                        </div>
-                                    ) : <p className="text-sm text-muted-foreground">No limits set.</p>}
-                                </div>
-                                <div className="space-y-2 rounded-lg border p-4">
-                                    <Label>Photo View Limits</Label>
-                                     {userProfile?.photoViewLimits ? (
-                                        <div className="space-y-1">
-                                            <LimitDetail label="Diamond Profiles" value={userProfile.photoViewLimits.diamond} />
-                                            <LimitDetail label="Gold Profiles" value={userProfile.photoViewLimits.gold} />
-                                            <LimitDetail label="Silver Profiles" value={userProfile.photoViewLimits.silver} />
-                                            <LimitDetail label="Basic Profiles" value={userProfile.photoViewLimits.basic} />
-                                        </div>
-                                    ) : <p className="text-sm text-muted-foreground">No limits set.</p>}
-                                </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-2 rounded-lg border p-4">
+                                <Label>Contact View Limits</Label>
+                                {userProfile?.contactLimit ? (
+                                    <div className="space-y-1">
+                                        <LimitDetail label="Diamond Profiles" value={userProfile.contactLimit.diamond} />
+                                        <LimitDetail label="Gold Profiles" value={userProfile.contactLimit.gold} />
+                                        <LimitDetail label="Silver Profiles" value={userProfile.contactLimit.silver} />
+                                        <LimitDetail label="Basic Profiles" value={userProfile.contactLimit.basic} />
+                                    </div>
+                                ) : <p className="text-sm text-muted-foreground">No limits set.</p>}
                             </div>
-                        )}
-
+                            <div className="space-y-2 rounded-lg border p-4">
+                                <Label>Photo View Limits</Label>
+                                 {userProfile?.photoViewLimits ? (
+                                    <div className="space-y-1">
+                                        <LimitDetail label="Diamond Profiles" value={userProfile.photoViewLimits.diamond} />
+                                        <LimitDetail label="Gold Profiles" value={userProfile.photoViewLimits.gold} />
+                                        <LimitDetail label="Silver Profiles" value={userProfile.photoViewLimits.silver} />
+                                        <LimitDetail label="Basic Profiles" value={userProfile.photoViewLimits.basic} />
+                                    </div>
+                                ) : <p className="text-sm text-muted-foreground">No limits set.</p>}
+                            </div>
+                        </div>
+                         <div className="space-y-2 rounded-lg border p-4">
+                            <Label>Likes Limit</Label>
+                             {userProfile?.likesLimits !== undefined ? (
+                                <div className="space-y-1">
+                                     <LimitDetail label="Likes Remaining" value={userProfile.likesLimits} />
+                                </div>
+                            ) : <p className="text-sm text-muted-foreground">No limit set.</p>}
+                        </div>
                     </CardContent>
                 </Card>
 
@@ -283,6 +288,8 @@ export default function SettingsPage() {
         </AppLayout>
     );
 }
+
+    
 
     
 
