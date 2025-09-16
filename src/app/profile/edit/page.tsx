@@ -850,6 +850,19 @@ export default function ProfileEditPage() {
                         </div>
 
                         <div className="grid gap-2">
+                            <Label htmlFor="interCasteMarriage">Are You Ready to Inter Caste Marriage</Label>
+                            <Select value={profileData.interCasteMarriage || ''} onValueChange={(value) => handleSelectChange('interCasteMarriage', value)}>
+                                <SelectTrigger id="interCasteMarriage">
+                                    <SelectValue placeholder="Select an option" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="Yes">Yes</SelectItem>
+                                    <SelectItem value="No">No</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+
+                        <div className="grid gap-2">
                             <Label htmlFor="lookingFor">What are you looking for?</Label>
                             <Textarea id="lookingFor" rows={3} value={profileData.lookingFor || ''} onChange={handleInputChange}/>
                         </div>
@@ -869,4 +882,5 @@ export default function ProfileEditPage() {
         </AppLayout>
     );
 }
+
 

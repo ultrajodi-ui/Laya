@@ -209,6 +209,7 @@ export default function ProfileViewPage() {
                             <ProfileDetail label="Drinking Habit" value={profileData.drinkingHabit} />
                             <ProfileDetail label="Smoking Habit" value={profileData.smokingHabit} />
                             <ProfileDetail label="Any Disability" value={profileData.anyDisability} />
+                            <ProfileDetail label="Ready for Inter-Caste Marriage" value={profileData.interCasteMarriage} />
                             <ProfileDetail label="Education" value={profileData.education} />
                             <ProfileDetail label="Education Details" value={profileData.educationDetails} />
                             <ProfileDetail label="Employed In" value={profileData.employed} />
@@ -235,3 +236,4 @@ export default function ProfileViewPage() {
 }
 
     
+
