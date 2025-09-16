@@ -275,7 +275,7 @@ export default function AdminDashboardPage() {
     return (
         <AppLayout>
              <AlertDialog onOpenChange={(open) => !open && setUserToDelete(null)}>
-                <div className="space-y-8 p-4 sm:p-6">
+                <div className="space-y-8">
                     <div className="flex flex-col gap-4">
                         <h1 className="text-3xl font-headline font-bold">Admin Dashboard</h1>
                         <p className="text-muted-foreground">An overview of your application's activity.</p>
@@ -521,5 +521,8 @@ export default function AdminDashboardPage() {
     
 
     
+
+    
+
 
     
