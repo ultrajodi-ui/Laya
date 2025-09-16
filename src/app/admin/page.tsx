@@ -41,6 +41,7 @@ type SupportQuery = {
 }
 
 const statusOptions = ["Active", "Engaged", "Married", "Inactive"];
+const userTypeOptions = ["Basic", "Silver", "Gold", "Diamond"];
 
 export default function AdminDashboardPage() {
     const [stats, setStats] = useState({
@@ -58,6 +59,7 @@ export default function AdminDashboardPage() {
     const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
     const [showUsers, setShowUsers] = useState(false);
     const [genderFilter, setGenderFilter] = useState('all');
+    const [userTypeFilter, setUserTypeFilter] = useState('all');
     const auth = getAuth();
     const router = useRouter();
     const { toast } = useToast();
@@ -189,11 +191,10 @@ export default function AdminDashboardPage() {
     };
 
     const filteredUsers = useMemo(() => {
-        if (genderFilter === 'all') {
-            return users;
-        }
-        return users.filter(user => user.gender === genderFilter);
-    }, [users, genderFilter]);
+        return users
+            .filter(user => genderFilter === 'all' || user.gender === genderFilter)
+            .filter(user => userTypeFilter === 'all' || (user.usertype || 'Basic') === userTypeFilter);
+    }, [users, genderFilter, userTypeFilter]);
 
 
     useEffect(() => {
@@ -318,22 +319,37 @@ export default function AdminDashboardPage() {
 
                     <Card>
                         <CardHeader>
-                            <div className="flex justify-between items-center">
+                            <div className="flex justify-between items-start">
                                 <div>
                                     <CardTitle>All Users</CardTitle>
                                     <CardDescription>A list of all registered users in the system.</CardDescription>
                                 </div>
-                                <div className="w-48">
-                                    <Select value={genderFilter} onValueChange={setGenderFilter}>
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Filter by gender" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="all">All Genders</SelectItem>
-                                            <SelectItem value="male">Male</SelectItem>
-                                            <SelectItem value="female">Female</SelectItem>
-                                        </SelectContent>
-                                    </Select>
+                                <div className="flex gap-2">
+                                    <div className="w-48">
+                                        <Select value={genderFilter} onValueChange={setGenderFilter}>
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Filter by gender" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="all">All Genders</SelectItem>
+                                                <SelectItem value="male">Male</SelectItem>
+                                                <SelectItem value="female">Female</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                    <div className="w-48">
+                                        <Select value={userTypeFilter} onValueChange={setUserTypeFilter}>
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Filter by user type" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="all">All User Types</SelectItem>
+                                                {userTypeOptions.map(type => (
+                                                     <SelectItem key={type} value={type}>{type}</SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
                                 </div>
                             </div>
                         </CardHeader>
@@ -479,6 +495,8 @@ export default function AdminDashboardPage() {
         </AppLayout>
     );
 }
+
+    
 
     
 
