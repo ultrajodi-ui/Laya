@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { AppLayout } from "@/components/AppLayout";
@@ -37,6 +36,8 @@ const salaryRanges = ["<3LPA", "3-5LPA", "5-10LPA", "10-20LPA", ">20LPA"];
 const employedOptions = ["Government", "Private", "Business", "Self Employed", "Un Employed"];
 const userTypes = ["Basic", "Silver", "Gold", "Diamond"];
 
+const PROFILES_PER_PAGE = 20;
+
 const UserTypeIcon = ({ usertype }: { usertype?: string }) => {
     switch (usertype) {
         case 'Silver': return <Star className="w-4 h-4 ml-2 text-slate-500" />;
@@ -66,6 +67,9 @@ export default function BrowsePage() {
     const [selectedSalary, setSelectedSalary] = useState('');
     const [selectedEmployed, setSelectedEmployed] = useState('');
     const [selectedUserType, setSelectedUserType] = useState('');
+    
+    // State for pagination
+    const [currentPage, setCurrentPage] = useState(1);
 
     const auth = getAuth();
     const { toast } = useToast();
@@ -222,6 +226,7 @@ export default function BrowsePage() {
     };
 
     const filteredUsers = useMemo(() => {
+        setCurrentPage(1); // Reset to first page on filter change
         return users
             .filter(user => currentUserProfile?.role === 'admin' ? true : user.role !== 'admin')
             .filter(user => {
@@ -262,6 +267,13 @@ export default function BrowsePage() {
                 return true;
             });
     }, [users, searchQuery, selectedInterests, selectedLocations, selectedMaritalStatus, selectedHomeState, selectedMotherTongue, selectedReligion, selectedCommunity, selectedSubCaste, selectedAgeRange, selectedSalary, selectedEmployed, selectedUserType, currentUserProfile]);
+    
+    const paginatedUsers = useMemo(() => {
+        const startIndex = (currentPage - 1) * PROFILES_PER_PAGE;
+        return filteredUsers.slice(startIndex, startIndex + PROFILES_PER_PAGE);
+    }, [filteredUsers, currentPage]);
+
+    const totalPages = Math.ceil(filteredUsers.length / PROFILES_PER_PAGE);
 
 
     const FilterDropdown = ({ placeholder, options, value, onChange }: { placeholder: string, options: string[], value: string, onChange: (value: string) => void }) => (
@@ -343,7 +355,7 @@ export default function BrowsePage() {
                      </div>
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                        {filteredUsers.map(user => {
+                        {paginatedUsers.map(user => {
                             const isLiked = currentUserProfile?.likes?.includes(user.memberid!);
                             const profileImageUrl = user.photoVisibility === 'Protected' 
                                 ? `https://picsum.photos/seed/default-avatar/400/400`
@@ -401,6 +413,27 @@ export default function BrowsePage() {
                 {!loading && filteredUsers.length === 0 && (
                     <div className="text-center col-span-full py-16">
                         <p className="text-muted-foreground">No profiles found. Try adjusting your search or filters.</p>
+                    </div>
+                )}
+                 {totalPages > 1 && (
+                    <div className="flex justify-center items-center gap-4 mt-8">
+                        <Button
+                            variant="outline"
+                            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                            disabled={currentPage === 1}
+                        >
+                            Previous
+                        </Button>
+                        <span className="text-sm text-muted-foreground">
+                            Page {currentPage} of {totalPages}
+                        </span>
+                        <Button
+                            variant="outline"
+                            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                            disabled={currentPage === totalPages}
+                        >
+                            Next
+                        </Button>
                     </div>
                 )}
             </div>
