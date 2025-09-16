@@ -329,7 +329,7 @@ function AppLayoutContent({ children }: { children: ReactNode }) {
                     </DropdownMenu>
                 </div>
             </header>
-            <main className="flex-1 p-4 sm:p-6" style={{ background: 'linear-gradient(90deg, hsla(308, 100%, 97%, 1) 0%, hsla(313, 100%, 98%, 1) 100%)' }}>{children}</main>
+            <main className="flex-1 p-4 sm:p-6" style={{ background: '#fff6fd' }}>{children}</main>
         </SidebarInset>
       </div>
     </SidebarProvider>
@@ -344,5 +344,3 @@ export function AppLayout({ children }: { children: ReactNode }) {
     </PageTitleProvider>
   )
 }
-
-    
