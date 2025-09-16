@@ -58,7 +58,7 @@ export default function SignupPage() {
 
   return (
      <div className="flex flex-col min-h-screen">
-      <header className="px-4 lg:px-6 h-16 flex items-center" style={{ backgroundColor: '#3B2F2F' }}>
+      <header className="px-4 lg:px-6 h-16 flex items-center" style={{ backgroundColor: '#0083B0' }}>
         <Link href="/" className="flex items-center justify-center text-primary">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -130,7 +130,7 @@ export default function SignupPage() {
                       onChange={(e) => setConfirmPassword(e.target.value)}
                     />
                   </div>
-                  <Button type="submit" className="w-full text-white" disabled={isLoading} style={{ backgroundColor: '#3B2F2F' }}>
+                  <Button type="submit" className="w-full text-white" disabled={isLoading}>
                       {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                       Create an account
                   </Button>

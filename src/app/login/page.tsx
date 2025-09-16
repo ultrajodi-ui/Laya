@@ -49,7 +49,7 @@ export default function LoginPage() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <header className="px-4 lg:px-6 h-16 flex items-center" style={{ backgroundColor: '#3B2F2F' }}>
+      <header className="px-4 lg:px-6 h-16 flex items-center" style={{ backgroundColor: '#0083B0' }}>
         <Link href="/" className="flex items-center justify-center text-primary">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -80,7 +80,7 @@ export default function LoginPage() {
       <main 
           className="flex-1 flex items-center justify-center p-4 bg-background"
       >
-        <Card className="mx-auto max-w-sm w-full" style={{ backgroundColor: '#FFF8E7' }}>
+        <Card className="mx-auto max-w-sm w-full" style={{ backgroundColor: '#c1f3ff' }}>
           <CardHeader>
             <CardTitle className="text-2xl font-headline">Welcome Back</CardTitle>
             <CardDescription>
@@ -120,7 +120,7 @@ export default function LoginPage() {
                   style={{ backgroundColor: '#F8F8F8' }}
                 />
               </div>
-              <Button type="submit" className="w-full" disabled={isLoading} style={{ backgroundColor: '#3B2F2F' }}>
+              <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Login
               </Button>

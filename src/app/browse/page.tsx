@@ -401,7 +401,7 @@ export default function BrowsePage() {
                                     </div>
                                 </CardContent>
                                 <CardFooter className="p-4 pt-0">
-                                     <Button style={{ backgroundColor: '#3B2F2F' }} className="w-full text-white hover:bg-slate-800/90" onClick={() => handleLikeClick(user)}>
+                                     <Button className="w-full" onClick={() => handleLikeClick(user)}>
                                         <Heart className={cn("mr-2 h-4 w-4", isLiked && "fill-red-500 text-red-500")} /> Like
                                     </Button>
                                 </CardFooter>
