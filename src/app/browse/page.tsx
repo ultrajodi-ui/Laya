@@ -14,7 +14,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState, useMemo } from "react";
 import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
-import { collection, doc, getDocs, query, where, arrayUnion, arrayRemove, updateDoc, onSnapshot, writeBatch, getDoc, deleteDoc } from 'firebase/firestore';
+import { collection, doc, getDocs, query, where, arrayUnion, arrayRemove, updateDoc, onSnapshot, writeBatch, getDoc, deleteDoc, increment } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import type { UserProfile } from "@/lib/types";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -158,41 +158,49 @@ export default function BrowsePage() {
             });
             return;
         }
-
+    
         const currentUserId = currentUser.uid;
         const currentUserMemberId = currentUserProfile.memberid;
         const targetUserMemberId = targetUser.memberid;
-        
+    
         const userDocRef = doc(db, 'users', currentUserId);
         const isLiked = currentUserProfile?.likes?.includes(targetUserMemberId);
-
+    
         try {
             const batch = writeBatch(db);
-
+    
             if (isLiked) {
-                // Remove like from current user's profile
+                // UNLIKE
                 batch.update(userDocRef, {
                     likes: arrayRemove(targetUserMemberId)
                 });
-
-                // Delete from likesReceived collection
+    
                 const likeReceivedDocId = `${currentUserMemberId}_likes_${targetUserMemberId}`;
                 const likeReceivedDocRef = doc(db, 'likesReceived', likeReceivedDocId);
                 batch.delete(likeReceivedDocRef);
-
+    
                 await batch.commit();
-
+    
                 toast({
                     title: 'Like Removed',
                     description: 'You have unliked this profile.',
                 });
             } else {
-                // Add like to current user's profile
+                // LIKE
+                if ((currentUserProfile.likesLimits ?? 0) <= 0) {
+                    toast({
+                        variant: 'destructive',
+                        title: 'Like Limit Reached',
+                        description: 'You have used all your likes. Please upgrade your plan for more.',
+                    });
+                    return;
+                }
+    
                 batch.update(userDocRef, {
-                    likes: arrayUnion(targetUserMemberId)
+                    likes: arrayUnion(targetUserMemberId),
+                    likesLimits: increment(-1)
                 });
-
-                // Add to likesReceived collection
+    
                 const likeReceivedDocId = `${currentUserMemberId}_likes_${targetUserMemberId}`;
                 const likeReceivedDocRef = doc(db, 'likesReceived', likeReceivedDocId);
                 batch.set(likeReceivedDocRef, {
@@ -200,9 +208,9 @@ export default function BrowsePage() {
                     likedUser: targetUserMemberId,
                     timestamp: new Date()
                 });
-                
+    
                 await batch.commit();
-
+    
                 toast({
                     title: 'Liked!',
                     description: 'Your like has been noted.',
@@ -442,5 +450,7 @@ export default function BrowsePage() {
         </AppLayout>
     );
 }
+
+    
 
     

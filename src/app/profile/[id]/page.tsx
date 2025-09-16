@@ -117,12 +117,11 @@ function ProfileContent({ id }: { id: string }) {
             const batch = writeBatch(db);
 
             if (isLiked) {
-                // Remove like from current user's profile
+                // UNLIKE
                 batch.update(userDocRef, {
                     likes: arrayRemove(targetUserMemberId)
                 });
 
-                // Delete from likesReceived collection
                 const likeReceivedDocId = `${currentUserMemberId}_likes_${targetUserMemberId}`;
                 const likeReceivedDocRef = doc(db, 'likesReceived', likeReceivedDocId);
                 batch.delete(likeReceivedDocRef);
@@ -133,12 +132,21 @@ function ProfileContent({ id }: { id: string }) {
                     description: 'You have unliked this profile.',
                 });
             } else {
-                // Add like to current user's profile
+                // LIKE
+                if ((currentUserProfile.likesLimits ?? 0) <= 0) {
+                    toast({
+                        variant: 'destructive',
+                        title: 'Like Limit Reached',
+                        description: 'You have used all your likes. Please upgrade your plan for more.',
+                    });
+                    return;
+                }
+
                 batch.update(userDocRef, {
-                    likes: arrayUnion(targetUserMemberId)
+                    likes: arrayUnion(targetUserMemberId),
+                    likesLimits: increment(-1)
                 });
 
-                 // Add to likesReceived collection
                 const likeReceivedDocId = `${currentUserMemberId}_likes_${targetUserMemberId}`;
                 const likeReceivedDocRef = doc(db, 'likesReceived', likeReceivedDocId);
                 batch.set(likeReceivedDocRef, {
@@ -553,3 +561,6 @@ export default function ProfileDetailPage({ params }: { params: { id: string } }
         </AppLayout>
     );
 }
+
+
+    

@@ -11,7 +11,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
-import { collection, doc, getDocs, query, where, arrayUnion, arrayRemove, updateDoc, writeBatch, getDoc, deleteDoc } from 'firebase/firestore';
+import { collection, doc, getDocs, query, where, arrayUnion, arrayRemove, updateDoc, writeBatch, getDoc, deleteDoc, increment } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import type { UserProfile } from "@/lib/types";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -134,8 +134,18 @@ function LikesReceivedContent() {
                     description: 'You have unliked this profile.',
                 });
             } else {
+                 if ((currentUserProfile.likesLimits ?? 0) <= 0) {
+                    toast({
+                        variant: 'destructive',
+                        title: 'Like Limit Reached',
+                        description: 'You have used all your likes. Please upgrade your plan for more.',
+                    });
+                    return;
+                }
+
                 batch.update(userDocRef, {
-                    likes: arrayUnion(targetUserMemberId)
+                    likes: arrayUnion(targetUserMemberId),
+                    likesLimits: increment(-1)
                 });
                 const likeReceivedDocId = `${currentUserMemberId}_likes_${targetUserMemberId}`;
                 const likeReceivedDocRef = doc(db, 'likesReceived', likeReceivedDocId);
@@ -154,6 +164,9 @@ function LikesReceivedContent() {
             setCurrentUserProfile(prev => {
                 if (!prev) return null;
                 const newLikes = isLiked ? prev.likes?.filter(id => id !== targetUserMemberId) : [...(prev.likes || []), targetUserMemberId];
+                 if (!isLiked) {
+                    return { ...prev, likes: newLikes, likesLimits: (prev.likesLimits ?? 0) - 1 };
+                }
                 return { ...prev, likes: newLikes };
             });
 
@@ -301,6 +314,8 @@ export default function LikesReceivedPage() {
         </AppLayout>
     );
 }
+
+    
 
     
 
