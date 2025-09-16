@@ -402,7 +402,7 @@ export default function ProfileEditPage() {
 
     return (
         <AppLayout>
-            <div className="mx-auto grid max-w-4xl gap-6">
+            <div className="mx-auto grid max-w-4xl gap-6 p-4 sm:p-6">
                  <Card>
                     <CardHeader>
                         <CardTitle className="font-headline">Edit Your Profile</CardTitle>
