@@ -68,6 +68,7 @@ export type UserProfile = {
   viewedPhotos?: string[];
   planStartDate?: any;
   planEndDate?: any;
+  likesLimits?: number;
 };
 
 export type Connection = {

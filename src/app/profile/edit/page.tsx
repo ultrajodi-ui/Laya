@@ -292,6 +292,7 @@ export default function ProfileEditPage() {
                 dataToSave.createdAt = new Date();
                 dataToSave.usertype = 'Basic';
                 dataToSave.photoViewLimits = { basic: 0, silver: 0, gold: 0, diamond: 0 };
+                dataToSave.likesLimits = 10;
             }
 
             if (auth.currentUser) {
@@ -352,13 +353,13 @@ export default function ProfileEditPage() {
     if (isLoading) {
         return (
             <AppLayout>
-                 <div className="mx-auto grid max-w-4xl gap-6">
+                 <div className="mx-auto grid max-w-4xl gap-6 p-4 sm:p-6">
                     <Card>
                         <CardHeader>
                             <Skeleton className="h-8 w-1/4" />
                             <Skeleton className="h-4 w-1/2" />
                         </CardHeader>
-                        <CardContent className="grid gap-6">
+                        <CardContent className="grid gap-6 p-6">
                             <div className="flex items-center gap-4">
                                 <Skeleton className="h-24 w-24 rounded-full" />
                                 <div className="grid gap-1.5">
@@ -408,7 +409,7 @@ export default function ProfileEditPage() {
                         <CardTitle className="font-headline">Edit Your Profile</CardTitle>
                         <CardDescription>Update your personal information and preferences.</CardDescription>
                     </CardHeader>
-                    <CardContent className="grid gap-6">
+                    <CardContent className="grid gap-6 p-6">
                         <div className="flex items-center gap-4">
                             <span className="relative flex h-24 w-24 shrink-0 overflow-hidden rounded-full">
                                 <img className="aspect-square h-full w-full object-cover" alt={profileData.fullName || 'User'} src={profileData.imageUrl || `https://picsum.photos/seed/${user?.uid}/100/100`} />
