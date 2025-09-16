@@ -203,7 +203,7 @@ const Sidebar = React.forwardRef<
             style={
               {
                 "--sidebar-width": SIDEBAR_WIDTH_MOBILE,
-                background: 'linear-gradient(to top, #0083B0, #00B4DB)',
+                background: 'linear-gradient(360deg, hsla(191, 100%, 43%, 1) 0%, hsla(195, 100%, 35%, 1) 100%)',
               } as React.CSSProperties
             }
             side={side}
@@ -251,7 +251,7 @@ const Sidebar = React.forwardRef<
           <div
             data-sidebar="sidebar"
             className="flex h-full w-full flex-col bg-sidebar group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:border-sidebar-border group-data-[variant=floating]:shadow"
-             style={{ background: 'linear-gradient(to top, #0083B0, #00B4DB)' }}
+             style={{ background: 'linear-gradient(360deg, hsla(191, 100%, 43%, 1) 0%, hsla(195, 100%, 35%, 1) 100%)' }}
           >
             {children}
           </div>
