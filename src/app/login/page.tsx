@@ -80,7 +80,7 @@ export default function LoginPage() {
       <main 
           className="flex-1 flex items-center justify-center p-4 bg-background"
       >
-        <Card className="mx-auto max-w-sm w-full" style={{ backgroundColor: '#c1f3ff' }}>
+        <Card className="mx-auto max-w-sm w-full">
           <CardHeader>
             <CardTitle className="text-2xl font-headline">Welcome Back</CardTitle>
             <CardDescription>
