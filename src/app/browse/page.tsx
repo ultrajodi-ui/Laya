@@ -298,6 +298,7 @@ export default function BrowsePage() {
                             className="pl-8" 
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
+                            style={{ backgroundColor: 'white' }}
                         />
                         <span className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground">
                             <SearchIcon className="h-4 w-4" />
@@ -440,3 +441,5 @@ export default function BrowsePage() {
         </AppLayout>
     );
 }
+
+    
