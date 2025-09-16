@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { AppLayout } from "@/components/AppLayout";
@@ -278,7 +279,7 @@ export default function BrowsePage() {
 
     const FilterDropdown = ({ placeholder, options, value, onChange }: { placeholder: string, options: string[], value: string, onChange: (value: string) => void }) => (
         <Select value={value} onValueChange={onChange}>
-            <SelectTrigger className="w-full sm:w-auto">
+            <SelectTrigger className="w-full sm:w-auto" style={{ backgroundColor: 'white' }}>
                 <SelectValue placeholder={placeholder} />
             </SelectTrigger>
             <SelectContent>
