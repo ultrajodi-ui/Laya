@@ -44,7 +44,7 @@ export default function SignupPage() {
         title: "Account Created",
         description: "Welcome! Please complete your profile.",
       });
-      router.push('/profile/edit'); 
+      window.location.href = '/profile/edit'; 
     } catch (error: any) {
       toast({
         variant: "destructive",
