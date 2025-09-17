@@ -54,22 +54,26 @@ function PaymentForm() {
         let photoViewLimits: UserProfile['photoViewLimits'] = { basic: 0, silver: 0, gold: 0, diamond: 0 };
         let contactLimit: UserProfile['contactLimit'] = { basic: 0, silver: 0, gold: 0, diamond: 0 };
         let planDuration: Duration = {};
+        let likesLimits = 0;
 
         switch (plan) {
             case 'Silver':
                 photoViewLimits = { basic: 20, silver: 15, gold: 10, diamond: 0 };
                 contactLimit = { basic: 20, silver: 15, gold: 10, diamond: 0 };
                 planDuration = { months: 3 };
+                likesLimits = 50;
                 break;
             case 'Gold':
                 photoViewLimits = { basic: 40, silver: 20, gold: 15, diamond: 5 };
                 contactLimit = { basic: 40, silver: 20, gold: 15, diamond: 5 };
                 planDuration = { months: 6 };
+                likesLimits = 100;
                 break;
             case 'Diamond':
                  photoViewLimits = { basic: 80, silver: 50, gold: 35, diamond: 25 };
                 contactLimit = { basic: 80, silver: 50, gold: 35, diamond: 25 };
                 planDuration = { months: 12 };
+                likesLimits = 200;
                 break;
         }
 
@@ -87,6 +91,7 @@ function PaymentForm() {
                 contactLimit: contactLimit,
                 planStartDate: planStartDate,
                 planEndDate: planEndDate,
+                likesLimits: likesLimits,
             });
             
             setIsLoading(false);
