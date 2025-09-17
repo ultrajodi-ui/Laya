@@ -21,7 +21,7 @@ import {
   ThumbsUp,
 } from 'lucide-react';
 import { getAuth, onAuthStateChanged, signOut, User as FirebaseUser } from 'firebase/auth';
-import { doc, getDoc, onSnapshot, Unsubscribe, updateDoc, collection, query, where, getDocs, Timestamp, serverTimestamp } from 'firebase/firestore';
+import { doc, getDoc, onSnapshot, Unsubscribe, updateDoc, collection, query, where, getDocs, Timestamp, serverTimestamp, orderBy } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 
 import {
@@ -101,11 +101,13 @@ function AppLayoutContent({ children }: { children: ReactNode }) {
                         const likesQuery = query(
                             collection(db, "likesReceived"), 
                             where("likedUser", "==", profile.memberid),
-                            where("timestamp", ">", profile.lastLikesViewed || new Date(0))
+                            orderBy("timestamp", "desc")
                         );
                         
                         const likesSnapshot = await getDocs(likesQuery);
-                        setNewLikesCount(likesSnapshot.size);
+                        const lastViewed = profile.lastLikesViewed?.toDate() || new Date(0);
+                        const newCount = likesSnapshot.docs.filter(doc => doc.data().timestamp.toDate() > lastViewed).length;
+                        setNewLikesCount(newCount);
                     }
 
                     // --- Plan Expiration & Likes Reset Logic ---
@@ -327,7 +329,7 @@ function AppLayoutContent({ children }: { children: ReactNode }) {
             </SidebarMenu>
           </SidebarFooter>
         </Sidebar>
-        <SidebarInset>
+        <div className="flex-1 flex flex-col">
             <header className="w-full sticky top-0 z-30 border-b">
                 <div className="flex h-14 items-center gap-4 w-full" style={{ backgroundColor: '#0083B0' }}>
                     <SidebarTrigger className="md:hidden text-white"/>
@@ -374,8 +376,8 @@ function AppLayoutContent({ children }: { children: ReactNode }) {
                     </div>
                 </div>
             </header>
-            <main className="flex flex-col flex-1 p-4 sm:p-6" style={{ background: '#def9ff' }}>{children}</main>
-        </SidebarInset>
+            <main className="flex-1 p-4 sm:p-6" style={{ background: '#def9ff' }}>{children}</main>
+        </div>
       </div>
     </SidebarProvider>
   );
