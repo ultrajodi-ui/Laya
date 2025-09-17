@@ -123,7 +123,8 @@ function LikesReceivedContent() {
 
             if (isLiked) {
                 batch.update(userDocRef, {
-                    likes: arrayRemove(targetUserMemberId)
+                    likes: arrayRemove(targetUserMemberId),
+                    likesLimits: increment(1)
                 });
                 const likeReceivedDocId = `${currentUserMemberId}_likes_${targetUserMemberId}`;
                 const likeReceivedDocRef = doc(db, 'likesReceived', likeReceivedDocId);
@@ -167,7 +168,7 @@ function LikesReceivedContent() {
                  if (!isLiked) {
                     return { ...prev, likes: newLikes, likesLimits: (prev.likesLimits ?? 0) - 1 };
                 }
-                return { ...prev, likes: newLikes };
+                return { ...prev, likes: newLikes, likesLimits: (prev.likesLimits ?? 0) + 1 };
             });
 
         } catch (error) {
@@ -314,6 +315,8 @@ export default function LikesReceivedPage() {
         </AppLayout>
     );
 }
+
+    
 
     
 

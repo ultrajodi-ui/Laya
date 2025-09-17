@@ -119,7 +119,8 @@ function ProfileContent({ id }: { id: string }) {
             if (isLiked) {
                 // UNLIKE
                 batch.update(userDocRef, {
-                    likes: arrayRemove(targetUserMemberId)
+                    likes: arrayRemove(targetUserMemberId),
+                    likesLimits: increment(1)
                 });
 
                 const likeReceivedDocId = `${currentUserMemberId}_likes_${targetUserMemberId}`;
@@ -562,5 +563,7 @@ export default function ProfileDetailPage({ params }: { params: { id: string } }
     );
 }
 
+
+    
 
     
