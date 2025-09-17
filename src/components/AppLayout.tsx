@@ -20,7 +20,7 @@ import {
   ThumbsUp,
 } from 'lucide-react';
 import { getAuth, onAuthStateChanged, signOut, User as FirebaseUser } from 'firebase/auth';
-import { doc, getDoc, onSnapshot, Unsubscribe, updateDoc } from 'firebase/firestore';
+import { doc, getDoc, onSnapshot, Unsubscribe, updateDoc, collection, query, where, getDocs, Timestamp, serverTimestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 
 import {
@@ -35,6 +35,7 @@ import {
   SidebarTrigger,
   SidebarInset,
   SidebarSeparator,
+  SidebarMenuBadge,
 } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -53,7 +54,7 @@ const navItems = [
   { href: '/browse', icon: Home, label: 'Browse' },
   { href: '/matches', icon: Search, label: 'AI Matches' },
   { href: '/your-likes', icon: ThumbsUp, label: 'Your Liked Profiles' },
-  { href: '/likes-received', icon: Star, label: 'Who Liked Your Profile' },
+  { href: '/likes-received', icon: Heart, label: 'Who Liked Your Profile' },
   { href: '/upgrade', icon: Zap, label: 'Premium Member Benefits' },
   { href: '/help-support', icon: LifeBuoy, label: 'Help & Support' },
   { href: '/about-us', icon: Info, label: 'About Us' },
@@ -71,85 +72,101 @@ function AppLayoutContent({ children }: { children: ReactNode }) {
   const [user, setUser] = React.useState<FirebaseUser | null>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = React.useState(true);
+  const [newLikesCount, setNewLikesCount] = useState(0);
   const { pageTitle, setPageTitle } = usePageTitle();
 
   useEffect(() => {
-    let unsubscribeSnapshot: Unsubscribe | undefined;
+    let unsubscribeAuth: Unsubscribe | undefined;
+    let unsubscribeLikes: Unsubscribe | undefined;
 
-    const unsubscribeAuth = onAuthStateChanged(auth, (authUser) => {
-      setLoading(false);
-      
-      // If there's an existing snapshot listener, unsubscribe from it first
-      if (unsubscribeSnapshot) {
-        unsubscribeSnapshot();
-      }
-
-      if (authUser) {
-        setUser(authUser);
-        const userDocRef = doc(db, 'users', authUser.uid);
+    unsubscribeAuth = onAuthStateChanged(auth, (authUser) => {
+        setLoading(false);
         
-        unsubscribeSnapshot = onSnapshot(userDocRef, async (doc) => {
-          if (doc.exists()) {
-            const profile = doc.data() as UserProfile;
-            setUserProfile(profile);
-
-             // Check for plan expiration
-            if (profile.usertype !== 'Basic' && profile.planEndDate) {
-                const endDate = profile.planEndDate.toDate();
-                if (new Date() > endDate) {
-                    await updateDoc(userDocRef, {
-                        usertype: 'Basic',
-                        photoViewLimits: { basic: 0, silver: 0, gold: 0, diamond: 0 },
-                        contactLimit: 3,
-                    });
-                    toast({
-                        title: 'Subscription Expired',
-                        description: 'Your premium plan has expired. You are now on the Basic plan.',
-                    });
-                    // The onSnapshot listener will update the userProfile state automatically
-                }
-            }
-
-
-            // Profile completion check
-            const profileIsMinimal = Object.keys(profile).length < 5;
-            if (profileIsMinimal && pathname !== '/profile/edit') {
-                toast({
-                    title: "Profile Incomplete",
-                    description: "Please complete your profile to continue.",
-                });
-                router.push('/profile/edit');
-            }
-          } else {
-             setUserProfile(null);
-             // If user exists in auth but not DB, redirect to edit profile
-             if (pathname !== '/profile/edit') {
-                 router.push('/profile/edit');
-             }
-          }
-        }, (error) => {
-            console.error("Snapshot listener error:", error);
-            // This is where permission errors might be caught if they still occur
-        });
-
-      } else {
-        setUser(null);
-        setUserProfile(null);
-        // If no user and not on a public page, redirect to login
-        if (!['/login', '/signup', '/', '/forgot-password'].includes(pathname)) {
-          router.push('/login');
+        if (unsubscribeLikes) {
+            unsubscribeLikes();
         }
-      }
+
+        if (authUser) {
+            setUser(authUser);
+            const userDocRef = doc(db, 'users', authUser.uid);
+
+            unsubscribeLikes = onSnapshot(userDocRef, async (doc) => {
+                if (doc.exists()) {
+                    const profile = { id: doc.id, ...doc.data() } as UserProfile;
+                    setUserProfile(profile);
+
+                    // Fetch likes received after last view
+                    if (profile.memberid) {
+                        const likesQuery = query(
+                            collection(db, "likesReceived"), 
+                            where("likedUser", "==", profile.memberid),
+                        );
+                        
+                        const likesSnapshot = await getDocs(likesQuery);
+                        const lastViewed = profile.lastLikesViewed?.toDate() || new Date(0);
+                        
+                        const newLikes = likesSnapshot.docs.filter(likeDoc => {
+                            const likeTimestamp = likeDoc.data().timestamp.toDate();
+                            return likeTimestamp > lastViewed;
+                        });
+                        
+                        setNewLikesCount(newLikes.length);
+                    }
+
+
+                    // Plan expiration check
+                    if (profile.usertype !== 'Basic' && profile.planEndDate) {
+                        const endDate = profile.planEndDate.toDate();
+                        if (new Date() > endDate) {
+                            await updateDoc(userDocRef, {
+                                usertype: 'Basic',
+                                photoViewLimits: { basic: 0, silver: 0, gold: 0, diamond: 0 },
+                                contactLimit: 3,
+                                likesLimits: 10,
+                                planStartDate: null,
+                                planEndDate: null,
+                            });
+                            toast({
+                                title: 'Subscription Expired',
+                                description: 'Your premium plan has expired. You are now on the Basic plan.',
+                            });
+                        }
+                    }
+
+                    // Profile completion check
+                    const profileIsMinimal = Object.keys(profile).length < 5;
+                    if (profileIsMinimal && pathname !== '/profile/edit') {
+                        toast({
+                            title: "Profile Incomplete",
+                            description: "Please complete your profile to continue.",
+                        });
+                        router.push('/profile/edit');
+                    }
+                } else {
+                    setUserProfile(null);
+                    if (pathname !== '/profile/edit') {
+                        router.push('/profile/edit');
+                    }
+                }
+            }, (error) => {
+                console.error("Snapshot listener error:", error);
+            });
+
+        } else {
+            setUser(null);
+            setUserProfile(null);
+            setNewLikesCount(0);
+            if (!['/login', '/signup', '/', '/forgot-password'].includes(pathname)) {
+                router.push('/login');
+            }
+        }
     });
 
-    // Cleanup both auth and snapshot listeners on component unmount
     return () => {
-        unsubscribeAuth();
-        if (unsubscribeSnapshot) {
-            unsubscribeSnapshot();
-        }
+        if (unsubscribeAuth) unsubscribeAuth();
+        if (unsubscribeLikes) unsubscribeLikes();
     };
-  }, [pathname, router, toast]);
+}, [pathname, router, toast]);
   
 
   useEffect(() => {
@@ -160,8 +177,13 @@ function AppLayoutContent({ children }: { children: ReactNode }) {
     } else if (pathname.startsWith('/admin')) {
       setPageTitle('Admin Dashboard');
     } else if (!pathname.startsWith('/profile/')) {
-       const title = pathname.split('/').pop()?.replace('-', ' ') || '';
-       setPageTitle(title);
+       const pageNavItem = navItems.find(item => pathname.startsWith(item.href));
+       if (pageNavItem) {
+           setPageTitle(pageNavItem.label);
+       } else {
+           const title = pathname.split('/').pop()?.replace('-', ' ') || '';
+           setPageTitle(title);
+       }
     }
   }, [pathname, setPageTitle]);
 
@@ -203,6 +225,8 @@ function AppLayoutContent({ children }: { children: ReactNode }) {
   if (!user) {
     return null;
   }
+  
+  const likesReceivedItem = navItems.find(item => item.href === '/likes-received');
 
   return (
     <SidebarProvider defaultOpen={true}>
@@ -239,6 +263,9 @@ function AppLayoutContent({ children }: { children: ReactNode }) {
                     <Link href={item.href}>
                       <item.icon />
                       <span>{item.label}</span>
+                       {item.href === '/likes-received' && newLikesCount > 0 && (
+                          <SidebarMenuBadge>{newLikesCount}</SidebarMenuBadge>
+                       )}
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -288,48 +315,50 @@ function AppLayoutContent({ children }: { children: ReactNode }) {
             <header className="w-full sticky top-0 z-30 border-b">
                 <div className="flex h-14 items-center gap-4 w-full" style={{ backgroundColor: '#0083B0' }}>
                     <SidebarTrigger className="md:hidden text-white"/>
-                    <div className="flex-1">
+                    <div className="flex-1 px-4">
                         <h1 className="font-headline text-lg font-semibold md:text-2xl capitalize text-white">{pageTitle}</h1>
                     </div>
-                    <Button variant="ghost" size="icon" className="rounded-full text-white hover:bg-white/20 hover:text-white" asChild>
-                        <Link href="/browse">
-                            <Home className="h-5 w-5" />
-                            <span className="sr-only">Home</span>
-                        </Link>
-                    </Button>
-                    <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="rounded-full">
-                        <Avatar className="h-8 w-8">
-                            <AvatarImage src={user?.photoURL || userProfile?.imageUrl || "https://picsum.photos/seed/user-avatar/100/100"} alt={user?.displayName || "User"} />
-                            <AvatarFallback>{user?.displayName?.charAt(0) || 'U'}</AvatarFallback>
-                        </Avatar>
-                        <span className="sr-only">Toggle user menu</span>
+                    <div className="flex items-center gap-2 pr-4">
+                        <Button variant="ghost" size="icon" className="rounded-full text-white hover:bg-white/20 hover:text-white" asChild>
+                            <Link href="/browse">
+                                <Home className="h-5 w-5" />
+                                <span className="sr-only">Home</span>
+                            </Link>
                         </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        <DropdownMenuItem asChild>
-                        <Link href="/profile">
-                            <User className="mr-2 h-4 w-4" />
-                            <span>My Profile</span>
-                        </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem asChild disabled={userProfile?.usertype === 'Diamond'}>
-                        <Link href="/upgrade">
-                            <Star className="mr-2 h-4 w-4" />
-                            <span>Upgrade Plan</span>
-                        </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={handleLogout}>
-                        <LogOut className="mr-2 h-4 w-4" />
-                        <span>Logout</span>
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                    </DropdownMenu>
+                        <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon" className="rounded-full">
+                            <Avatar className="h-8 w-8">
+                                <AvatarImage src={user?.photoURL || userProfile?.imageUrl || "https://picsum.photos/seed/user-avatar/100/100"} alt={user?.displayName || "User"} />
+                                <AvatarFallback>{user?.displayName?.charAt(0) || 'U'}</AvatarFallback>
+                            </Avatar>
+                            <span className="sr-only">Toggle user menu</span>
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            <DropdownMenuItem asChild>
+                            <Link href="/profile">
+                                <User className="mr-2 h-4 w-4" />
+                                <span>My Profile</span>
+                            </Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem asChild disabled={userProfile?.usertype === 'Diamond'}>
+                            <Link href="/upgrade">
+                                <Star className="mr-2 h-4 w-4" />
+                                <span>Upgrade Plan</span>
+                            </Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem onClick={handleLogout}>
+                            <LogOut className="mr-2 h-4 w-4" />
+                            <span>Logout</span>
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                        </DropdownMenu>
+                    </div>
                 </div>
             </header>
-            <main className="flex-1" style={{ background: '#def9ff' }}>{children}</main>
+            <main className="flex-1 p-4 sm:p-6" style={{ background: '#def9ff' }}>{children}</main>
         </SidebarInset>
       </div>
     </SidebarProvider>
@@ -344,3 +373,5 @@ export function AppLayout({ children }: { children: ReactNode }) {
     </PageTitleProvider>
   )
 }
+
+    
