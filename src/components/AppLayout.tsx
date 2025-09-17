@@ -100,14 +100,17 @@ function AppLayoutContent({ children }: { children: ReactNode }) {
                     if (profile.memberid) {
                         const likesQuery = query(
                             collection(db, "likesReceived"), 
-                            where("likedUser", "==", profile.memberid),
-                            orderBy("timestamp", "desc")
+                            where("likedUser", "==", profile.memberid)
                         );
                         
                         const likesSnapshot = await getDocs(likesQuery);
                         const lastViewed = profile.lastLikesViewed?.toDate() || new Date(0);
-                        const newCount = likesSnapshot.docs.filter(doc => doc.data().timestamp.toDate() > lastViewed).length;
-                        setNewLikesCount(newCount);
+                        
+                        const newLikes = likesSnapshot.docs
+                            .map(doc => doc.data())
+                            .filter(like => like.timestamp.toDate() > lastViewed);
+
+                        setNewLikesCount(newLikes.length);
                     }
 
                     // --- Plan Expiration & Likes Reset Logic ---
@@ -391,5 +394,3 @@ export function AppLayout({ children }: { children: ReactNode }) {
     </PageTitleProvider>
   )
 }
-
-    
