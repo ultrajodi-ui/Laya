@@ -130,7 +130,7 @@ export default function SettingsPage() {
     if (isLoading) {
         return (
             <AppLayout>
-                <div className="grid gap-6 p-4 sm:p-6">
+                <div className="grid gap-6">
                     <Card>
                         <CardHeader>
                             <CardTitle className="font-headline">My Account</CardTitle>
@@ -147,7 +147,7 @@ export default function SettingsPage() {
 
     return (
         <AppLayout>
-            <div className="grid gap-6 p-4 sm:p-6">
+            <div className="grid gap-6">
                  <Card>
                     <CardHeader>
                         <CardTitle className="font-headline">My Account</CardTitle>
@@ -195,6 +195,10 @@ export default function SettingsPage() {
                                 <Button disabled>
                                     <Zap className="mr-2 h-4 w-4" /> Highest Plan
                                 </Button>
+                            ) : userProfile?.usertype === 'admin' ? (
+                                <Button disabled>
+                                     <Zap className="mr-2 h-4 w-4" /> Admin
+                                </Button>
                             ) : (
                                 <Button asChild>
                                     <Link href="/upgrade">
@@ -204,7 +208,7 @@ export default function SettingsPage() {
                             )}
                         </div>
                         
-                        {userProfile?.usertype !== 'Basic' && userProfile?.planStartDate && userProfile?.planEndDate && (
+                        {userProfile?.usertype !== 'Basic' && userProfile?.usertype !== 'admin' && userProfile?.planStartDate && userProfile?.planEndDate && (
                             <div className="rounded-lg border p-4 text-center">
                                 <Label className="text-sm text-muted-foreground">Plan Validity</Label>
                                 <p className="font-semibold">{format(userProfile.planStartDate.toDate(), 'PP')} &mdash; {format(userProfile.planEndDate.toDate(), 'PP')}</p>
