@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { AppLayout } from "@/components/AppLayout";
@@ -342,7 +341,7 @@ export default function BrowsePage() {
                     <FilterDropdown placeholder="Mother Tongue" options={motherTongues} value={selectedMotherTongue} onChange={(v) => setSelectedMotherTongue(v === 'all' ? '' : v)} />
                     <FilterDropdown placeholder="Religion" options={religions} value={selectedReligion} onChange={(v) => setSelectedReligion(v === 'all' ? '' : v)} />
                     <FilterDropdown placeholder="Community" options={communities} value={selectedCommunity} onChange={(v) => setSelectedCommunity(v === 'all' ? '' : v)} />
-                    <FilterDropdown placeholder="Sub-Caste" options={subCastes} value={selectedSubCaste} onChange={(v) => setSelectedSubCaste(v === 'all' ? '' : v)} />
+                    <FilterDropdown placeholder="Caste" options={subCastes} value={selectedSubCaste} onChange={(v) => setSelectedSubCaste(v === 'all' ? '' : v)} />
                     <FilterDropdown placeholder="Age Range" options={ageRanges} value={selectedAgeRange} onChange={(v) => setSelectedAgeRange(v === 'all' ? '' : v)} />
                     <FilterDropdown placeholder="Salary" options={salaryRanges} value={selectedSalary} onChange={(v) => setSelectedSalary(v === 'all' ? '' : v)} />
                     <FilterDropdown placeholder="Employed" options={employedOptions} value={selectedEmployed} onChange={(v) => setSelectedEmployed(v === 'all' ? '' : v)} />
@@ -451,3 +450,5 @@ export default function BrowsePage() {
         </AppLayout>
     );
 }
+
+    
