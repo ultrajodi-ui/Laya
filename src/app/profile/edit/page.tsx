@@ -286,7 +286,7 @@ export default function ProfileEditPage() {
                 const memberIdPrefix = dataToSave.gender === 'male' ? 'UJM' : 'UJF';
                 const uniqueId = Date.now().toString().slice(-6);
                 dataToSave.memberid = `${memberIdPrefix}${uniqueId}`;
-                dataToSave.contactLimit = 3; 
+                dataToSave.contactLimit = { basic: 3, silver: 0, gold: 0, diamond: 0 }; 
                 dataToSave.currentStatus = 'Active';
                 dataToSave.profileVisible = true;
                 dataToSave.createdAt = new Date();
@@ -403,7 +403,7 @@ export default function ProfileEditPage() {
 
     return (
         <AppLayout>
-            <div className="mx-auto grid max-w-4xl gap-6 p-4 sm:p-6">
+            <div className="mx-auto grid max-w-4xl gap-6">
                  <Card>
                     <CardHeader>
                         <CardTitle className="font-headline">Edit Your Profile</CardTitle>
