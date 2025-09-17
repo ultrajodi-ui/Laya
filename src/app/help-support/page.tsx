@@ -92,33 +92,35 @@ export default function HelpSupportPage() {
 
     return (
         <AppLayout>
-            <div className="max-w-2xl mx-auto">
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="font-headline flex items-center gap-2">
-                            <LifeBuoy className="text-primary" />
-                            Help & Support
-                        </CardTitle>
-                        <CardDescription>
-                            Have a question or need assistance? Fill out the form below and our support team will get back to you as soon as possible.
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <Textarea 
-                            placeholder="Type your question or issue here..."
-                            rows={8}
-                            value={query}
-                            onChange={(e) => setQuery(e.target.value)}
-                            disabled={isSubmitting || isLoadingUser}
-                        />
-                    </CardContent>
-                    <CardFooter>
-                        <Button onClick={handleSubmit} disabled={isSubmitting || isLoadingUser}>
-                            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            {isSubmitting ? 'Submitting...' : 'Submit Your Queries'}
-                        </Button>
-                    </CardFooter>
-                </Card>
+            <div className="flex flex-col items-center justify-center h-full p-4">
+                <div className="max-w-2xl w-full">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="font-headline flex items-center gap-2">
+                                <LifeBuoy className="text-primary" />
+                                Help & Support
+                            </CardTitle>
+                            <CardDescription>
+                                Have a question or need assistance? Fill out the form below and our support team will get back to you as soon as possible.
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <Textarea 
+                                placeholder="Type your question or issue here..."
+                                rows={8}
+                                value={query}
+                                onChange={(e) => setQuery(e.target.value)}
+                                disabled={isSubmitting || isLoadingUser}
+                            />
+                        </CardContent>
+                        <CardFooter>
+                            <Button onClick={handleSubmit} disabled={isSubmitting || isLoadingUser}>
+                                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                {isSubmitting ? 'Submitting...' : 'Submit Your Queries'}
+                            </Button>
+                        </CardFooter>
+                    </Card>
+                </div>
             </div>
         </AppLayout>
     );
