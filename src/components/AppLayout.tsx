@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import type { ReactNode } from 'react';
@@ -77,61 +78,76 @@ function AppLayoutContent({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     let unsubscribeAuth: Unsubscribe | undefined;
-    let unsubscribeLikes: Unsubscribe | undefined;
+    let unsubscribeProfile: Unsubscribe | undefined;
 
     unsubscribeAuth = onAuthStateChanged(auth, (authUser) => {
         setLoading(false);
         
-        if (unsubscribeLikes) {
-            unsubscribeLikes();
+        if (unsubscribeProfile) {
+            unsubscribeProfile();
         }
 
         if (authUser) {
             setUser(authUser);
             const userDocRef = doc(db, 'users', authUser.uid);
 
-            unsubscribeLikes = onSnapshot(userDocRef, async (doc) => {
+            unsubscribeProfile = onSnapshot(userDocRef, async (doc) => {
                 if (doc.exists()) {
                     const profile = { id: doc.id, ...doc.data() } as UserProfile;
                     setUserProfile(profile);
 
-                    // Fetch likes received after last view
+                    // --- Likes Notification Logic ---
                     if (profile.memberid) {
                         const likesQuery = query(
                             collection(db, "likesReceived"), 
                             where("likedUser", "==", profile.memberid),
+                            where("timestamp", ">", profile.lastLikesViewed || new Date(0))
                         );
                         
                         const likesSnapshot = await getDocs(likesQuery);
-                        const lastViewed = profile.lastLikesViewed?.toDate() || new Date(0);
-                        
-                        const newLikes = likesSnapshot.docs.filter(likeDoc => {
-                            const likeTimestamp = likeDoc.data().timestamp.toDate();
-                            return likeTimestamp > lastViewed;
-                        });
-                        
-                        setNewLikesCount(newLikes.length);
+                        setNewLikesCount(likesSnapshot.size);
+                    }
+
+                    // --- Plan Expiration & Likes Reset Logic ---
+                    const now = new Date();
+                    const updates: Partial<UserProfile> = {};
+
+                    // Monthly Likes Reset
+                    const lastReset = profile.likesLastReset?.toDate() || new Date(0);
+                    const oneMonthAgo = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
+
+                    if (lastReset < oneMonthAgo) {
+                        switch(profile.usertype) {
+                            case 'Silver': updates.likesLimits = 50; break;
+                            case 'Gold': updates.likesLimits = 100; break;
+                            case 'Diamond': updates.likesLimits = 200; break;
+                            default: updates.likesLimits = 10; break; // Basic
+                        }
+                        updates.likesLastReset = serverTimestamp();
                     }
 
 
                     // Plan expiration check
                     if (profile.usertype !== 'Basic' && profile.planEndDate) {
                         const endDate = profile.planEndDate.toDate();
-                        if (new Date() > endDate) {
-                            await updateDoc(userDocRef, {
-                                usertype: 'Basic',
-                                photoViewLimits: { basic: 0, silver: 0, gold: 0, diamond: 0 },
-                                contactLimit: 3,
-                                likesLimits: 10,
-                                planStartDate: null,
-                                planEndDate: null,
-                            });
+                        if (now > endDate) {
+                            updates.usertype = 'Basic';
+                            updates.photoViewLimits = { basic: 0, silver: 0, gold: 0, diamond: 0 };
+                            updates.contactLimit = { basic: 3, silver: 0, gold: 0, diamond: 0 };
+                            updates.likesLimits = 10;
+                            updates.planStartDate = null;
+                            updates.planEndDate = null;
                             toast({
                                 title: 'Subscription Expired',
                                 description: 'Your premium plan has expired. You are now on the Basic plan.',
                             });
                         }
                     }
+
+                    if (Object.keys(updates).length > 0) {
+                        await updateDoc(userDocRef, updates);
+                    }
+
 
                     // Profile completion check
                     const profileIsMinimal = Object.keys(profile).length < 5;
@@ -164,7 +180,7 @@ function AppLayoutContent({ children }: { children: ReactNode }) {
 
     return () => {
         if (unsubscribeAuth) unsubscribeAuth();
-        if (unsubscribeLikes) unsubscribeLikes();
+        if (unsubscribeProfile) unsubscribeProfile();
     };
 }, [pathname, router, toast]);
   
@@ -358,7 +374,7 @@ function AppLayoutContent({ children }: { children: ReactNode }) {
                     </div>
                 </div>
             </header>
-            <main className="flex-1 p-4 sm:p-6" style={{ background: '#def9ff' }}>{children}</main>
+            <main className="flex flex-col flex-1 p-4 sm:p-6" style={{ background: '#def9ff' }}>{children}</main>
         </SidebarInset>
       </div>
     </SidebarProvider>

@@ -11,7 +11,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
-import { collection, doc, getDocs, query, where, arrayUnion, arrayRemove, updateDoc, writeBatch, getDoc, deleteDoc, increment } from 'firebase/firestore';
+import { collection, doc, getDocs, query, where, arrayUnion, arrayRemove, updateDoc, writeBatch, getDoc, deleteDoc, increment, serverTimestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import type { UserProfile } from "@/lib/types";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -43,6 +43,10 @@ function LikesReceivedContent() {
                     const userProfile = { id: userDocSnap.id, ...userDocSnap.data() } as UserProfile;
                     setCurrentUserProfile(userProfile);
                     fetchLikedByUsers(userProfile);
+                    // When the user views this page, update their last viewed timestamp.
+                    await updateDoc(userDocRef, {
+                        lastLikesViewed: serverTimestamp()
+                    });
                 } else {
                     setLoading(false);
                 }

@@ -4,7 +4,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { getAuth, onAuthStateChanged, User, updateProfile } from 'firebase/auth';
-import { doc, getDoc, setDoc, getCountFromServer, collection, where, query } from 'firebase/firestore';
+import { doc, getDoc, setDoc, getCountFromServer, collection, where, query, serverTimestamp } from 'firebase/firestore';
 import { db, storage } from '@/lib/firebase';
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import { AppLayout } from "@/components/AppLayout";
@@ -293,6 +293,7 @@ export default function ProfileEditPage() {
                 dataToSave.usertype = 'Basic';
                 dataToSave.photoViewLimits = { basic: 0, silver: 0, gold: 0, diamond: 0 };
                 dataToSave.likesLimits = 10;
+                dataToSave.likesLastReset = serverTimestamp();
             }
 
             if (auth.currentUser) {

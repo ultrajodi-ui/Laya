@@ -71,6 +71,8 @@ export type UserProfile = {
   planStartDate?: any;
   planEndDate?: any;
   likesLimits?: number;
+  lastLikesViewed?: any;
+  likesLastReset?: any;
 };
 
 export type Connection = {
@@ -93,5 +95,6 @@ export type Conversation = {
   messages: Message[];
   lastMessage: Message;
 };
+
 
 
