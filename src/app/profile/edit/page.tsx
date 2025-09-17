@@ -353,7 +353,7 @@ export default function ProfileEditPage() {
     if (isLoading) {
         return (
             <AppLayout>
-                 <div className="mx-auto grid max-w-4xl gap-6 p-4 sm:p-6">
+                 <div className="flex flex-col gap-6">
                     <Card>
                         <CardHeader>
                             <Skeleton className="h-8 w-1/4" />
@@ -403,7 +403,7 @@ export default function ProfileEditPage() {
 
     return (
         <AppLayout>
-            <div className="mx-auto grid max-w-4xl gap-6">
+            <div className="flex flex-col gap-6">
                  <Card>
                     <CardHeader>
                         <CardTitle className="font-headline">Edit Your Profile</CardTitle>

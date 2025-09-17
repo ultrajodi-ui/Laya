@@ -72,7 +72,7 @@ export default function ProfileViewPage() {
     if (isLoading) {
         return (
             <AppLayout>
-                 <div className="mx-auto grid max-w-4xl gap-6">
+                 <div className="flex flex-col gap-6">
                     <Card>
                         <CardHeader>
                             <Skeleton className="h-8 w-1/4" />
@@ -125,7 +125,7 @@ export default function ProfileViewPage() {
 
     return (
         <AppLayout>
-            <div className="mx-auto grid max-w-4xl gap-6">
+            <div className="flex flex-col gap-6">
                  <Card>
                     <CardHeader className="items-center text-center">
                         <CardTitle className="font-headline">My Profile</CardTitle>

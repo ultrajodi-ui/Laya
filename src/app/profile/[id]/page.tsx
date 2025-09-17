@@ -296,7 +296,7 @@ function ProfileContent({ id }: { id: string }) {
     if (loading) {
         return (
             <AppLayout>
-                <div className="max-w-4xl mx-auto space-y-6">
+                <div className="flex flex-col gap-6">
                     <Card className="overflow-hidden">
                         <Skeleton className="h-48 md:h-64 w-full" />
                         <CardHeader className="pt-20 md:pt-24 relative">
@@ -358,7 +358,7 @@ function ProfileContent({ id }: { id: string }) {
     return (
          <>
             <AlertDialog open={showUpgradeAlert} onOpenChange={setShowUpgradeAlert}>
-                <div className="max-w-4xl mx-auto space-y-6">
+                <div className="flex flex-col gap-6">
                     <Card className="overflow-hidden">
                         <div className="relative h-64 md:h-80 bg-muted">
                              {(showProtectedView || galleryImages.length === 0) ? (

@@ -160,7 +160,7 @@ export default function MatchesPage() {
     if (loadingProfile) {
         return (
             <AppLayout>
-                <div className="space-y-8">
+                <div className="flex flex-col gap-8">
                      <Card>
                         <CardHeader>
                             <Skeleton className="h-8 w-1/2" />
@@ -178,7 +178,7 @@ export default function MatchesPage() {
 
     return (
         <AppLayout>
-            <div className="space-y-8">
+            <div className="flex flex-col gap-8">
                 <Card>
                     <CardHeader>
                         <CardTitle className="font-headline flex items-center gap-2"><Wand2 className="text-primary"/> AI Smart Matchmaking</CardTitle>

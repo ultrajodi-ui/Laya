@@ -1,3 +1,4 @@
+
 import { AppLayout } from "@/components/AppLayout";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -41,30 +42,32 @@ export default function ConnectionsPage() {
     
     return (
         <AppLayout>
-            <Card>
-                 <CardHeader>
-                    <CardTitle className="font-headline">Manage Connections</CardTitle>
-                    <CardDescription>View your pending requests and established connections.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                     <Tabs defaultValue="accepted">
-                        <TabsList className="grid w-full grid-cols-3">
-                            <TabsTrigger value="accepted">Connected</TabsTrigger>
-                            <TabsTrigger value="incoming">Incoming</TabsTrigger>
-                            <TabsTrigger value="outgoing">Sent</TabsTrigger>
-                        </TabsList>
-                        <TabsContent value="accepted" className="mt-4 space-y-4">
-                            {acceptedConnections.length > 0 ? acceptedConnections.map(c => c.user && <UserConnectionCard key={c.id} user={c.user} />) : <p className="text-muted-foreground text-sm text-center py-8">No connections yet. Start browsing!</p>}
-                        </TabsContent>
-                        <TabsContent value="incoming" className="mt-4 space-y-4">
-                            {incomingRequests.length > 0 ? incomingRequests.map(c => c.user && <UserConnectionCard key={c.id} user={c.user} direction="incoming" status="pending" />) : <p className="text-muted-foreground text-sm text-center py-8">No new connection requests.</p>}
-                        </TabsContent>
-                        <TabsContent value="outgoing" className="mt-4 space-y-4">
-                             {outgoingRequests.length > 0 ? outgoingRequests.map(c => c.user && <UserConnectionCard key={c.id} user={c.user} direction="outgoing" status="pending" />) : <p className="text-muted-foreground text-sm text-center py-8">You haven't sent any requests yet.</p>}
-                        </TabsContent>
-                    </Tabs>
-                </CardContent>
-            </Card>
+            <div className="flex flex-col gap-4">
+                <Card>
+                     <CardHeader>
+                        <CardTitle className="font-headline">Manage Connections</CardTitle>
+                        <CardDescription>View your pending requests and established connections.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                         <Tabs defaultValue="accepted">
+                            <TabsList className="grid w-full grid-cols-3">
+                                <TabsTrigger value="accepted">Connected</TabsTrigger>
+                                <TabsTrigger value="incoming">Incoming</TabsTrigger>
+                                <TabsTrigger value="outgoing">Sent</TabsTrigger>
+                            </TabsList>
+                            <TabsContent value="accepted" className="mt-4 space-y-4">
+                                {acceptedConnections.length > 0 ? acceptedConnections.map(c => c.user && <UserConnectionCard key={c.id} user={c.user} />) : <p className="text-muted-foreground text-sm text-center py-8">No connections yet. Start browsing!</p>}
+                            </TabsContent>
+                            <TabsContent value="incoming" className="mt-4 space-y-4">
+                                {incomingRequests.length > 0 ? incomingRequests.map(c => c.user && <UserConnectionCard key={c.id} user={c.user} direction="incoming" status="pending" />) : <p className="text-muted-foreground text-sm text-center py-8">No new connection requests.</p>}
+                            </TabsContent>
+                            <TabsContent value="outgoing" className="mt-4 space-y-4">
+                                 {outgoingRequests.length > 0 ? outgoingRequests.map(c => c.user && <UserConnectionCard key={c.id} user={c.user} direction="outgoing" status="pending" />) : <p className="text-muted-foreground text-sm text-center py-8">You haven't sent any requests yet.</p>}
+                            </TabsContent>
+                        </Tabs>
+                    </CardContent>
+                </Card>
+            </div>
         </AppLayout>
     );
 }
