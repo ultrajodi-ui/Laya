@@ -315,11 +315,3 @@ export default function LikesReceivedPage() {
         </AppLayout>
     );
 }
-
-    
-
-    
-
-    
-
-    
