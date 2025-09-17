@@ -53,7 +53,7 @@ const navItems = [
   { href: '/browse', icon: Home, label: 'Browse' },
   { href: '/matches', icon: Search, label: 'AI Matches' },
   { href: '/your-likes', icon: ThumbsUp, label: 'Your Liked Profiles' },
-  { href: '/likes-received', icon: Star, label: 'Likes Received' },
+  { href: '/likes-received', icon: Star, label: 'Who Liked Your Profile' },
   { href: '/upgrade', icon: Zap, label: 'Premium Member Benefits' },
   { href: '/help-support', icon: LifeBuoy, label: 'Help & Support' },
   { href: '/about-us', icon: Info, label: 'About Us' },
