@@ -52,7 +52,7 @@ const auth = getAuth(app);
 const navItems = [
   { href: '/browse', icon: Home, label: 'Browse' },
   { href: '/matches', icon: Search, label: 'AI Matches' },
-  { href: '/your-likes', icon: ThumbsUp, label: 'Your Likes' },
+  { href: '/your-likes', icon: ThumbsUp, label: 'Your Liked Profiles' },
   { href: '/likes-received', icon: Star, label: 'Likes Received' },
   { href: '/upgrade', icon: Zap, label: 'Premium Member Benefits' },
   { href: '/help-support', icon: LifeBuoy, label: 'Help & Support' },

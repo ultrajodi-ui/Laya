@@ -10,7 +10,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
-import { collection, doc, getDocs, query, where, arrayRemove, writeBatch, onSnapshot } from 'firebase/firestore';
+import { collection, doc, getDocs, query, where, arrayUnion, arrayRemove, updateDoc, writeBatch, getDoc, deleteDoc, increment, onSnapshot } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import type { UserProfile } from "@/lib/types";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -27,7 +27,7 @@ function YourLikesContent() {
     const { setPageTitle } = usePageTitle();
 
     useEffect(() => {
-        setPageTitle('Your Likes');
+        setPageTitle('Your Liked Profiles');
     }, [setPageTitle]);
 
     useEffect(() => {
@@ -113,7 +113,8 @@ function YourLikesContent() {
 
             // Remove like from current user's profile
             batch.update(userDocRef, {
-                likes: arrayRemove(targetUserMemberId)
+                likes: arrayRemove(targetUserMemberId),
+                likesLimits: increment(1)
             });
 
             // Delete from likesReceived collection
