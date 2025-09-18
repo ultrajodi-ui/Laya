@@ -102,11 +102,11 @@ export default function ProfileEditPage() {
             return;
         }
 
-        if (file.size > 50 * 1024) { // 50KB
+        if (file.size > 100 * 1024) { // 100KB
             toast({
                 variant: "destructive",
                 title: 'File too large',
-                description: 'Photo size should be less than or equal to 50KB.',
+                description: 'Photo size should be less than or equal to 100KB.',
             });
             return;
         }
@@ -159,11 +159,11 @@ export default function ProfileEditPage() {
         let uploadFailed = false;
 
         for (const file of files) {
-            if (file.size > 50 * 1024) { // 50KB
+            if (file.size > 100 * 1024) { // 100KB
                 toast({
                     variant: "destructive",
                     title: `File too large: ${file.name}`,
-                    description: 'Please upload images smaller than 50KB.',
+                    description: 'Please upload images smaller than 100KB.',
                 });
                 continue; // Skip this file
             }
@@ -427,7 +427,7 @@ export default function ProfileEditPage() {
                                     className="hidden"
                                     accept="image/png, image/jpeg"
                                 />
-                                <p className="text-sm text-muted-foreground">JPG or PNG. 50KB max.</p>
+                                <p className="text-sm text-muted-foreground">JPG or PNG. 100KB max.</p>
                             </div>
                         </div>
                         
@@ -475,7 +475,7 @@ export default function ProfileEditPage() {
                                 multiple
                                 disabled={(profileData.additionalPhotoUrls?.length ?? 0) >= 4}
                             />
-                            <p className="text-sm text-muted-foreground">Upload up to 4 more photos to your gallery. Each photo must be 50KB or less.</p>
+                            <p className="text-sm text-muted-foreground">Upload up to 4 more photos to your gallery. Each photo must be 100KB or less.</p>
                         </div>
 
 
