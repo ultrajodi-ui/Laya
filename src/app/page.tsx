@@ -104,7 +104,7 @@ export default function Home() {
                 Ultra Jodi uses cutting-edge AI to help you find a truly compatible partner. <br /> Your journey to a lasting connection starts here.
               </p>
               <div className="space-x-4">
-                <Button size="lg" asChild className="bg-accent hover:bg-accent/90 text-accent-foreground">
+                <Button size="lg" asChild className="bg-primary hover:bg-primary/90 text-primary-foreground">
                   <Link href="/signup">Get Started</Link>
                 </Button>
               </div>
