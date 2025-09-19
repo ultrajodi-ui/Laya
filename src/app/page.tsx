@@ -123,11 +123,13 @@ export default function Home() {
                   </p>
                 </div>
                  <div className="mt-8 text-left">
-                  <p className="font-headline text-lg">Your Perfect Match Awaits</p>
-                  <p className="font-headline text-lg">Match Made Easy</p>
-                  <p className="font-headline text-lg">Where Hearts Find Their Match</p>
-                  <p className="font-headline text-lg">Bringing Dreams Together Forever</p>
-                  <p className="font-headline text-lg">Your Journey to True Love</p>
+                  <ul className="list-disc pl-5 space-y-2">
+                    <li className="font-headline text-lg" style={{ color: '#0083B0' }}>Your Perfect Match Awaits</li>
+                    <li className="font-headline text-lg" style={{ color: '#0083B0' }}>Match Made Easy</li>
+                    <li className="font-headline text-lg" style={{ color: '#0083B0' }}>Where Hearts Find Their Match</li>
+                    <li className="font-headline text-lg" style={{ color: '#0083B0' }}>Bringing Dreams Together Forever</li>
+                    <li className="font-headline text-lg" style={{ color: '#0083B0' }}>Your Journey to True Love</li>
+                  </ul>
                 </div>
               </div>
               <Image
