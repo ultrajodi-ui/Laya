@@ -106,8 +106,11 @@ function AppLayoutContent({ children }: { children: ReactNode }) {
                         const likesSnapshot = await getDocs(likesQuery);
                         const lastViewed = profile.lastLikesViewed?.toDate() || new Date(0);
                         
-                        const newLikes = likesSnapshot.docs
+                        const sortedLikes = likesSnapshot.docs
                             .map(doc => doc.data())
+                            .sort((a, b) => b.timestamp.toDate().getTime() - a.timestamp.toDate().getTime());
+
+                        const newLikes = sortedLikes
                             .filter(like => like.timestamp.toDate() > lastViewed);
 
                         setNewLikesCount(newLikes.length);
@@ -335,7 +338,7 @@ function AppLayoutContent({ children }: { children: ReactNode }) {
         <div className="flex-1 flex flex-col">
             <header className="w-full sticky top-0 z-30 border-b">
                 <div className="flex h-14 items-center gap-4 w-full" style={{ backgroundColor: '#0083B0' }}>
-                    <SidebarTrigger className="md:hidden text-white"/>
+                    <SidebarTrigger className="text-white"/>
                     <div className="flex-1 px-4">
                         <h1 className="font-headline text-lg font-semibold md:text-2xl capitalize text-white">{pageTitle}</h1>
                     </div>
