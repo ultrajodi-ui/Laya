@@ -62,6 +62,7 @@ export default function BrowsePage() {
     const [selectedMotherTongue, setSelectedMotherTongue] = useState('');
     const [selectedReligion, setSelectedReligion] = useState('');
     const [selectedCommunity, setSelectedCommunity] = useState('');
+    const [selectedCaste, setSelectedCaste] = useState('');
     const [subCasteQuery, setSubCasteQuery] = useState('');
     const [selectedAgeRange, setSelectedAgeRange] = useState('');
     const [selectedSalary, setSelectedSalary] = useState('');
@@ -259,6 +260,7 @@ export default function BrowsePage() {
             .filter(user => !selectedMotherTongue || user.motherTongue === selectedMotherTongue)
             .filter(user => !selectedReligion || user.religion === selectedReligion)
             .filter(user => !selectedCommunity || user.community === selectedCommunity)
+            .filter(user => !selectedCaste || user.caste === selectedCaste)
             .filter(user => !lowerSubCasteQuery || user.subCaste?.toLowerCase().includes(lowerSubCasteQuery))
             .filter(user => !selectedSalary || user.salary === selectedSalary)
             .filter(user => !selectedEmployed || user.employed === selectedEmployed)
@@ -277,7 +279,7 @@ export default function BrowsePage() {
                 if (selectedAgeRange === "Above 35") return age > 35;
                 return true;
             });
-    }, [users, searchQuery, selectedInterests, selectedLocations, selectedMaritalStatus, selectedHomeState, selectedMotherTongue, selectedReligion, selectedCommunity, subCasteQuery, selectedAgeRange, selectedSalary, selectedEmployed, selectedUserType, currentUserProfile]);
+    }, [users, searchQuery, selectedInterests, selectedLocations, selectedMaritalStatus, selectedHomeState, selectedMotherTongue, selectedReligion, selectedCommunity, selectedCaste, subCasteQuery, selectedAgeRange, selectedSalary, selectedEmployed, selectedUserType, currentUserProfile]);
     
     const paginatedUsers = useMemo(() => {
         const startIndex = (currentPage - 1) * PROFILES_PER_PAGE;
@@ -343,6 +345,7 @@ export default function BrowsePage() {
                     <FilterDropdown placeholder="Mother Tongue" options={motherTongues} value={selectedMotherTongue} onChange={(v) => setSelectedMotherTongue(v === 'all' ? '' : v)} />
                     <FilterDropdown placeholder="Religion" options={religions} value={selectedReligion} onChange={(v) => setSelectedReligion(v === 'all' ? '' : v)} />
                     <FilterDropdown placeholder="Community" options={communities} value={selectedCommunity} onChange={(v) => setSelectedCommunity(v === 'all' ? '' : v)} />
+                    <FilterDropdown placeholder="Caste" options={castes} value={selectedCaste} onChange={(v) => setSelectedCaste(v === 'all' ? '' : v)} />
                     <Input
                         placeholder="Sub Caste"
                         value={subCasteQuery}
