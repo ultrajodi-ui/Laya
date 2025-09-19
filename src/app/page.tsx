@@ -9,7 +9,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Skeleton } from '@/components/ui/skeleton';
 import { app } from '@/lib/firebase';
-import { CheckBadge, Lock, HeartHandshake } from 'lucide-react';
+import { BadgeCheck, Lock, HeartHandshake } from 'lucide-react';
 
 export default function Home() {
   const router = useRouter();
@@ -93,7 +93,7 @@ export default function Home() {
               alt="Couple holding hands"
               data-ai-hint="couple hands"
               fill
-              className="object-cover -z-10 opacity-50"
+              className="object-cover -z-10"
             />
           </div>
           <div className="container px-4 md:px-6 text-center text-white relative z-10">
@@ -141,6 +141,20 @@ export default function Home() {
                 data-ai-hint="indian couple"
                 className="mx-auto aspect-video overflow-hidden rounded-xl object-cover object-center sm:w-full"
               />
+            </div>
+            <div className="mt-16 flex justify-around text-center">
+              <div className="flex flex-col items-center gap-2">
+                <BadgeCheck className="w-12 h-12 text-primary" />
+                <h3 className="text-lg font-semibold font-headline">Verified Profiles</h3>
+              </div>
+              <div className="flex flex-col items-center gap-2">
+                <Lock className="w-12 h-12 text-primary" />
+                <h3 className="text-lg font-semibold font-headline">100% Privacy</h3>
+              </div>
+              <div className="flex flex-col items-center gap-2">
+                <HeartHandshake className="w-12 h-12 text-primary" />
+                <h3 className="text-lg font-semibold font-headline">Best Matches</h3>
+              </div>
             </div>
           </div>
         </section>
