@@ -124,7 +124,7 @@ export default function Home() {
                 </div>
               </div>
               <Image
-                src="https://images.unsplash.com/photo-1541679368093-5c967ac6de11?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxpbmRpYW4lMjBjb3VwbGV8ZW58MHx8fHwxNzU3NDExMzY4fDA&ixlib=rb-4.1.0&q=80&w=1080"
+                src="https://firebasestorage.googleapis.com/v0/b/ultra-jodi-wxhoi.appspot.com/o/photos%2FCouple1.jpg?alt=media&token=e29a3a99-27e4-498c-b01b-9f4a56a6de98"
                 width="550"
                 height="310"
                 alt="AI matchmaking illustration"
@@ -136,7 +136,7 @@ export default function Home() {
         </section>
       </main>
       <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 md:px-6 border-t">
-        <p className="text-xs text-muted-foreground">&copy; 2024 Ultra Jodi Matrimony. All rights reserved.</p>
+        <p className="text-xs text-muted-foreground text-center sm:text-left">Ultra Jodi Matrimony is a trusted matrimonial service designed for those seeking a lifelong marriage. This is not a dating website. All profiles should reflect genuine marriage intentions. Copyright © 2025 Ultra Jodi Matrimony. All rights reserved.</p>
         <nav className="sm:ml-auto flex gap-4 sm:gap-6">
           <Link href="#" className="text-xs hover:underline underline-offset-4" prefetch={false}>
             Terms of Service
