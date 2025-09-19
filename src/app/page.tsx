@@ -9,6 +9,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Skeleton } from '@/components/ui/skeleton';
 import { app } from '@/lib/firebase';
+import { CheckBadge, Lock, HeartHandshake } from 'lucide-react';
 
 export default function Home() {
   const router = useRouter();
@@ -92,7 +93,7 @@ export default function Home() {
               alt="Couple holding hands"
               data-ai-hint="couple hands"
               fill
-              className="object-cover -z-10"
+              className="object-cover -z-10 opacity-50"
             />
           </div>
           <div className="container px-4 md:px-6 text-center text-white relative z-10">
