@@ -363,7 +363,7 @@ function ProfileContent({ id }: { id: string }) {
                 <div className="flex flex-col gap-6">
                     <Card className="overflow-hidden">
                         <div className="relative h-64 md:h-80 bg-muted">
-                             {(showProtectedView || galleryImages.length === 0) ? (
+                             {(showProtectedView || galleryImages.length === 0) && (
                                 <Image 
                                     src={coverImageUrl}
                                     alt={`${user.fullName}'s cover photo`} 
@@ -372,7 +372,8 @@ function ProfileContent({ id }: { id: string }) {
                                     data-ai-hint="romantic landscape" 
                                     onClick={() => !showProtectedView && setFullscreenImage(coverImageUrl)}
                                 />
-                            ) : (
+                            )}
+                            {!showProtectedView && galleryImages.length > 0 && (
                                 <Carousel className="w-full h-full">
                                     <CarouselContent>
                                         {galleryImages.map((url, index) => (
