@@ -133,7 +133,7 @@ export default function Home() {
                 </div>
               </div>
               <Image
-                src="https://firebasestorage.googleapis.com/v0/b/ultra-jodi-wxhoi.firebasestorage.app/o/photos%2FCouple1.png?alt=media&token=f0f9cda0-1d4d-45e5-af87-4c8a98798b0a"
+                src="https://images.unsplash.com/photo-1541679368093-5c967ac6de11?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxpbmRpYW4lMjBjb3VwbGV8ZW58MHx8fHwxNzU4MjgxMTk5fDA&ixlib=rb-4.1.0&q=80&w=1080"
                 width="310"
                 height="550"
                 alt="AI matchmaking illustration"
