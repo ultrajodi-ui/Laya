@@ -447,6 +447,7 @@ function ProfileContent({ id }: { id: string }) {
                                     <p><span className="font-semibold text-foreground">Location:</span> {user.workingPlace}</p>
                                     <p><span className="font-semibold text-foreground">Religion:</span> {user.religion}</p>
                                     <p><span className="font-semibold text-foreground">Community:</span> {user.community}</p>
+                                    <p><span className="font-semibold text-foreground">Caste:</span> {user.caste}</p>
                                     <p><span className="font-semibold text-foreground">Sub-caste:</span> {user.subCaste}</p>
                                     <p><span className="font-semibold text-foreground">Zodiac Sign:</span> {user.zodiacSign}</p>
                                     <p><span className="font-semibold text-foreground">Star Sign:</span> {user.starSign}</p>

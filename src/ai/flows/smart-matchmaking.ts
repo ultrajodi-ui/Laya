@@ -20,6 +20,7 @@ const UserProfileSchema = z.object({
   occupation: z.string().optional(),
   education: z.string().optional(),
   religion: z.string().optional(),
+  caste: z.string().optional(),
   subCaste: z.string().optional(),
   location: z.string().optional(),
   interests: z.array(z.string()).optional(),
@@ -56,7 +57,7 @@ const prompt = ai.definePrompt({
   output: {schema: SmartMatchmakingOutputSchema},
   prompt: `You are an expert AI matchmaker for a matrimonial service. Your task is to find the most suitable partners for a user from a list of candidates.
 
-Analyze the user's profile and their stated preferences. Then, for each candidate, evaluate their compatibility based on all available profile information (age, location, occupation, interests, religion, sub-caste, what they are looking for, etc.).
+Analyze the user's profile and their stated preferences. Then, for each candidate, evaluate their compatibility based on all available profile information (age, location, occupation, interests, religion, caste, sub-caste, what they are looking for, etc.).
 
 Return a list of the top 3-5 most compatible matches. For each match, you MUST provide a compatibility score (from 0 to 100) and a concise, one-sentence reason for why they are a good match.
 

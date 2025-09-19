@@ -113,6 +113,7 @@ export default function MatchesPage() {
                 lookingFor: currentUserProfile.lookingFor,
                 occupation: currentUserProfile.occupation,
                 religion: currentUserProfile.religion,
+                caste: currentUserProfile.caste,
                 subCaste: currentUserProfile.subCaste,
             },
             candidates: candidateProfiles.map(p => ({
@@ -126,6 +127,7 @@ export default function MatchesPage() {
                 lookingFor: p.lookingFor,
                 occupation: p.occupation,
                 religion: p.religion,
+                caste: p.caste,
                 subCaste: p.subCaste,
             })),
             matchingCriteria: matchingCriteria || "Find the best matches based on my profile.",

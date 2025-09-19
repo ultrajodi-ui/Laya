@@ -199,6 +199,7 @@ export default function ProfileViewPage() {
                             <ProfileDetail label="Marital Status" value={profileData.maritalStatus} />
                             <ProfileDetail label="Religion" value={profileData.religion} />
                             <ProfileDetail label="Community" value={profileData.community} />
+                            <ProfileDetail label="Caste" value={profileData.caste} />
                             <ProfileDetail label="Sub Caste" value={profileData.subCaste} />
                             <ProfileDetail label="Zodiac Sign" value={profileData.zodiacSign} />
                             <ProfileDetail label="Star Sign (Nakshatra)" value={profileData.starSign} />
