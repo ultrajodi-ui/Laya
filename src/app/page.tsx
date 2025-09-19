@@ -92,7 +92,7 @@ export default function Home() {
               alt="Couple holding hands"
               data-ai-hint="couple hands"
               fill
-              className="object-cover -z-10 opacity-50"
+              className="object-cover -z-10"
             />
           </div>
           <div className="container px-4 md:px-6 text-center text-white relative z-10">
