@@ -113,7 +113,7 @@ export default function Home() {
         </section>
         <section className="w-full py-12 md:py-24 lg:py-32 bg-background">
           <div className="container px-4 md:px-6">
-            <div className="grid items-center gap-6 lg:grid-cols-[1fr_500px] lg:gap-12 xl:grid-cols-[1fr_550px]">
+            <div className="grid items-center gap-6 lg:grid-cols-2 lg:gap-12">
               <div className="flex flex-col justify-center space-y-4">
                 <div className="space-y-2">
                   <div className="inline-block rounded-lg bg-secondary px-3 py-1 text-sm text-secondary-foreground">AI Matchmaking</div>
@@ -121,6 +121,13 @@ export default function Home() {
                   <p className="max-w-[600px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
                     Our advanced AI goes beyond surface-level traits. It analyzes deep compatibility in values, personality, and life goals to introduce you to someone you can truly build a future with.
                   </p>
+                </div>
+                 <div className="mt-8 text-left">
+                  <p className="font-headline text-lg">Your Perfect Match Awaits</p>
+                  <p className="font-headline text-lg">Match Made Easy</p>
+                  <p className="font-headline text-lg">Where Hearts Find Their Match</p>
+                  <p className="font-headline text-lg">Bringing Dreams Together Forever</p>
+                  <p className="font-headline text-lg">Your Journey to True Love</p>
                 </div>
               </div>
               <Image
