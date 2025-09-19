@@ -60,23 +60,6 @@ export default function AboutUsPage() {
             </Card>
         </div>
 
-        <section className="text-center">
-            <h2 className="text-3xl font-headline font-bold">Meet the Team</h2>
-             <p className="mt-2 text-muted-foreground">The passionate minds behind Ultra Jodi.</p>
-             <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                {['Alice', 'Ben', 'Clara', 'David'].map((name, i) => (
-                    <div key={name} className="flex flex-col items-center">
-                        <Avatar className="w-24 h-24">
-                            <AvatarImage src={`https://picsum.photos/seed/team${i}/200/200`} />
-                            <AvatarFallback>{name.charAt(0)}</AvatarFallback>
-                        </Avatar>
-                        <h3 className="mt-4 font-semibold font-headline">{name}</h3>
-                        <p className="text-sm text-muted-foreground">Founder</p>
-                    </div>
-                ))}
-             </div>
-        </section>
-
       </div>
     </AppLayout>
   )
