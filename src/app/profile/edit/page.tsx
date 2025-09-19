@@ -433,7 +433,7 @@ export default function ProfileEditPage() {
                         </div>
                         
                          <div className="grid gap-2">
-                            <Label htmlFor="photo-visibility">Profile Photo is</Label>
+                            <Label htmlFor="photo-visibility">Photos are Visible to others as</Label>
                             <Select value={profileData.photoVisibility} onValueChange={(value) => handleSelectChange('photoVisibility', value)}>
                                 <SelectTrigger id="photo-visibility">
                                     <SelectValue placeholder="Select visibility" />
@@ -897,5 +897,7 @@ export default function ProfileEditPage() {
         </AppLayout>
     );
 }
+
+    
 
     
