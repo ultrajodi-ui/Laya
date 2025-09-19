@@ -30,7 +30,7 @@ const states = ["Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhatt
 const motherTongues = ["Assamese", "Bengali", "Bodo", "Dogri", "English", "Gujarati", "Hindi", "Kannada", "Kashmiri", "Konkani", "Maithili", "Malayalam", "Manipuri", "Marathi", "Nepali", "Odia", "Punjabi", "Sanskrit", "Santali", "Sindhi", "Tamil", "Telugu", "Urdu", "Other"];
 const religions = ["Hindu", "Christian", "Muslim - Shia", "Muslim - Sunni", "Muslim - Other", "Sikh", "Jain - Digambar", "Jain - Shwetamber", "Jain - Others", "Parsi", "Buddhist", "Jewish", "Inter - Religion", "No Religious Belief"];
 const communities = ["FC", "MBC", "BC", "SC", "ST", "Other"];
-const subCastes = ["Vanniyar", "Settiyar", "Readdy", "Yadavar", "Braminar", "Adi Dravidar", "Mudaliyar"];
+const castes = ["Adi Dravidar", "Adi Karnataka", "Agamudayar", "Ajila", "Alwar/ Azhavar / Alavar", "Ambalakarar", "Andipandaram", "Ansar", "Arayar", "Arunthathiyar", "Ayira Vaisyar", "Baira", "Balija", "Bandi", "Bellara", "Bestha", "Bhatraju", "Boyar", "Brahmin Iyengar", "Brahmin Iyer", "Chakkiliyar", "Chettiar", "Chowdry", "Dasari", "Dekkani Muslims", "Devar", "Devangar", "Devendrakula Velalar", "Donga Dasaris", "Dudekula", "Ezhava", "Gavara", "Golla", "Goud", "Gounder", "Gowda", "Irular", "Isai Vellalar", "Kadar", "Kaikolar", "Kallar", "Kallar Kula Thondaman", "Kallarakarar", "Kammalar", "Kamma", "Kander", "Kannada Saineegar", "Kannadiya Naidu", "Kannadiyar", "Kapu", "Karpoora Chettiar", "Kasukkara Chettiar", "Kattunayakan", "Kerala Mudali", "Konar", "Kongu Chettiar", "Kongu Gounder", "Kongu Vaishnava", "Kongu Vellalar", "Kongu Vellalar Gounder", "Kulalar", "Kurumba", "Kurumba Gounder", "Kurumans", "Malai Arayan", "Mangala", "Maniagar", "Mapilla", "Maravar", "Maruthuvar", "Moopanar", "Mudaliar", "Mudiraj", "Mukkulaththor", "Muthuraja", "Nadar", "Naicker", "Naidu", "Nainar", "Nair", "Namboodiri", "Nangudi Vellalar", "Nattukottai Chettiar", "Navithar", "Nagarathar", "Oddar", "Padayachi", "Pagadai", "Pallar", "Palliyar", "Paniyan", "Panisaivan / Panisivan", "Pannayar", "Paraiyar", "Parkavakulam", "Pillai", "Potter", "Punnan Vettuva Gounder", "Rajaka", "Reddy", "Sengunthar", "Sengunthar Mudaliar", "Servai / Servar", "Sheik", "Siviar", "Sozhia Chetty", "Syed", "Telugupatty Chetty", "Telugu Naidus", "Thevar", "Thondaiman", "Thondaimandala Mudaliar", "Thoti", "Tiruvalluvar", "Udayar", "Urali Gounder", "Valluvan", "Vannan", "Vannia Gounder", "Vanniyar", "Vanniya Kula Kshatriya", "Vanniya", "Vathiriyan", "Veduvar and Vedar", "Velan", "Velar / Kulalar", "Vellala Gounder", "Vellalar", "Vettiyan", "Vettuva Gounder", "Vettuvan", "Viswakarma", "Vokkaligar", "Yadava", "Yogeeswarar"].sort();
 const ageRanges = ["18 to 22", "23 to 26", "27 to 30", "31 to 35", "Above 35"];
 const salaryRanges = ["<3LPA", "3-5LPA", "5-10LPA", "10-20LPA", ">20LPA"];
 const employedOptions = ["Government", "Private", "Business", "Self Employed", "Un Employed"];
@@ -62,7 +62,7 @@ export default function BrowsePage() {
     const [selectedMotherTongue, setSelectedMotherTongue] = useState('');
     const [selectedReligion, setSelectedReligion] = useState('');
     const [selectedCommunity, setSelectedCommunity] = useState('');
-    const [selectedSubCaste, setSelectedSubCaste] = useState('');
+    const [subCasteQuery, setSubCasteQuery] = useState('');
     const [selectedAgeRange, setSelectedAgeRange] = useState('');
     const [selectedSalary, setSelectedSalary] = useState('');
     const [selectedEmployed, setSelectedEmployed] = useState('');
@@ -236,6 +236,8 @@ export default function BrowsePage() {
 
     const filteredUsers = useMemo(() => {
         setCurrentPage(1); // Reset to first page on filter change
+        const lowerSubCasteQuery = subCasteQuery.toLowerCase();
+
         return users
             .filter(user => currentUserProfile?.role === 'admin' ? true : user.role !== 'admin')
             .filter(user => {
@@ -257,7 +259,7 @@ export default function BrowsePage() {
             .filter(user => !selectedMotherTongue || user.motherTongue === selectedMotherTongue)
             .filter(user => !selectedReligion || user.religion === selectedReligion)
             .filter(user => !selectedCommunity || user.community === selectedCommunity)
-            .filter(user => !selectedSubCaste || user.subCaste === selectedSubCaste)
+            .filter(user => !lowerSubCasteQuery || user.subCaste?.toLowerCase().includes(lowerSubCasteQuery))
             .filter(user => !selectedSalary || user.salary === selectedSalary)
             .filter(user => !selectedEmployed || user.employed === selectedEmployed)
             .filter(user => {
@@ -275,7 +277,7 @@ export default function BrowsePage() {
                 if (selectedAgeRange === "Above 35") return age > 35;
                 return true;
             });
-    }, [users, searchQuery, selectedInterests, selectedLocations, selectedMaritalStatus, selectedHomeState, selectedMotherTongue, selectedReligion, selectedCommunity, selectedSubCaste, selectedAgeRange, selectedSalary, selectedEmployed, selectedUserType, currentUserProfile]);
+    }, [users, searchQuery, selectedInterests, selectedLocations, selectedMaritalStatus, selectedHomeState, selectedMotherTongue, selectedReligion, selectedCommunity, subCasteQuery, selectedAgeRange, selectedSalary, selectedEmployed, selectedUserType, currentUserProfile]);
     
     const paginatedUsers = useMemo(() => {
         const startIndex = (currentPage - 1) * PROFILES_PER_PAGE;
@@ -341,7 +343,13 @@ export default function BrowsePage() {
                     <FilterDropdown placeholder="Mother Tongue" options={motherTongues} value={selectedMotherTongue} onChange={(v) => setSelectedMotherTongue(v === 'all' ? '' : v)} />
                     <FilterDropdown placeholder="Religion" options={religions} value={selectedReligion} onChange={(v) => setSelectedReligion(v === 'all' ? '' : v)} />
                     <FilterDropdown placeholder="Community" options={communities} value={selectedCommunity} onChange={(v) => setSelectedCommunity(v === 'all' ? '' : v)} />
-                    <FilterDropdown placeholder="Caste" options={subCastes} value={selectedSubCaste} onChange={(v) => setSelectedSubCaste(v === 'all' ? '' : v)} />
+                    <Input
+                        placeholder="Sub Caste"
+                        value={subCasteQuery}
+                        onChange={(e) => setSubCasteQuery(e.target.value)}
+                        style={{ backgroundColor: 'white' }}
+                        className="w-full sm:w-auto"
+                    />
                     <FilterDropdown placeholder="Age Range" options={ageRanges} value={selectedAgeRange} onChange={(v) => setSelectedAgeRange(v === 'all' ? '' : v)} />
                     <FilterDropdown placeholder="Salary" options={salaryRanges} value={selectedSalary} onChange={(v) => setSelectedSalary(v === 'all' ? '' : v)} />
                     <FilterDropdown placeholder="Employed" options={employedOptions} value={selectedEmployed} onChange={(v) => setSelectedEmployed(v === 'all' ? '' : v)} />
@@ -450,5 +458,3 @@ export default function BrowsePage() {
         </AppLayout>
     );
 }
-
-    
