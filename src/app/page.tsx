@@ -88,7 +88,7 @@ export default function Home() {
         <section className="relative w-full h-[80vh] min-h-[600px] flex items-center justify-center pt-16">
           <div className="absolute inset-0 bg-black/50 z-0">
             <Image
-              src="https://images.unsplash.com/photo-1511405889574-b01de1da5441?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyMHx8Y291cGxlfGVufDB8fHx8MTc1NzQxMTIyNnww&ixlib=rb-4.1.0&q=80&w=1080"
+              src="https://firebasestorage.googleapis.com/v0/b/ultra-jodi-wxhoi.appspot.com/o/photos%2FCover1.jpg?alt=media"
               alt="Couple holding hands"
               data-ai-hint="couple hands"
               fill
@@ -124,7 +124,7 @@ export default function Home() {
                 </div>
               </div>
               <Image
-                src="https://firebasestorage.googleapis.com/v0/b/ultra-jodi-wxhoi.appspot.com/o/photos%2FCouple1.jpg?alt=media&token=e29a3a99-27e4-498c-b01b-9f4a56a6de98"
+                src="https://firebasestorage.googleapis.com/v0/b/ultra-jodi-wxhoi.appspot.com/o/photos%2FCouple1.jpg?alt=media"
                 width="550"
                 height="310"
                 alt="AI matchmaking illustration"
