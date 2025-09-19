@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -12,7 +13,7 @@ import type { UserProfile } from '@/lib/types';
 import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
 import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
-import { collection, doc, getDoc, getDocs, query, where } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, query, where, onSnapshot } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
@@ -59,14 +60,18 @@ export default function MatchesPage() {
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
             if (user) {
                 const userDocRef = doc(db, 'users', user.uid);
-                const userDocSnap = await getDoc(userDocRef);
-                if (userDocSnap.exists()) {
-                    const profile = { id: userDocSnap.id, ...userDocSnap.data() } as UserProfile;
-                    setCurrentUserProfile(profile);
-                    fetchCandidates(profile.gender, user.uid);
-                }
+                const unsubscribeSnapshot = onSnapshot(userDocRef, (docSnap) => {
+                    if (docSnap.exists()) {
+                        const profile = { id: docSnap.id, ...docSnap.data() } as UserProfile;
+                        setCurrentUserProfile(profile);
+                        fetchCandidates(profile.gender, user.uid);
+                    }
+                    setLoadingProfile(false);
+                });
+                return () => unsubscribeSnapshot();
+            } else {
+                setLoadingProfile(false);
             }
-            setLoadingProfile(false);
         });
 
         const fetchCandidates = async (gender: string | undefined, currentUserId: string) => {
@@ -225,12 +230,19 @@ export default function MatchesPage() {
                     <div>
                         <h2 className="text-2xl font-headline mb-4">Your Top AI-Powered Matches</h2>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                            {suggestedMatches.map((user) => (
+                            {suggestedMatches.map((user) => {
+                                const hasPhotoAccess = currentUserProfile?.role === 'admin' || (currentUserProfile?.viewedPhotos || []).includes(user.memberid!);
+                                const showProtectedView = user.photoVisibility === 'Protected' && !hasPhotoAccess;
+                                const profileImageUrl = showProtectedView
+                                    ? `https://picsum.photos/seed/default-avatar/400/400`
+                                    : user.imageUrl || `https://picsum.photos/seed/${user.id}/400/400`;
+
+                                return (
                                 <Card key={user.id} className="overflow-hidden transition-transform transform hover:scale-105 hover:shadow-lg duration-300 ease-in-out">
                                     <CardHeader className="p-0 relative">
                                         <Link href={`/profile/${user.id}`}>
                                             <Image
-                                                src={user.imageUrl || `https://picsum.photos/seed/${user.id}/400/400`}
+                                                src={profileImageUrl}
                                                 alt={user.fullName || 'User'}
                                                 width={400}
                                                 height={400}
@@ -275,7 +287,7 @@ export default function MatchesPage() {
                                         </Button>
                                     </CardFooter>
                                 </Card>
-                            ))}
+                            )})}
                         </div>
                     </div>
                 )}
