@@ -348,6 +348,8 @@ function ProfileContent({ id }: { id: string }) {
         ? `https://picsum.photos/seed/default-avatar/100/100`
         : user.imageUrl || `https://picsum.photos/seed/${user.id}/100/100`;
 
+    const coverImageUrl = user.coverUrl || `https://picsum.photos/seed/${user.id}-cover/1200/400`;
+
     const heightValue = user.heightFeet && user.heightInches 
         ? `${user.heightFeet}' ${user.heightInches}"` 
         : '-';
@@ -363,11 +365,12 @@ function ProfileContent({ id }: { id: string }) {
                         <div className="relative h-64 md:h-80 bg-muted">
                              {(showProtectedView || galleryImages.length === 0) ? (
                                 <Image 
-                                    src={user.coverUrl || `https://picsum.photos/seed/${user.id}-cover/1200/400`} 
+                                    src={coverImageUrl}
                                     alt={`${user.fullName}'s cover photo`} 
                                     fill 
-                                    className="object-cover" 
+                                    className={cn("object-cover", !showProtectedView && "cursor-pointer")}
                                     data-ai-hint="romantic landscape" 
+                                    onClick={() => !showProtectedView && setFullscreenImage(coverImageUrl)}
                                 />
                             ) : (
                                 <Carousel className="w-full h-full">
@@ -396,7 +399,10 @@ function ProfileContent({ id }: { id: string }) {
                             )}
                             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                             <div className="absolute bottom-4 left-6">
-                                <Avatar className="w-24 h-24 md:w-32 md:h-32 border-4 border-background">
+                                <Avatar 
+                                    className={cn("w-24 h-24 md:w-32 md:h-32 border-4 border-background", !showProtectedView && "cursor-pointer")}
+                                    onClick={() => !showProtectedView && setFullscreenImage(profileImageUrl)}
+                                >
                                     <AvatarImage src={profileImageUrl} alt={user.fullName} />
                                     <AvatarFallback>{user.fullName?.charAt(0)}</AvatarFallback>
                                 </Avatar>
