@@ -76,10 +76,10 @@ export default function Home() {
           <span className="ml-2 font-headline text-xl font-semibold text-white">Ultra Jodi Matrimony</span>
         </Link>
         <nav className="ml-auto flex gap-4 sm:gap-6">
-          <Button asChild style={{ backgroundColor: 'hsl(var(--background))', color: '#3B2F2F' }} className="hover:bg-slate-200">
+          <Button asChild style={{ backgroundColor: '#F8F8F8', color: '#3B2F2F' }} className="hover:bg-slate-200">
             <Link href="/login">Login</Link>
           </Button>
-          <Button asChild style={{ backgroundColor: 'hsl(var(--background))', color: '#3B2F2F' }} className="hover:bg-slate-200">
+          <Button asChild style={{ backgroundColor: '#F8F8F8', color: '#3B2F2F' }} className="hover:bg-slate-200">
             <Link href="/signup">Sign Up</Link>
           </Button>
         </nav>
@@ -88,7 +88,7 @@ export default function Home() {
         <section className="relative w-full h-[80vh] min-h-[600px] flex items-center justify-center pt-16">
           <div className="absolute inset-0 bg-black/50 z-0">
             <Image
-              src="https://firebasestorage.googleapis.com/v0/b/ultra-jodi-wxhoi.appspot.com/o/photos%2FCover1.jpg?alt=media"
+              src="https://firebasestorage.googleapis.com/v0/b/ultra-jodi-wxhoi.firebasestorage.app/o/photos%2FCover1.jpg?alt=media&token=e89baee8-fa32-4435-b126-d936d915dc98"
               alt="Couple holding hands"
               data-ai-hint="couple hands"
               fill
