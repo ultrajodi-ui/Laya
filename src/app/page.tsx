@@ -88,7 +88,7 @@ export default function Home() {
         <section className="relative w-full h-[80vh] min-h-[600px] flex items-center justify-center pt-16">
           <div className="absolute inset-0 bg-black/50 z-0">
             <Image
-              src="https://firebasestorage.googleapis.com/v0/b/ultra-jodi-wxhoi.firebasestorage.app/o/photos%2FCover1.jpg?alt=media&token=e89baee8-fa32-4435-b126-d936d915dc98"
+              src="https://firebasestorage.googleapis.com/v0/b/ultra-jodi-wxhoi.firebasestorage.app/o/photos%2FCover1.jpg?alt=media&token=e2764b88-1be2-4467-9d7a-86716f901170"
               alt="Couple holding hands"
               data-ai-hint="couple hands"
               fill
@@ -133,7 +133,7 @@ export default function Home() {
                 </div>
               </div>
               <Image
-                src="https://firebasestorage.googleapis.com/v0/b/ultra-jodi-wxhoi.appspot.com/o/photos%2FCouple1.jpg?alt=media"
+                src="https://firebasestorage.googleapis.com/v0/b/ultra-jodi-wxhoi.firebasestorage.app/o/photos%2FCouple1.png?alt=media&token=f0f9cda0-1d4d-45e5-af87-4c8a98798b0a"
                 width="550"
                 height="310"
                 alt="AI matchmaking illustration"
@@ -144,7 +144,7 @@ export default function Home() {
           </div>
         </section>
       </main>
-      <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 md:px-6 border-t">
+      <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 md:px-6 border-t" style={{ backgroundColor: '#def9ff' }}>
         <p className="text-xs text-muted-foreground text-center">Ultra Jodi Matrimony is a trusted matrimonial service designed for those seeking a lifelong marriage. This is not a dating website. All profiles should reflect genuine marriage intentions. Copyright © 2025 Ultra Jodi Matrimony. All rights reserved.</p>
         <nav className="sm:ml-auto flex gap-4 sm:gap-6">
         </nav>
