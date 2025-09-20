@@ -124,7 +124,7 @@ function UpgradePageContent() {
                 <h1 className="text-3xl font-headline font-bold" style={{ color: '#000435' }}>Find the Perfect Plan</h1>
                 <p className="max-w-2xl text-muted-foreground">Unlock premium features to find your perfect match faster. Choose the plan that works best for you.</p>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-8 max-w-6xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-8 mx-auto">
                 {plans.map(plan => (
                     <PricingCard key={plan.name} plan={plan} />
                 ))}
