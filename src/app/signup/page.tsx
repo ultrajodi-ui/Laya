@@ -58,7 +58,7 @@ export default function SignupPage() {
 
   return (
      <div className="flex flex-col min-h-screen">
-      <header className="px-4 lg:px-6 h-16 flex items-center" style={{ backgroundColor: '#0083B0' }}>
+      <header className="px-4 lg:px-6 h-16 flex items-center" style={{ backgroundColor: '#000435' }}>
         <Link href="/" className="flex items-center justify-center text-primary">
           <svg
             xmlns="http://www.w3.org/2000/svg"
