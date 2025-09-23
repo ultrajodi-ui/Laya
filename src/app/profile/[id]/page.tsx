@@ -430,8 +430,9 @@ function ProfileContent({ id }: { id: string }) {
                                 <span>{user.fullName}, {calculateAge(user.dob)}</span>
                                 <UserTypeIcon usertype={user.usertype} />
                             </CardTitle>
-                            <CardDescription className="!mt-1 text-base text-muted-foreground">
-                                ID: {user.memberid}
+                            <CardDescription className="!mt-1 text-base text-muted-foreground flex items-center gap-2">
+                                <span>ID: {user.memberid}</span>
+                                {user.usertype && <Badge variant={user.usertype === 'Basic' ? 'secondary' : 'default'}>{user.usertype}</Badge>}
                             </CardDescription>
                             <CardDescription className="flex items-center gap-4 text-base flex-wrap">
                                 <span className="flex items-center gap-1"><MapPin className="w-4 h-4" /> {user.city}</span>
