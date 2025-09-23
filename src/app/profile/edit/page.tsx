@@ -435,7 +435,7 @@ export default function ProfileEditPage() {
                          <div className="grid gap-2">
                             <Label htmlFor="photo-visibility">Photos are Visible to others as</Label>
                             <Select value={profileData.photoVisibility} onValueChange={(value) => handleSelectChange('photoVisibility', value)}>
-                                <SelectTrigger id="photo-visibility">
+                                <SelectTrigger id="photo-visibility" style={{ backgroundColor: '#f8f8f8' }}>
                                     <SelectValue placeholder="Select visibility" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -484,8 +484,8 @@ export default function ProfileEditPage() {
                             <Label>Account Type</Label>
                             <div className="flex items-center justify-between">
                                 <Badge variant="secondary" className="text-base">{profileData.usertype || 'Basic'}</Badge>
-                                 <Button asChild={profileData.usertype !== 'Diamond'} disabled={profileData.usertype === 'Diamond'} style={{ backgroundColor: '#4ca626', color: 'white' }}>
-                                    <Link href="/upgrade" onClick={(e) => { if (profileData.usertype === 'Diamond') e.preventDefault(); }}>
+                                 <Button asChild={profileData.usertype !== 'Diamond'} onClick={(e) => { if (profileData.usertype === 'Diamond') e.preventDefault(); }} style={{ backgroundColor: '#4ca626', color: 'white' }}>
+                                    <Link href="/upgrade">
                                         <Zap className="mr-2 h-4 w-4" />
                                         {profileData.usertype === 'Diamond' ? 'Highest Plan' : 'Upgrade to Premium'}
                                     </Link>
@@ -496,7 +496,7 @@ export default function ProfileEditPage() {
                          <div className="grid gap-2">
                             <Label htmlFor="profileBy">Profile By</Label>
                             <Select value={profileData.profileBy} onValueChange={(value) => handleSelectChange('profileBy', value)}>
-                                <SelectTrigger id="profileBy">
+                                <SelectTrigger id="profileBy" style={{ backgroundColor: '#f8f8f8' }}>
                                     <SelectValue placeholder="Select who created this profile" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -510,7 +510,7 @@ export default function ProfileEditPage() {
                         <div className="grid sm:grid-cols-2 gap-4">
                             <div className="grid gap-2">
                                 <Label htmlFor="fullName">Full Name</Label>
-                                <Input id="fullName" value={profileData.fullName || ''} onChange={handleInputChange} />
+                                <Input id="fullName" value={profileData.fullName || ''} onChange={handleInputChange} style={{ backgroundColor: '#f8f8f8' }} />
                             </div>
                             <div className="grid gap-2">
                                 <Label htmlFor="dob">Date of Birth<span className="text-red-500">*</span></Label>
@@ -522,6 +522,7 @@ export default function ProfileEditPage() {
                                           "justify-start text-left font-normal",
                                           !profileData.dob && "text-muted-foreground"
                                       )}
+                                      style={{ backgroundColor: '#f8f8f8' }}
                                       >
                                       <CalendarIcon className="mr-2 h-4 w-4" />
                                       {profileData.dob ? format(profileData.dob, "PPP") : <span>Pick a date</span>}
@@ -556,7 +557,7 @@ export default function ProfileEditPage() {
                             <div className="grid gap-2">
                                 <Label htmlFor="motherTongue">Mother Tongue</Label>
                                 <Select value={profileData.motherTongue || ''} onValueChange={(value) => handleSelectChange('motherTongue', value)}>
-                                    <SelectTrigger id="motherTongue">
+                                    <SelectTrigger id="motherTongue" style={{ backgroundColor: '#f8f8f8' }}>
                                         <SelectValue placeholder="Select mother tongue" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -568,16 +569,16 @@ export default function ProfileEditPage() {
                             </div>
                             <div className="grid gap-2">
                                 <Label htmlFor="fatherName">Father Name</Label>
-                                <Input id="fatherName" ref={fatherNameRef} value={profileData.fatherName || ''} onChange={handleInputChange} />
+                                <Input id="fatherName" ref={fatherNameRef} value={profileData.fatherName || ''} onChange={handleInputChange} style={{ backgroundColor: '#f8f8f8' }} />
                             </div>
                              <div className="grid gap-2">
                                 <Label htmlFor="motherName">Mother Name</Label>
-                                <Input id="motherName" value={profileData.motherName || ''} onChange={handleInputChange} />
+                                <Input id="motherName" value={profileData.motherName || ''} onChange={handleInputChange} style={{ backgroundColor: '#f8f8f8' }} />
                             </div>
                             <div className="grid gap-2">
                                 <Label htmlFor="bodyType">Body Type</Label>
                                 <Select value={profileData.bodyType || ''} onValueChange={(value) => handleSelectChange('bodyType', value)}>
-                                    <SelectTrigger id="bodyType">
+                                    <SelectTrigger id="bodyType" style={{ backgroundColor: '#f8f8f8' }}>
                                         <SelectValue placeholder="Select body type" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -590,7 +591,7 @@ export default function ProfileEditPage() {
                             <div className="grid gap-2">
                                 <Label htmlFor="complexion">Complexion</Label>
                                 <Select value={profileData.complexion || ''} onValueChange={(value) => handleSelectChange('complexion', value)}>
-                                    <SelectTrigger id="complexion">
+                                    <SelectTrigger id="complexion" style={{ backgroundColor: '#f8f8f8' }}>
                                         <SelectValue placeholder="Select complexion" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -605,7 +606,7 @@ export default function ProfileEditPage() {
                                 <div className="grid gap-2">
                                     <Label htmlFor="heightFeet">Height (Feet)</Label>
                                     <Select value={profileData.heightFeet || ''} onValueChange={(value) => handleSelectChange('heightFeet', value)}>
-                                        <SelectTrigger id="heightFeet">
+                                        <SelectTrigger id="heightFeet" style={{ backgroundColor: '#f8f8f8' }}>
                                             <SelectValue placeholder="Feet" />
                                         </SelectTrigger>
                                         <SelectContent>
@@ -618,7 +619,7 @@ export default function ProfileEditPage() {
                                 <div className="grid gap-2">
                                     <Label htmlFor="heightInches">Height (Inches)</Label>
                                     <Select value={profileData.heightInches || ''} onValueChange={(value) => handleSelectChange('heightInches', value)}>
-                                        <SelectTrigger id="heightInches">
+                                        <SelectTrigger id="heightInches" style={{ backgroundColor: '#f8f8f8' }}>
                                             <SelectValue placeholder="Inches" />
                                         </SelectTrigger>
                                         <SelectContent>
@@ -632,7 +633,7 @@ export default function ProfileEditPage() {
                              <div className="grid gap-2">
                                 <Label htmlFor="maritalStatus">Marital Status<span className="text-red-500">*</span></Label>
                                 <Select value={profileData.maritalStatus || ''} onValueChange={(value) => handleSelectChange('maritalStatus', value)}>
-                                    <SelectTrigger id="maritalStatus">
+                                    <SelectTrigger id="maritalStatus" style={{ backgroundColor: '#f8f8f8' }}>
                                         <SelectValue placeholder="Select marital status" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -646,7 +647,7 @@ export default function ProfileEditPage() {
                              <div className="grid gap-2">
                                 <Label htmlFor="education">Education</Label>
                                 <Select value={profileData.education || ''} onValueChange={(value) => handleSelectChange('education', value)}>
-                                    <SelectTrigger id="education">
+                                    <SelectTrigger id="education" style={{ backgroundColor: '#f8f8f8' }}>
                                         <SelectValue placeholder="Select education level" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -658,12 +659,12 @@ export default function ProfileEditPage() {
                             </div>
                             <div className="grid gap-2">
                                 <Label htmlFor="educationDetails">Education Details</Label>
-                                <Input id="educationDetails" value={profileData.educationDetails || ''} onChange={handleInputChange} />
+                                <Input id="educationDetails" value={profileData.educationDetails || ''} onChange={handleInputChange} style={{ backgroundColor: '#f8f8f8' }} />
                             </div>
                              <div className="grid gap-2">
                                 <Label htmlFor="employed">Employed</Label>
                                 <Select value={profileData.employed || ''} onValueChange={(value) => handleSelectChange('employed', value)}>
-                                    <SelectTrigger id="employed">
+                                    <SelectTrigger id="employed" style={{ backgroundColor: '#f8f8f8' }}>
                                         <SelectValue placeholder="Select employment status" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -677,12 +678,12 @@ export default function ProfileEditPage() {
                             </div>
                             <div className="grid gap-2">
                                 <Label htmlFor="occupation">Occupation</Label>
-                                <Input id="occupation" value={profileData.occupation || ''} onChange={handleInputChange} />
+                                <Input id="occupation" value={profileData.occupation || ''} onChange={handleInputChange} style={{ backgroundColor: '#f8f8f8' }} />
                             </div>
                              <div className="grid gap-2">
                                 <Label htmlFor="salary">Salary (per annum)</Label>
                                 <Select value={profileData.salary || ''} onValueChange={(value) => handleSelectChange('salary', value)}>
-                                    <SelectTrigger id="salary">
+                                    <SelectTrigger id="salary" style={{ backgroundColor: '#f8f8f8' }}>
                                         <SelectValue placeholder="Select range" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -696,12 +697,12 @@ export default function ProfileEditPage() {
                             </div>
                              <div className="grid gap-2">
                                 <Label htmlFor="workingPlace">Working Place</Label>
-                                <Input id="workingPlace" value={profileData.workingPlace || ''} onChange={handleInputChange} />
+                                <Input id="workingPlace" value={profileData.workingPlace || ''} onChange={handleInputChange} style={{ backgroundColor: '#f8f8f8' }} />
                             </div>
                              <div className="grid gap-2">
                                 <Label htmlFor="homeState">Home State</Label>
                                 <Select value={profileData.homeState || ''} onValueChange={(value) => handleSelectChange('homeState', value)}>
-                                    <SelectTrigger id="homeState">
+                                    <SelectTrigger id="homeState" style={{ backgroundColor: '#f8f8f8' }}>
                                         <SelectValue placeholder="Select your state" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -713,16 +714,16 @@ export default function ProfileEditPage() {
                             </div>
                              <div className="grid gap-2">
                                 <Label htmlFor="city">Home Town/City</Label>
-                                <Input id="city" value={profileData.city || ''} onChange={handleInputChange} />
+                                <Input id="city" value={profileData.city || ''} onChange={handleInputChange} style={{ backgroundColor: '#f8f8f8' }} />
                             </div>
                              <div className="grid gap-2">
                                 <Label htmlFor="mobileNo">Mobile No</Label>
-                                <Input id="mobileNo" value={profileData.mobileNo || ''} onChange={handleInputChange} />
+                                <Input id="mobileNo" value={profileData.mobileNo || ''} onChange={handleInputChange} style={{ backgroundColor: '#f8f8f8' }} />
                             </div>
                             <div className="grid gap-2">
                                 <Label htmlFor="religion">Religion</Label>
                                 <Select value={profileData.religion || ''} onValueChange={(value) => handleSelectChange('religion', value)}>
-                                    <SelectTrigger id="religion">
+                                    <SelectTrigger id="religion" style={{ backgroundColor: '#f8f8f8' }}>
                                         <SelectValue placeholder="Select religion" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -735,7 +736,7 @@ export default function ProfileEditPage() {
                              <div className="grid gap-2">
                                 <Label htmlFor="community">Community</Label>
                                 <Select value={profileData.community || ''} onValueChange={(value) => handleSelectChange('community', value)}>
-                                    <SelectTrigger id="community">
+                                    <SelectTrigger id="community" style={{ backgroundColor: '#f8f8f8' }}>
                                         <SelectValue placeholder="Select community" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -748,7 +749,7 @@ export default function ProfileEditPage() {
                             <div className="grid gap-2">
                                 <Label htmlFor="caste">Caste</Label>
                                 <Select value={profileData.caste || ''} onValueChange={(value) => handleSelectChange('caste', value)}>
-                                    <SelectTrigger id="caste">
+                                    <SelectTrigger id="caste" style={{ backgroundColor: '#f8f8f8' }}>
                                         <SelectValue placeholder="Select caste" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -760,12 +761,12 @@ export default function ProfileEditPage() {
                             </div>
                              <div className="grid gap-2">
                                 <Label htmlFor="subCaste">Sub Caste</Label>
-                                <Input id="subCaste" value={profileData.subCaste || ''} onChange={handleInputChange} />
+                                <Input id="subCaste" value={profileData.subCaste || ''} onChange={handleInputChange} style={{ backgroundColor: '#f8f8f8' }} />
                             </div>
                              <div className="grid gap-2">
                               <Label htmlFor="zodiac-sign">Zodiac Sign (Rashi)</Label>
                               <Select value={profileData.zodiacSign} onValueChange={(value) => handleSelectChange('zodiacSign', value)}>
-                                  <SelectTrigger id="zodiac-sign">
+                                  <SelectTrigger id="zodiac-sign" style={{ backgroundColor: '#f8f8f8' }}>
                                       <SelectValue placeholder="Select zodiac sign" />
                                   </SelectTrigger>
                                   <SelectContent>
@@ -778,7 +779,7 @@ export default function ProfileEditPage() {
                           <div className="grid gap-2">
                               <Label htmlFor="star-sign">Star Sign (Nakshatra)</Label>
                               <Select value={profileData.starSign} onValueChange={(value) => handleSelectChange('starSign', value)}>
-                                  <SelectTrigger id="star-sign">
+                                  <SelectTrigger id="star-sign" style={{ backgroundColor: '#f8f8f8' }}>
                                       <SelectValue placeholder="Select star sign" />
                                   </SelectTrigger>
                                   <SelectContent>
@@ -791,7 +792,7 @@ export default function ProfileEditPage() {
                           <div className="grid gap-2">
                             <Label htmlFor="diet">Diet</Label>
                             <Select value={profileData.diet || ''} onValueChange={(value) => handleSelectChange('diet', value)}>
-                                <SelectTrigger id="diet">
+                                <SelectTrigger id="diet" style={{ backgroundColor: '#f8f8f8' }}>
                                     <SelectValue placeholder="Select diet" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -804,7 +805,7 @@ export default function ProfileEditPage() {
                         <div className="grid gap-2">
                             <Label htmlFor="drinkingHabit">Drinking Habit</Label>
                             <Select value={profileData.drinkingHabit || ''} onValueChange={(value) => handleSelectChange('drinkingHabit', value)}>
-                                <SelectTrigger id="drinkingHabit">
+                                <SelectTrigger id="drinkingHabit" style={{ backgroundColor: '#f8f8f8' }}>
                                     <SelectValue placeholder="Select drinking habit" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -818,7 +819,7 @@ export default function ProfileEditPage() {
                         <div className="grid gap-2">
                             <Label htmlFor="smokingHabit">Smoking Habit</Label>
                             <Select value={profileData.smokingHabit || ''} onValueChange={(value) => handleSelectChange('smokingHabit', value)}>
-                                <SelectTrigger id="smokingHabit">
+                                <SelectTrigger id="smokingHabit" style={{ backgroundColor: '#f8f8f8' }}>
                                     <SelectValue placeholder="Select smoking habit" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -832,7 +833,7 @@ export default function ProfileEditPage() {
                          <div className="grid gap-2">
                             <Label htmlFor="anyDisability">Any Disability</Label>
                             <Select value={profileData.anyDisability || ''} onValueChange={(value) => handleSelectChange('anyDisability', value)}>
-                                <SelectTrigger id="anyDisability">
+                                <SelectTrigger id="anyDisability" style={{ backgroundColor: '#f8f8f8' }}>
                                     <SelectValue placeholder="Select an option" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -867,7 +868,7 @@ export default function ProfileEditPage() {
                         <div className="grid gap-2">
                             <Label htmlFor="interCasteMarriage">Are You Ready to Inter Caste Marriage</Label>
                             <Select value={profileData.interCasteMarriage || ''} onValueChange={(value) => handleSelectChange('interCasteMarriage', value)}>
-                                <SelectTrigger id="interCasteMarriage">
+                                <SelectTrigger id="interCasteMarriage" style={{ backgroundColor: '#f8f8f8' }}>
                                     <SelectValue placeholder="Select an option" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -879,12 +880,12 @@ export default function ProfileEditPage() {
                         
                         <div className="grid gap-2">
                             <Label htmlFor="bio">Few Words About You</Label>
-                            <Textarea id="bio" rows={3} value={profileData.bio || ''} onChange={handleInputChange}/>
+                            <Textarea id="bio" rows={3} value={profileData.bio || ''} onChange={handleInputChange} style={{ backgroundColor: '#f8f8f8' }}/>
                         </div>
 
                         <div className="grid gap-2">
                             <Label htmlFor="lookingFor">What are you looking for?</Label>
-                            <Textarea id="lookingFor" rows={3} value={profileData.lookingFor || ''} onChange={handleInputChange}/>
+                            <Textarea id="lookingFor" rows={3} value={profileData.lookingFor || ''} onChange={handleInputChange} style={{ backgroundColor: '#f8f8f8' }}/>
                         </div>
 
                          <div className="flex gap-2 justify-self-start">
