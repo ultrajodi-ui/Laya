@@ -414,7 +414,7 @@ export default function BrowsePage() {
                                         <span>{user.occupation}</span>
                                     </div>
                                     <div className="flex items-center text-sm text-muted-foreground">
-                                        <Badge variant="secondary">{user.subCaste}</Badge>
+                                    <Badge variant="secondary">{user.caste}</Badge><Badge variant="secondary">{user.subCaste}</Badge>
                                     </div>
                                     <div className="flex items-center text-sm text-muted-foreground">
                                         <IndianRupee className="w-4 h-4 mr-1" />

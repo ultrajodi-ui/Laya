@@ -150,12 +150,12 @@ export default function ProfileViewPage() {
                              <div className="grid gap-1.5 text-center">
                                  <h2 className="text-2xl font-bold text-primary">{profileData.fullName}</h2>
                                  {profileData.memberid && (
-                                     <p className="text-sm text-muted-foreground flex items-center gap-2 justify-center">
+                                     <div className="text-sm text-muted-foreground flex items-center gap-2 justify-center">
                                          <span>Member ID: {profileData.memberid}</span>
                                          {profileData.usertype && (
                                              <Badge variant={profileData.usertype === 'Basic' ? 'secondary' : 'default'}>{profileData.usertype}</Badge>
                                          )}
-                                     </p>
+                                     </div>
                                  )}
                                  <p className="text-sm text-muted-foreground">{profileData.email}</p>
                              </div>
