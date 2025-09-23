@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { db } from "@/lib/firebase";
-import { UserProfile } from "@/lib/types";
+import { UserProfile, SupportQuery } from "@/lib/types";
 import { collection, getDocs, query, doc, getDoc, orderBy, updateDoc, deleteDoc, addDoc } from "firebase/firestore";
 import { Users, Star, Shield, Gem, User as UserIcon, Loader2, MessageSquare, Trash2, Search } from "lucide-react";
 import { useEffect, useState, useCallback, useMemo } from "react";
@@ -31,18 +31,10 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
-type SupportQuery = {
-    id: string;
-    memberId?: string;
-    name?: string;
-    email?: string;
-    contactNo?: string;
-    query?: string;
-    submittedAt?: Date;
-}
 
 const statusOptions = ["Active", "Engaged", "Married", "Inactive"];
 const userTypeOptions = ["Basic", "Silver", "Gold", "Diamond"];
+const queryStatusOptions = ["Pending", "Process", "Finished"];
 
 export default function AdminDashboardPage() {
     const [stats, setStats] = useState({
@@ -123,7 +115,7 @@ export default function AdminDashboardPage() {
                     id: doc.id,
                     ...data,
                     submittedAt: data.submittedAt?.toDate()
-                };
+                } as SupportQuery;
             });
             setQueries(fetchedQueries);
         } catch (error) {
@@ -152,6 +144,25 @@ export default function AdminDashboardPage() {
         }
     };
     
+    const handleQueryStatusChange = async (queryId: string, newStatus: string) => {
+        const queryDocRef = doc(db, 'supportQueries', queryId);
+        try {
+            await updateDoc(queryDocRef, { status: newStatus });
+            setQueries(prevQueries => prevQueries.map(q => q.id === queryId ? { ...q, status: newStatus } : q));
+            toast({
+                title: 'Query Status Updated',
+                description: `Query status has been changed to ${newStatus}.`,
+            });
+        } catch (error) {
+            console.error("Error updating query status:", error);
+             toast({
+                variant: 'destructive',
+                title: 'Update Failed',
+                description: 'Could not update query status.',
+            });
+        }
+    };
+
     const handleDeleteUser = async () => {
         if (!userToDelete) return;
         setIsDeleting(true);
@@ -468,18 +479,19 @@ export default function AdminDashboardPage() {
                                         <TableHead>Contact No</TableHead>
                                         <TableHead>Query</TableHead>
                                         <TableHead>Submitted At</TableHead>
+                                        <TableHead>Status</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
                                     {loadingQueries ? (
                                         <TableRow>
-                                            <TableCell colSpan={6} className="text-center">
+                                            <TableCell colSpan={7} className="text-center">
                                                 <Loader2 className="mx-auto h-6 w-6 animate-spin" />
                                             </TableCell>
                                         </TableRow>
                                     ) : queries.length === 0 ? (
                                         <TableRow>
-                                            <TableCell colSpan={6} className="text-center">No queries found.</TableCell>
+                                            <TableCell colSpan={7} className="text-center">No queries found.</TableCell>
                                         </TableRow>
                                     ) : (
                                         queries.map(q => (
@@ -490,6 +502,21 @@ export default function AdminDashboardPage() {
                                                 <TableCell>{q.contactNo}</TableCell>
                                                 <TableCell className="max-w-xs truncate">{q.query}</TableCell>
                                                 <TableCell>{q.submittedAt ? format(q.submittedAt, 'PPp') : 'N/A'}</TableCell>
+                                                <TableCell>
+                                                    <Select
+                                                        value={q.status || 'Pending'}
+                                                        onValueChange={(newStatus) => handleQueryStatusChange(q.id, newStatus)}
+                                                    >
+                                                        <SelectTrigger className="w-full">
+                                                            <SelectValue placeholder="Select status" />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            {queryStatusOptions.map(status => (
+                                                                <SelectItem key={status} value={status}>{status}</SelectItem>
+                                                            ))}
+                                                        </SelectContent>
+                                                    </Select>
+                                                </TableCell>
                                             </TableRow>
                                         ))
                                     )}
@@ -517,12 +544,3 @@ export default function AdminDashboardPage() {
         </AppLayout>
     );
 }
-
-    
-
-    
-
-    
-
-
-    

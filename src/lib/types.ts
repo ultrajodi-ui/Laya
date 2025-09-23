@@ -1,5 +1,6 @@
 
 
+
 export type UserProfile = {
   id: string;
   name: string;
@@ -97,7 +98,13 @@ export type Conversation = {
   lastMessage: Message;
 };
 
-
-
-
-
+export type SupportQuery = {
+    id: string;
+    memberId?: string;
+    name?: string;
+    email?: string;
+    contactNo?: string;
+    query?: string;
+    submittedAt?: Date;
+    status?: 'Pending' | 'Process' | 'Finished';
+};
