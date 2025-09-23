@@ -876,6 +876,11 @@ export default function ProfileEditPage() {
                                 </SelectContent>
                             </Select>
                         </div>
+                        
+                        <div className="grid gap-2">
+                            <Label htmlFor="bio">Few Words About You</Label>
+                            <Textarea id="bio" rows={3} value={profileData.bio || ''} onChange={handleInputChange}/>
+                        </div>
 
                         <div className="grid gap-2">
                             <Label htmlFor="lookingFor">What are you looking for?</Label>

@@ -108,6 +108,7 @@ export default function SignupPage() {
                       required
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
+                      style={{ backgroundColor: '#F8F8F8' }}
                     />
                   </div>
                   <div className="grid gap-2">
@@ -118,6 +119,7 @@ export default function SignupPage() {
                       required 
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
+                      style={{ backgroundColor: '#F8F8F8' }}
                     />
                   </div>
                   <div className="grid gap-2">
@@ -128,6 +130,7 @@ export default function SignupPage() {
                       required 
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
+                      style={{ backgroundColor: '#F8F8F8' }}
                     />
                   </div>
                   <Button type="submit" className="w-full text-white" disabled={isLoading}>

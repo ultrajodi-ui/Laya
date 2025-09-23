@@ -188,6 +188,13 @@ export default function ProfileViewPage() {
                             </div>
                         )}
 
+                        {profileData.bio && (
+                            <div className="grid gap-2">
+                                <p className="text-sm font-medium text-muted-foreground">About Me</p>
+                                <p className="text-base italic text-muted-foreground">"{profileData.bio}"</p>
+                            </div>
+                        )}
+
                         <div className="grid sm:grid-cols-2 gap-6">
                             <ProfileDetail label="Profile By" value={profileData.profileBy} />
                             <ProfileDetail label="Full Name" value={profileData.fullName} />
@@ -235,3 +242,4 @@ export default function ProfileViewPage() {
         </AppLayout>
     );
 }
+

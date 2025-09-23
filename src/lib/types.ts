@@ -5,7 +5,6 @@ export type UserProfile = {
   name: string;
   age: number;
   location: string;
-  bio: string;
   interests: string[];
   imageUrl: string;
   lookingFor: string;
@@ -74,6 +73,7 @@ export type UserProfile = {
   likesLimits?: number;
   lastLikesViewed?: any;
   likesLastReset?: any;
+  bio?: string;
 };
 
 export type Connection = {
@@ -96,6 +96,7 @@ export type Conversation = {
   messages: Message[];
   lastMessage: Message;
 };
+
 
 
 

@@ -440,8 +440,15 @@ function ProfileContent({ id }: { id: string }) {
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-6">
+                            {user.bio && (
+                                <div>
+                                    <h3 className="text-lg font-semibold font-headline mb-2">About Me</h3>
+                                    <p className="text-muted-foreground italic">"{user.bio}"</p>
+                                </div>
+                            )}
+
                             <div>
-                                <h3 className="text-lg font-semibold font-headline mb-2">About Me</h3>
+                                <h3 className="text-lg font-semibold font-headline mb-2">My Details</h3>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 text-muted-foreground">
                                     <p><span className="font-semibold text-foreground">Father:</span> {user.fatherName}</p>
                                     <p><span className="font-semibold text-foreground">Mother:</span> {user.motherName}</p>
@@ -570,3 +577,4 @@ export default function ProfileDetailPage({ params }: { params: { id: string } }
         </AppLayout>
     );
 }
+
