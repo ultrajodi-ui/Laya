@@ -118,7 +118,7 @@ export default function Home() {
               <div className="flex flex-col justify-center space-y-4">
                 <div className="space-y-2">
                   <div className="inline-block rounded-lg bg-primary px-3 py-1 text-sm text-primary-foreground">AI Matchmaking</div>
-                  <h2 className="text-3xl font-bold font-headline tracking-tighter sm:text-5xl">Intelligent Connections</h2>
+                  <h2 className="text-3xl font-bold font-headline tracking-tighter sm:text-5xl" style={{ color: '#000435' }}>Intelligent Connections</h2>
                   <p className="max-w-[600px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
                     Our advanced AI goes beyond surface-level traits. It analyzes deep compatibility in values, personality, and life goals to introduce you to someone you can truly build a future with.
                   </p>
@@ -167,3 +167,5 @@ export default function Home() {
     </div>
   );
 }
+
+    
