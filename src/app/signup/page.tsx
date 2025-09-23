@@ -78,10 +78,10 @@ export default function SignupPage() {
           <span className="ml-2 font-headline text-xl font-semibold text-white">Ultra Jodi Matrimony</span>
         </Link>
         <nav className="ml-auto flex gap-4 sm:gap-6">
-          <Button asChild style={{ backgroundColor: 'hsl(var(--background))', color: '#3B2F2F' }} className="hover:bg-slate-200">
+          <Button asChild style={{ backgroundColor: 'white', color: '#3B2F2F' }} className="hover:bg-slate-200">
             <Link href="/login">Login</Link>
           </Button>
-          <Button disabled style={{ backgroundColor: 'hsl(var(--background))', color: '#3B2F2F' }} className="hover:bg-slate-200">
+          <Button disabled style={{ backgroundColor: 'white', color: '#3B2F2F' }} className="hover:bg-slate-200">
             Sign Up
           </Button>
         </nav>

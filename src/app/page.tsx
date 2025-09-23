@@ -77,10 +77,10 @@ export default function Home() {
           <span className="ml-2 font-headline text-xl font-semibold text-white">Ultra Jodi Matrimony</span>
         </Link>
         <nav className="ml-auto flex gap-4 sm:gap-6">
-          <Button asChild style={{ backgroundColor: '#F8F8F8', color: '#3B2F2F' }} className="hover:bg-slate-200">
+          <Button asChild style={{ backgroundColor: 'white', color: '#3B2F2F' }} className="hover:bg-slate-200">
             <Link href="/login">Login</Link>
           </Button>
-          <Button asChild style={{ backgroundColor: '#F8F8F8', color: '#3B2F2F' }} className="hover:bg-slate-200">
+          <Button asChild style={{ backgroundColor: 'white', color: '#3B2F2F' }} className="hover:bg-slate-200">
             <Link href="/signup">Sign Up</Link>
           </Button>
         </nav>

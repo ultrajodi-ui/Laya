@@ -72,7 +72,7 @@ export default function LoginPage() {
           <Button variant="ghost" disabled className="text-white hover:bg-white/20 hover:text-white">
             Login
           </Button>
-          <Button asChild style={{ backgroundColor: 'hsl(var(--background))', color: '#3B2F2F' }} className="hover:bg-slate-200">
+          <Button asChild style={{ backgroundColor: 'white', color: '#3B2F2F' }} className="hover:bg-slate-200">
             <Link href="/signup">Sign Up</Link>
           </Button>
         </nav>
