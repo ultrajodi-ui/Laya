@@ -130,7 +130,7 @@ export default function ProfileViewPage() {
                     <CardHeader className="items-center text-center">
                         <CardTitle className="font-headline">My Profile</CardTitle>
                         <CardDescription>This is how your profile appears to others. Keep it updated!</CardDescription>
-                         <Button variant="outline" onClick={() => router.push('/profile/edit')}>
+                         <Button variant="outline" style={{ backgroundColor: '#ffde59' }} onClick={() => router.push('/profile/edit')}>
                             <Pencil className="mr-2 h-4 w-4" />
                             Edit Profile
                         </Button>
@@ -242,4 +242,3 @@ export default function ProfileViewPage() {
         </AppLayout>
     );
 }
-
