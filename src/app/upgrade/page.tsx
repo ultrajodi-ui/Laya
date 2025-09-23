@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { AppLayout } from "@/components/AppLayout";
@@ -8,9 +9,14 @@ import { usePageTitle } from "@/hooks/use-page-title";
 import { cn } from "@/lib/utils";
 import { Check, Star, X } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
+import type { UserProfile } from '@/lib/types';
 
-const plans = [
+
+const planDetails = [
     {
         name: "Basic",
         price: "Free",
@@ -21,7 +27,6 @@ const plans = [
             "View 3 Contact Numbers of Basic Profile Only",
             "x:Cannot watch all Protected Photos"
         ],
-        isCurrent: true,
     },
     {
         name: "Silver",
@@ -62,11 +67,11 @@ const plans = [
     }
 ]
 
-function PricingCard({ plan }: { plan: typeof plans[0] }) {
+function PricingCard({ plan, isCurrent }: { plan: typeof planDetails[0] & { isPopular?: boolean }, isCurrent: boolean }) {
     const router = useRouter();
 
     const handleChoosePlan = () => {
-        if (plan.isCurrent) return;
+        if (isCurrent) return;
         router.push(`/payment?plan=${encodeURIComponent(plan.name)}&price=${encodeURIComponent(plan.price)}`);
     }
 
@@ -103,8 +108,8 @@ function PricingCard({ plan }: { plan: typeof plans[0] }) {
                 </ul>
             </CardContent>
             <div className="p-6 pt-0">
-                <Button className="w-full" disabled={plan.isCurrent} onClick={handleChoosePlan}>
-                    {plan.isCurrent ? "Current Plan" : "Choose Plan"}
+                <Button className="w-full" disabled={isCurrent} onClick={handleChoosePlan}>
+                    {isCurrent ? "Current Plan" : "Choose Plan"}
                 </Button>
             </div>
         </Card>
@@ -113,10 +118,28 @@ function PricingCard({ plan }: { plan: typeof plans[0] }) {
 
 function UpgradePageContent() {
     const { setPageTitle } = usePageTitle();
-
+    const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+    const [loading, setLoading] = useState(true);
+    const auth = getAuth();
+    
     useEffect(() => {
         setPageTitle("Upgrade Your Plan");
-    }, [setPageTitle]);
+         const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+            if (currentUser) {
+                const docRef = doc(db, "users", currentUser.uid);
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    setUserProfile(docSnap.data() as UserProfile);
+                }
+            }
+            setLoading(false);
+        });
+
+        return () => unsubscribe();
+    }, [setPageTitle, auth]);
+
+    const currentUserPlan = userProfile?.usertype || 'Basic';
+
 
     return (
         <>
@@ -125,8 +148,12 @@ function UpgradePageContent() {
                 <p className="max-w-2xl text-muted-foreground">Unlock premium features to find your perfect match faster. Choose the plan that works best for you.</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-8 mx-auto">
-                {plans.map(plan => (
-                    <PricingCard key={plan.name} plan={plan} />
+                {planDetails.map(plan => (
+                    <PricingCard 
+                        key={plan.name} 
+                        plan={plan}
+                        isCurrent={currentUserPlan === plan.name}
+                    />
                 ))}
             </div>
         </>

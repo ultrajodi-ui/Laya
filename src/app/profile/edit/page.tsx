@@ -484,7 +484,7 @@ export default function ProfileEditPage() {
                             <Label>Account Type</Label>
                             <div className="flex items-center justify-between">
                                 <Badge variant="secondary" className="text-base">{profileData.usertype || 'Basic'}</Badge>
-                                <Button asChild className="bg-accent text-accent-foreground hover:bg-accent/90">
+                                 <Button asChild className="bg-accent text-accent-foreground hover:bg-accent/90" disabled={profileData.usertype === 'Diamond'}>
                                     <Link href="/upgrade">
                                         <Zap className="mr-2 h-4 w-4" />
                                         Upgrade to Premium
@@ -906,3 +906,4 @@ export default function ProfileEditPage() {
     
 
     
+

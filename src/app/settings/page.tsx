@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -191,18 +192,14 @@ export default function SettingsPage() {
                                 <Label className="text-base">Current Plan</Label>
                                 <p className="text-2xl font-bold">{userProfile?.usertype || 'Basic'}</p>
                             </div>
-                            {userProfile?.usertype === 'Diamond' ? (
-                                <Button disabled>
-                                    <Zap className="mr-2 h-4 w-4" /> Highest Plan
-                                </Button>
-                            ) : userProfile?.usertype === 'admin' ? (
+                            {userProfile?.usertype === 'admin' ? (
                                 <Button disabled>
                                      <Zap className="mr-2 h-4 w-4" /> Admin
                                 </Button>
                             ) : (
-                                <Button asChild>
+                                <Button asChild disabled={userProfile?.usertype === 'Diamond'}>
                                     <Link href="/upgrade">
-                                        <Zap className="mr-2 h-4 w-4" /> Upgrade Plan
+                                        <Zap className="mr-2 h-4 w-4" /> {userProfile?.usertype === 'Diamond' ? 'Highest Plan' : 'Upgrade Plan'}
                                     </Link>
                                 </Button>
                             )}
