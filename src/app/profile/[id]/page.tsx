@@ -453,7 +453,12 @@ function ProfileContent({ id }: { id: string }) {
                                     <p><span className="font-semibold text-foreground">Father:</span> {user.fatherName}</p>
                                     <p><span className="font-semibold text-foreground">Mother:</span> {user.motherName}</p>
                                     <p><span className="font-semibold text-foreground">Date of Birth:</span> {user.dob ? format(user.dob.toDate(), 'PPP') : '-'}</p>
-                                    <p><span className="font-semibold text-foreground">Marital Status:</span> {user.maritalStatus}</p>
+                                    <div>
+                                        <span className="font-semibold text-foreground">Marital Status: </span>
+                                        <span style={{color: user.maritalStatus === 'Never Married' ? '#4ca626' : '#cc0000'}}>
+                                            {user.maritalStatus}
+                                        </span>
+                                    </div>
                                     <p><span className="font-semibold text-foreground">Mother Tongue:</span> {user.motherTongue}</p>
                                     <p><span className="font-semibold text-foreground">Home State:</span> {user.homeState}</p>
                                     <p><span className="font-semibold text-foreground">Occupation:</span> {user.occupation}</p>
@@ -577,4 +582,3 @@ export default function ProfileDetailPage({ params }: { params: { id: string } }
         </AppLayout>
     );
 }
-

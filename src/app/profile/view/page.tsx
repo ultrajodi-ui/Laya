@@ -24,6 +24,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel"
 import { UserProfile } from '@/lib/types';
+import { cn } from '@/lib/utils';
 
 export default function ProfileViewPage() {
     const { toast } = useToast();
@@ -203,7 +204,16 @@ export default function ProfileViewPage() {
                             <ProfileDetail label="Mother Name" value={profileData.motherName} />
                             <ProfileDetail label="Date of Birth" value={profileData.dob ? format(profileData.dob, 'PPP') : '-'} />
                             <ProfileDetail label="Mother Tongue" value={profileData.motherTongue} />
-                            <ProfileDetail label="Marital Status" value={profileData.maritalStatus} />
+                             <div className="grid gap-1">
+                                <p className="text-sm font-medium text-muted-foreground">Marital Status</p>
+                                <p className={cn("text-base", profileData.maritalStatus === 'Never Married' ? 'text-green-600' : 'text-red-600')}
+                                    style={{
+                                        color: profileData.maritalStatus === 'Never Married' ? '#4ca626' : '#cc0000'
+                                    }}
+                                >
+                                    {profileData.maritalStatus || '-'}
+                                </p>
+                            </div>
                             <ProfileDetail label="Religion" value={profileData.religion} />
                             <ProfileDetail label="Community" value={profileData.community} />
                             <ProfileDetail label="Caste" value={profileData.caste} />
