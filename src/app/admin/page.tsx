@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { AppLayout } from "@/components/AppLayout";
@@ -292,49 +293,49 @@ export default function AdminDashboardPage() {
                     </div>
 
                     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-                        <Card>
+                        <Card style={{ backgroundColor: '#003d20' }}>
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-                                <Users className="h-4 w-4 text-muted-foreground" />
+                                <CardTitle className="text-sm font-medium text-white">Total Users</CardTitle>
+                                <Users className="h-4 w-4 text-white" />
                             </CardHeader>
                             <CardContent>
-                                <div className="text-2xl font-bold">{stats.totalUsers}</div>
+                                <div className="text-2xl font-bold text-white">{stats.totalUsers}</div>
                             </CardContent>
                         </Card>
                         <Card style={{ backgroundColor: '#99daf4' }}>
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium">Basic Members</CardTitle>
-                                <UserIcon className="h-4 w-4 text-muted-foreground" />
+                                <CardTitle className="text-sm font-medium text-slate-800">Basic Members</CardTitle>
+                                <UserIcon className="h-4 w-4 text-slate-800" />
                             </CardHeader>
                             <CardContent>
-                                <div className="text-2xl font-bold">{stats.basicUsers}</div>
+                                <div className="text-2xl font-bold text-slate-800">{stats.basicUsers}</div>
                             </CardContent>
                         </Card>
                         <Card style={{ backgroundColor: '#70cbff' }}>
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium">Silver Members</CardTitle>
-                                <Star className="h-4 w-4 text-muted-foreground" />
+                                <CardTitle className="text-sm font-medium text-slate-800">Silver Members</CardTitle>
+                                <Star className="h-4 w-4 text-slate-800" />
                             </CardHeader>
                             <CardContent>
-                                <div className="text-2xl font-bold">{stats.silverUsers}</div>
+                                <div className="text-2xl font-bold text-slate-800">{stats.silverUsers}</div>
                             </CardContent>
                         </Card>
                         <Card style={{ backgroundColor: '#ffd21f' }}>
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium">Gold Members</CardTitle>
-                                <Shield className="h-4 w-4 text-muted-foreground" />
+                                <CardTitle className="text-sm font-medium text-slate-800">Gold Members</CardTitle>
+                                <Shield className="h-4 w-4 text-slate-800" />
                             </CardHeader>
                             <CardContent>
-                                <div className="text-2xl font-bold">{stats.goldUsers}</div>
+                                <div className="text-2xl font-bold text-slate-800">{stats.goldUsers}</div>
                             </CardContent>
                         </Card>
                         <Card style={{ backgroundColor: '#ff66c4' }}>
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium">Diamond Members</CardTitle>
-                                <Gem className="h-4 w-4 text-muted-foreground" />
+                                <CardTitle className="text-sm font-medium text-slate-800">Diamond Members</CardTitle>
+                                <Gem className="h-4 w-4 text-slate-800" />
                             </CardHeader>
                             <CardContent>
-                                <div className="text-2xl font-bold">{stats.diamondUsers}</div>
+                                <div className="text-2xl font-bold text-slate-800">{stats.diamondUsers}</div>
                             </CardContent>
                         </Card>
                     </div>
@@ -545,6 +546,8 @@ export default function AdminDashboardPage() {
 
     
 
+
+    
 
     
 
