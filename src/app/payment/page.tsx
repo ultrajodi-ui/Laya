@@ -3,7 +3,7 @@
 'use client';
 
 import { Suspense, useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -19,11 +19,8 @@ import type { UserProfile } from '@/lib/types';
 import { add } from 'date-fns';
 
 
-function PaymentForm() {
+function PaymentForm({ plan, price }: { plan: UserProfile['usertype'], price: string | null }) {
     const router = useRouter();
-    const searchParams = useSearchParams();
-    const plan = searchParams.get('plan') as UserProfile['usertype'];
-    const price = searchParams.get('price');
     const { toast } = useToast();
     const [isLoading, setIsLoading] = useState(false);
     const [paymentMethod, setPaymentMethod] = useState('credit-card');
@@ -195,12 +192,12 @@ function PaymentForm() {
     )
 }
 
-export default function PaymentPage() {
+export default function PaymentPage({ searchParams }: { searchParams: { plan: UserProfile['usertype'], price: string }}) {
     return (
         <AppLayout>
             <div className="flex justify-center items-start pt-8">
                 <Suspense fallback={<div>Loading...</div>}>
-                    <PaymentForm />
+                    <PaymentForm plan={searchParams.plan} price={searchParams.price} />
                 </Suspense>
             </div>
         </AppLayout>
