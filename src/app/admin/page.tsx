@@ -147,7 +147,7 @@ export default function AdminDashboardPage() {
         const queryDocRef = doc(db, 'supportQueries', queryId);
         try {
             await updateDoc(queryDocRef, { status: newStatus });
-            setQueries(prevQueries => prevQueries.map(q => q.id === queryId ? { ...q, status: newStatus } : q));
+            setQueries(prevQueries => prevQueries.map(q => q.id === queryId ? { ...q, status: newStatus as any } : q));
             toast({
                 title: 'Query Status Updated',
                 description: `Query status has been changed to ${newStatus}.`,
@@ -328,7 +328,7 @@ export default function AdminDashboardPage() {
                                 <div className="text-2xl font-bold">{stats.goldUsers}</div>
                             </CardContent>
                         </Card>
-                        <Card>
+                        <Card style={{ backgroundColor: '#ff66c4' }}>
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                                 <CardTitle className="text-sm font-medium">Diamond Members</CardTitle>
                                 <Gem className="h-4 w-4 text-muted-foreground" />
@@ -504,7 +504,7 @@ export default function AdminDashboardPage() {
                                                 <TableCell>
                                                     <Select
                                                         value={q.status || 'Pending'}
-                                                        onValueChange={(newStatus) => handleQueryStatusChange(q.id, newStatus)}
+                                                        onValueChange={(newStatus) => handleQueryStatusChange(q.id, newStatus as any)}
                                                     >
                                                         <SelectTrigger className="w-full">
                                                             <SelectValue placeholder="Select status" />
