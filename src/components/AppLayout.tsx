@@ -136,7 +136,7 @@ function AppLayoutContent({ children }: { children: ReactNode }) {
 
 
                     // Plan expiration check
-                    if (profile.usertype !== 'Basic' && profile.planEndDate) {
+                    if (profile.usertype !== 'Basic' && profile.usertype !== 'admin' && profile.planEndDate) {
                         const endDate = profile.planEndDate.toDate();
                         if (now > endDate) {
                             updates.usertype = 'Basic';
@@ -335,7 +335,7 @@ function AppLayoutContent({ children }: { children: ReactNode }) {
             </SidebarMenu>
           </SidebarFooter>
         </Sidebar>
-        <div className="flex flex-col mx-auto ">
+        <div className="flex flex-col w-full">
             <header className="w-full sticky top-0 z-30 border-b">
                 <div className="flex h-14 items-center gap-4 w-full" style={{ backgroundColor: '#000435' }}>
                     <SidebarTrigger className="text-white"/>
