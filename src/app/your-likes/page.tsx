@@ -143,7 +143,7 @@ function YourLikesContent() {
 
     return (
         <div className="flex flex-col gap-4">
-            <h1 className="text-2xl font-headline font-bold">Profiles You've Liked</h1>
+            <h1 className="text-2xl font-headline font-bold" style={{ color: '#000435' }}>Profiles You've Liked</h1>
             {loading ? (
                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     {[...Array(4)].map((_, i) => (
