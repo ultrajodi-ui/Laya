@@ -291,7 +291,7 @@ function LikesReceivedContent() {
                                 </div>
                             </CardContent>
                             <CardFooter className="p-4 pt-0 flex flex-wrap gap-2">
-                                 <Button variant="outline" className="w-full" onClick={() => handleDislikeClick(user)}>
+                                 <Button variant="destructive" className="w-full" onClick={() => handleDislikeClick(user)}>
                                     <X className="mr-2 h-4 w-4" /> Dislike
                                 </Button>
                                  <Button className="w-full" onClick={() => handleLikeClick(user)}>
