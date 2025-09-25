@@ -199,7 +199,8 @@ export default function SettingsPage() {
                             ) : (
                                 <Button asChild={userProfile?.usertype !== 'Diamond'} disabled={userProfile?.usertype === 'Diamond'} style={{ backgroundColor: '#4ca626', color: 'white' }}>
                                     <Link href="/upgrade" onClick={(e) => {if (userProfile?.usertype === 'Diamond') e.preventDefault();}}>
-                                        <Zap className="mr-2 h-4 w-4" /> {userProfile?.usertype === 'Diamond' ? 'Highest Plan' : 'Upgrade Plan'}
+                                        <Zap className="mr-2 h-4 w-4" />
+                                        {userProfile?.usertype === 'Diamond' ? 'Highest Plan' : 'Upgrade Plan'}
                                     </Link>
                                 </Button>
                             )}
