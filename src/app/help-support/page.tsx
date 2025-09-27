@@ -92,7 +92,7 @@ export default function HelpSupportPage() {
 
     return (
         <AppLayout>
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-4 ">
                 <Card>
                     <CardHeader>
                         <CardTitle className="font-headline flex items-center gap-2">

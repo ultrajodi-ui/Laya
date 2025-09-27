@@ -382,7 +382,7 @@ function AppLayoutContent({ children }: { children: ReactNode }) {
                     </div>
                 </div>
             </header>
-            <main className="flex-1 p-4 sm:p-6" style={{ background: '#eff0ff' }}>{children}</main>
+            <main className="flex-1 p-4 sm:p-6" style={{ background: '#EFF6FF' }}>{children}</main>
         </div>
       </div>
     </SidebarProvider>

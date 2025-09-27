@@ -22,7 +22,7 @@ export type UserProfile = {
   zodiacSign?: string;
   starSign?: string;
   religion?: "Hindu" | "Christian" | "Muslim - Shia" | "Muslim - Sunni" | "Muslim - Other" | "Sikh" | "Jain - Digambar" | "Jain - Shwetamber" | "Jain - Others" | "Parsi" | "Buddhist" | "Jewish" | "Inter - Religion" | "No Religious Belief";
-  community?: "OC" | "FC" | "MBC" | "BC" | "SC" | "ST" | "Other";
+  community?: "FC" | "MBC" | "BC" | "SC" | "ST" | "Other";
   caste?: string;
   subCaste?: string;
   education?: string;
