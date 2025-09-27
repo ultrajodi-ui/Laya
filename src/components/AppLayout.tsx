@@ -336,7 +336,7 @@ function AppLayoutContent({ children }: { children: ReactNode }) {
           </SidebarFooter>
         </Sidebar>
         <div className="flex flex-col flex-1 min-w-0">
-            <header className="w-full sticky top-0 z-30 border-b">
+            <header className="w-full sticky top-0 z-20 border-b">
                 <div className="flex h-14 items-center gap-4 w-full" style={{ backgroundColor: '#000435' }}>
                     <SidebarTrigger className="text-white"/>
                     <div className="flex-1 px-4">
@@ -382,7 +382,7 @@ function AppLayoutContent({ children }: { children: ReactNode }) {
                     </div>
                 </div>
             </header>
-            <main className="flex-1 p-4 sm:p-6" style={{ background: '#EFF6FF' }}>{children}</main>
+            <main className="flex flex-col flex-1 overflow-x-hidden p-4 sm:p-6" style={{ background: '#EFF6FF' }}>{children}</main>
         </div>
       </div>
     </SidebarProvider>
