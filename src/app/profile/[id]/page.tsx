@@ -28,6 +28,8 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel"
+import type { CarouselApi } from "@/components/ui/carousel"
+
 
 const calculateAge = (dob: any) => {
     if (!dob) return 0;
@@ -56,7 +58,14 @@ function ProfileContent({ id }: { id: string }) {
     const [isContactVisible, setIsContactVisible] = useState(false);
     const [arePhotosVisible, setArePhotosVisible] = useState(false);
     const [showUpgradeAlert, setShowUpgradeAlert] = useState(false);
-    const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
+    
+    const [fullscreenImageIndex, setFullscreenImageIndex] = useState<number | null>(null);
+    const [carouselApi, setCarouselApi] = useState<CarouselApi>()
+
+    useEffect(() => {
+        if (!carouselApi || fullscreenImageIndex === null) return;
+        carouselApi.scrollTo(fullscreenImageIndex, true);
+    }, [carouselApi, fullscreenImageIndex]);
 
 
     useEffect(() => {
@@ -344,18 +353,20 @@ function ProfileContent({ id }: { id: string }) {
     
     const showProtectedView = user.photoVisibility === 'Protected' && !arePhotosVisible;
 
-    const profileImageUrl = showProtectedView
-        ? `https://picsum.photos/seed/default-avatar/100/100`
-        : user.imageUrl || `https://picsum.photos/seed/${user.id}/100/100`;
+    const profileImageUrl = user.imageUrl || `https://picsum.photos/seed/${user.id}/100/100`;
+    const protectedProfileImageUrl = `https://picsum.photos/seed/default-avatar/100/100`;
 
     const coverImageUrl = user.coverUrl || `https://picsum.photos/seed/${user.id}-cover/1200/400`;
+    const galleryImages = (user.additionalPhotoUrls || []).filter(Boolean) as string[];
+
+    const allImages = [
+        profileImageUrl,
+        ...galleryImages
+    ].filter(Boolean);
 
     const heightValue = user.heightFeet && user.heightInches 
         ? `${user.heightFeet}' ${user.heightInches}"` 
         : '-';
-    
-    const galleryImages = (user.additionalPhotoUrls || []).filter(Boolean) as string[];
-
 
     return (
          <>
@@ -363,48 +374,21 @@ function ProfileContent({ id }: { id: string }) {
                 <div className="flex flex-col gap-6">
                     <Card className="overflow-hidden">
                         <div className="relative h-64 md:h-80 bg-muted">
-                             {(showProtectedView || galleryImages.length === 0) && (
-                                <Image 
-                                    src={coverImageUrl}
-                                    alt={`${user.fullName}'s cover photo`} 
-                                    fill 
-                                    className={cn("object-cover", !showProtectedView && "cursor-pointer")}
-                                    data-ai-hint="romantic landscape" 
-                                    onClick={() => !showProtectedView && setFullscreenImage(coverImageUrl)}
-                                />
-                            )}
-                            {!showProtectedView && galleryImages.length > 0 && (
-                                <Carousel className="w-full h-full">
-                                    <CarouselContent>
-                                        {galleryImages.map((url, index) => (
-                                            <CarouselItem key={index}>
-                                                <div className="relative w-full h-64 md:h-80">
-                                                    <Image 
-                                                        src={url} 
-                                                        alt={`Photo ${index + 1}`} 
-                                                        fill 
-                                                        className="object-cover cursor-pointer"
-                                                        onClick={() => setFullscreenImage(url)}
-                                                    />
-                                                </div>
-                                            </CarouselItem>
-                                        ))}
-                                    </CarouselContent>
-                                    {galleryImages.length > 1 && (
-                                        <>
-                                            <CarouselPrevious className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-black/50 text-white border-none hover:bg-black/70" />
-                                            <CarouselNext className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-black/50 text-white border-none hover:bg-black/70" />
-                                        </>
-                                    )}
-                                </Carousel>
-                            )}
+                            <Image 
+                                src={coverImageUrl}
+                                alt={`${user.fullName}'s cover photo`} 
+                                fill 
+                                className={cn("object-cover", !showProtectedView && "cursor-pointer")}
+                                data-ai-hint="romantic landscape" 
+                                onClick={() => !showProtectedView && allImages.length > 0 && setFullscreenImageIndex(0)}
+                            />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                             <div className="absolute bottom-4 left-6">
                                 <Avatar 
                                     className={cn("w-24 h-24 md:w-32 md:h-32 border-4 border-background", !showProtectedView && "cursor-pointer")}
-                                    onClick={() => !showProtectedView && setFullscreenImage(profileImageUrl)}
+                                    onClick={() => !showProtectedView && allImages.length > 0 && setFullscreenImageIndex(0)}
                                 >
-                                    <AvatarImage src={profileImageUrl} alt={user.fullName} />
+                                    <AvatarImage src={showProtectedView ? protectedProfileImageUrl : profileImageUrl} alt={user.fullName} />
                                     <AvatarFallback>{user.fullName?.charAt(0)}</AvatarFallback>
                                 </Avatar>
                             </div>
@@ -441,6 +425,18 @@ function ProfileContent({ id }: { id: string }) {
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-6">
+                             {!showProtectedView && galleryImages.length > 0 && (
+                                <div>
+                                    <h3 className="text-lg font-semibold font-headline mb-2">Photo Gallery</h3>
+                                     <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2">
+                                        {allImages.map((url, index) => (
+                                            <div key={index} className="relative aspect-square cursor-pointer" onClick={() => setFullscreenImageIndex(index)}>
+                                                <Image src={url} alt={`Photo ${index + 1}`} layout="fill" className="rounded-md object-cover" />
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
                             {user.bio && (
                                 <div>
                                     <h3 className="text-lg font-semibold font-headline mb-2">About Me</h3>
@@ -533,26 +529,42 @@ function ProfileContent({ id }: { id: string }) {
                 </AlertDialogContent>
             </AlertDialog>
 
-            {fullscreenImage && (
+            {fullscreenImageIndex !== null && (
                 <div 
                     className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center animate-in fade-in-50"
-                    onClick={() => setFullscreenImage(null)}
+                    onClick={() => setFullscreenImageIndex(null)}
                 >
-                    <div className="relative w-full h-full max-w-4xl max-h-[90vh] p-4">
-                        <Image 
-                            src={fullscreenImage} 
-                            alt="Fullscreen" 
-                            fill
-                            className="object-contain"
-                        />
+                    <div 
+                        className="relative w-full h-full"
+                        onClick={(e) => e.stopPropagation()} // Prevent closing when clicking on the carousel itself
+                    >
+                        <Carousel setApi={setCarouselApi} className="w-full h-full">
+                            <CarouselContent>
+                                {allImages.map((url, index) => (
+                                    <CarouselItem key={index}>
+                                        <div className="relative w-full h-full">
+                                            <Image 
+                                                src={url} 
+                                                alt={`Fullscreen photo ${index + 1}`} 
+                                                fill
+                                                className="object-contain"
+                                            />
+                                        </div>
+                                    </CarouselItem>
+                                ))}
+                            </CarouselContent>
+                            {allImages.length > 1 && (
+                                <>
+                                    <CarouselPrevious className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-black/50 text-white border-none hover:bg-black/70" />
+                                    <CarouselNext className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-black/50 text-white border-none hover:bg-black/70" />
+                                </>
+                            )}
+                        </Carousel>
                         <Button 
                             variant="ghost" 
                             size="icon" 
-                            className="absolute top-4 right-4 text-white hover:text-white bg-black/50 hover:bg-black/70 rounded-full"
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                setFullscreenImage(null);
-                            }}
+                            className="absolute top-4 right-4 z-20 text-white hover:text-white bg-black/50 hover:bg-black/70 rounded-full"
+                            onClick={() => setFullscreenImageIndex(null)}
                         >
                             <X className="w-6 h-6" />
                         </Button>
