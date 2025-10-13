@@ -357,12 +357,14 @@ function ProfileContent({ id }: { id: string }) {
     const protectedProfileImageUrl = `https://picsum.photos/seed/default-avatar/100/100`;
 
     const coverImageUrl = user.coverUrl || `https://picsum.photos/seed/${user.id}-cover/1200/400`;
-    const galleryImages = (user.additionalPhotoUrls || []).filter(Boolean) as string[];
 
     const allImages = [
+        coverImageUrl,
         profileImageUrl,
-        ...galleryImages
-    ].filter(Boolean);
+        ...(user.additionalPhotoUrls || [])
+    ].filter(Boolean) as string[];
+
+    const galleryImages = allImages.slice(1);
 
     const heightValue = user.heightFeet && user.heightInches 
         ? `${user.heightFeet}' ${user.heightInches}"` 
@@ -386,7 +388,7 @@ function ProfileContent({ id }: { id: string }) {
                             <div className="absolute bottom-4 left-6">
                                 <Avatar 
                                     className={cn("w-24 h-24 md:w-32 md:h-32 border-4 border-background", !showProtectedView && "cursor-pointer")}
-                                    onClick={() => !showProtectedView && allImages.length > 0 && setFullscreenImageIndex(0)}
+                                    onClick={() => !showProtectedView && allImages.length > 0 && setFullscreenImageIndex(1)}
                                 >
                                     <AvatarImage src={showProtectedView ? protectedProfileImageUrl : profileImageUrl} alt={user.fullName} />
                                     <AvatarFallback>{user.fullName?.charAt(0)}</AvatarFallback>
@@ -429,8 +431,8 @@ function ProfileContent({ id }: { id: string }) {
                                 <div>
                                     <h3 className="text-lg font-semibold font-headline mb-2">Photo Gallery</h3>
                                      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2">
-                                        {allImages.map((url, index) => (
-                                            <div key={index} className="relative aspect-square cursor-pointer" onClick={() => setFullscreenImageIndex(index)}>
+                                        {galleryImages.map((url, index) => (
+                                            <div key={index} className="relative aspect-square cursor-pointer" onClick={() => setFullscreenImageIndex(index + 2)}>
                                                 <Image src={url} alt={`Photo ${index + 1}`} layout="fill" className="rounded-md object-cover" />
                                             </div>
                                         ))}
@@ -595,3 +597,5 @@ export default function ProfileDetailPage({ params }: { params: { id: string } }
         </AppLayout>
     );
 }
+
+    
