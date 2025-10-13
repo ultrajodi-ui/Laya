@@ -28,6 +28,31 @@ import Link from 'next/link';
 import { UserProfile } from '@/lib/types';
 import { Checkbox } from '@/components/ui/checkbox';
 import Image from 'next/image';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import ReactCrop, { type Crop, centerCrop, makeAspectCrop } from 'react-image-crop';
+import 'react-image-crop/dist/ReactCrop.css';
+
+
+function centerAspectCrop(
+  mediaWidth: number,
+  mediaHeight: number,
+  aspect: number,
+) {
+  return centerCrop(
+    makeAspectCrop(
+      {
+        unit: '%',
+        width: 90,
+      },
+      aspect,
+      mediaWidth,
+      mediaHeight,
+    ),
+    mediaWidth,
+    mediaHeight,
+  )
+}
+
 
 export default function ProfileEditPage() {
     const { toast } = useToast();
@@ -43,6 +68,16 @@ export default function ProfileEditPage() {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const additionalFileInputRef = useRef<HTMLInputElement>(null);
     const auth = getAuth();
+    
+    // Cropping state
+    const [crop, setCrop] = useState<Crop>();
+    const [completedCrop, setCompletedCrop] = useState<Crop>();
+    const [imgSrc, setImgSrc] = useState('');
+    const [isCropModalOpen, setIsCropModalOpen] = useState(false);
+    const previewCanvasRef = useRef<HTMLCanvasElement>(null);
+    const imgRef = useRef<HTMLImageElement>(null);
+    const aspect = 1;
+
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -93,29 +128,57 @@ export default function ProfileEditPage() {
         fileInputRef.current?.click();
     };
 
-    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (!e.target.files || e.target.files.length === 0) return;
-        const file = e.target.files[0];
+    const onImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
+      if (aspect) {
+        const { width, height } = e.currentTarget;
+        setCrop(centerAspectCrop(width, height, aspect));
+      }
+    };
 
-        if (!user) {
-            toast({ variant: 'destructive', title: 'You must be logged in to upload a photo.' });
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files.length > 0) {
+            setCrop(undefined) // Makes crop preview update between images.
+            const reader = new FileReader();
+            reader.addEventListener('load', () =>
+                setImgSrc(reader.result?.toString() || ''),
+            );
+            reader.readAsDataURL(e.target.files[0]);
+            setIsCropModalOpen(true);
+        }
+    };
+    
+    const handleCropAndUpload = async () => {
+      if (!previewCanvasRef.current || !imgRef.current) {
+        throw new Error('Crop canvas does not exist');
+      }
+
+      if (!user) {
+          toast({ variant: 'destructive', title: 'You must be logged in to upload a photo.' });
+          return;
+      }
+      
+      const canvas = previewCanvasRef.current;
+      canvas.toBlob(async (blob) => {
+        if (!blob) {
+            toast({ variant: "destructive", title: 'Cropping failed', description: 'Could not create image blob.' });
             return;
         }
 
-        if (file.size > 100 * 1024) { // 100KB
+        if (blob.size > 100 * 1024) { // 100KB
             toast({
                 variant: "destructive",
                 title: 'File too large',
-                description: 'Photo size should be less than or equal to 100KB.',
+                description: 'Final cropped photo size should be less than or equal to 100KB.',
             });
             return;
         }
         
         setIsUploading(true);
-        const storageRef = ref(storage, `profile-photos/${user.uid}/${file.name}`);
+        setIsCropModalOpen(false);
+        const storageRef = ref(storage, `profile-photos/${user.uid}/profile.jpg`);
 
         try {
-            const snapshot = await uploadBytes(storageRef, file);
+            const snapshot = await uploadBytes(storageRef, blob, { contentType: 'image/jpeg' });
             const downloadURL = await getDownloadURL(snapshot.ref);
             
             setProfileData(prev => ({...prev, imageUrl: downloadURL}));
@@ -138,9 +201,63 @@ export default function ProfileEditPage() {
             });
         } finally {
             setIsUploading(false);
+            setImgSrc('');
         }
+      }, 'image/jpeg', 0.9); // Adjust quality as needed
     };
-    
+
+    useEffect(() => {
+      if (
+        completedCrop?.width &&
+        completedCrop?.height &&
+        imgRef.current &&
+        previewCanvasRef.current
+      ) {
+        const image = imgRef.current
+        const canvas = previewCanvasRef.current
+        const crop = completedCrop
+
+        const scaleX = image.naturalWidth / image.width
+        const scaleY = image.naturalHeight / image.height
+
+        const ctx = canvas.getContext('2d')
+        if (!ctx) {
+          throw new Error('No 2d context')
+        }
+
+        const pixelRatio = window.devicePixelRatio
+        canvas.width = Math.floor(crop.width * scaleX * pixelRatio)
+        canvas.height = Math.floor(crop.height * scaleY * pixelRatio)
+        
+        ctx.scale(pixelRatio, pixelRatio)
+        ctx.imageSmoothingQuality = 'high'
+
+        const cropX = crop.x * scaleX
+        const cropY = crop.y * scaleY
+
+        const centerX = image.naturalWidth / 2
+        const centerY = image.naturalHeight / 2
+        
+        ctx.save()
+        
+        ctx.translate(-cropX, -cropY)
+        ctx.drawImage(
+          image,
+          0,
+          0,
+          image.naturalWidth,
+          image.naturalHeight,
+          0,
+          0,
+          image.naturalWidth,
+          image.naturalHeight,
+        )
+
+        ctx.restore()
+      }
+    }, [completedCrop])
+
+
     const handleAddPhotosClick = () => {
         additionalFileInputRef.current?.click();
     };
@@ -405,6 +522,54 @@ export default function ProfileEditPage() {
 
     return (
         <AppLayout>
+             <Dialog open={isCropModalOpen} onOpenChange={setIsCropModalOpen}>
+                <DialogContent className="max-w-md">
+                    <DialogHeader>
+                        <DialogTitle>Crop Your Photo</DialogTitle>
+                    </DialogHeader>
+                    <div className="flex justify-center">
+                        {!!imgSrc && (
+                            <ReactCrop
+                                crop={crop}
+                                onChange={(_, percentCrop) => setCrop(percentCrop)}
+                                onComplete={(c) => setCompletedCrop(c)}
+                                aspect={aspect}
+                                minHeight={100}
+                            >
+                                <img
+                                    ref={imgRef}
+                                    alt="Crop me"
+                                    src={imgSrc}
+                                    onLoad={onImageLoad}
+                                    style={{ maxHeight: '70vh' }}
+                                />
+                            </ReactCrop>
+                        )}
+                    </div>
+                    {/* Hidden canvas for preview */}
+                    <div className='hidden'>
+                        {!!completedCrop && (
+                            <canvas
+                                ref={previewCanvasRef}
+                                style={{
+                                    border: '1px solid black',
+                                    objectFit: 'contain',
+                                    width: completedCrop.width,
+                                    height: completedCrop.height,
+                                }}
+                            />
+                        )}
+                    </div>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setIsCropModalOpen(false)}>Cancel</Button>
+                        <Button onClick={handleCropAndUpload} disabled={isUploading}>
+                             {isUploading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                             {isUploading ? 'Uploading...' : 'Crop & Upload'}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
             <div className="flex flex-col gap-6">
                  <Card>
                     <CardHeader>
@@ -426,9 +591,9 @@ export default function ProfileEditPage() {
                                     ref={fileInputRef}
                                     onChange={handleFileChange}
                                     className="hidden"
-                                    accept="image/png, image/jpeg"
+                                    accept="image/png, image/jpeg, image/webp"
                                 />
-                                <p className="text-sm text-muted-foreground">JPG or PNG. 100KB max.</p>
+                                <p className="text-sm text-muted-foreground">JPG, PNG, or WEBP.</p>
                             </div>
                         </div>
                         
@@ -907,3 +1072,4 @@ export default function ProfileEditPage() {
     
 
     
+
