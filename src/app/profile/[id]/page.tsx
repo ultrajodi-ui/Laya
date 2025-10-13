@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useEffect, use } from 'react';
@@ -362,7 +361,7 @@ function ProfileContent({ id }: { id: string }) {
         coverImageUrl,
         profileImageUrl,
         ...(user.additionalPhotoUrls || [])
-    ].filter(Boolean) as string[];
+    ].filter(Boolean);
 
     const galleryImages = allImages.slice(1);
 
@@ -402,7 +401,7 @@ function ProfileContent({ id }: { id: string }) {
                                     <Lock className="w-4 h-4" />
                                     <p className="font-medium">Photos are Protected</p>
                                 </div>
-                                <Button variant="outline" size="sm" className="bg-background" onClick={handleShowPhotos}>Show</Button>
+                                {!arePhotosVisible && <Button variant="outline" size="sm" className="bg-background" onClick={handleShowPhotos}>Show</Button>}
                             </div>
                         )}
                         
@@ -432,8 +431,8 @@ function ProfileContent({ id }: { id: string }) {
                                     <h3 className="text-lg font-semibold font-headline mb-2">Photo Gallery</h3>
                                      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2">
                                         {galleryImages.map((url, index) => (
-                                            <div key={index} className="relative aspect-square cursor-pointer" onClick={() => setFullscreenImageIndex(index + 2)}>
-                                                <Image src={url} alt={`Photo ${index + 1}`} layout="fill" className="rounded-md object-cover" />
+                                            <div key={index} className="relative aspect-square cursor-pointer" onClick={() => setFullscreenImageIndex(index + 1)}>
+                                                <Image src={url} alt={`Photo ${index + 1}`} fill className="rounded-md object-cover" />
                                             </div>
                                         ))}
                                     </div>
@@ -597,5 +596,7 @@ export default function ProfileDetailPage({ params }: { params: { id: string } }
         </AppLayout>
     );
 }
+
+    
 
     
