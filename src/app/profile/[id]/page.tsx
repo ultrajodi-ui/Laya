@@ -358,12 +358,16 @@ function ProfileContent({ id }: { id: string }) {
     const coverImageUrl = user.coverUrl || `https://picsum.photos/seed/${user.id}-cover/1200/400`;
 
     const allImages = [
-        coverImageUrl,
-        profileImageUrl,
+        user.coverUrl,
+        user.imageUrl,
         ...(user.additionalPhotoUrls || [])
-    ].filter(Boolean);
+    ].filter(Boolean).map(url => url || `https://picsum.photos/seed/placeholder/800/600`);
 
-    const galleryImages = allImages.slice(1);
+    const galleryImages = [
+        user.imageUrl,
+        ...(user.additionalPhotoUrls || [])
+    ].filter(Boolean).map(url => url || `https://picsum.photos/seed/placeholder/400/400`);
+
 
     const heightValue = user.heightFeet && user.heightInches 
         ? `${user.heightFeet}' ${user.heightInches}"` 
@@ -596,7 +600,3 @@ export default function ProfileDetailPage({ params }: { params: { id: string } }
         </AppLayout>
     );
 }
-
-    
-
-    
