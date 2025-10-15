@@ -543,7 +543,13 @@ function ProfileContent({ id }: { id: string }) {
                         className="relative w-full h-full"
                         onClick={(e) => e.stopPropagation()} // Prevent closing when clicking on the carousel itself
                     >
-                        <Carousel setApi={setCarouselApi} className="w-full h-full">
+                        <Carousel 
+                            setApi={setCarouselApi} 
+                            className="w-full h-full"
+                            opts={{
+                                startIndex: fullscreenImageIndex,
+                            }}
+                        >
                             <CarouselContent>
                                 {allImages.map((url, index) => (
                                     <CarouselItem key={index}>
