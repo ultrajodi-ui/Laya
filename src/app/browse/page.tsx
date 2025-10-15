@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/componentsui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Heart, ListFilter, MapPin, Search as SearchIcon, Star, Shield, Gem, Briefcase, IndianRupee } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -303,7 +303,7 @@ export default function BrowsePage() {
 
     return (
         <AppLayout>
-            <div className="flex flex-col gap-4 rounded-lg p-4 bg-blue-50 w-full overflow-x-auto">
+            <div className="flex flex-col gap-4 rounded-lg p-4 bg-blue-50">
                 <div className="flex items-center gap-4 ">
                     <div className="relative flex-1">
                         <Input 
