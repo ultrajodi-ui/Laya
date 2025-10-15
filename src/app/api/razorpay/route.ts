@@ -3,6 +3,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import Razorpay from 'razorpay';
 import crypto from 'crypto';
 
+export const runtime = 'nodejs'; // Force Node.js runtime
+
 // Initialize razorpay
 const razorpay = new Razorpay({
     key_id: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
