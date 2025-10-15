@@ -3,20 +3,23 @@
 
 import { Suspense, useState, useEffect, use } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import Script from 'next/script';
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, CreditCard } from 'lucide-react';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Loader2 } from 'lucide-react';
 import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
 import { doc, updateDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import type { UserProfile } from '@/lib/types';
 import { add } from 'date-fns';
 
+declare global {
+  interface Window {
+    Razorpay: any;
+  }
+}
 
 function PaymentForm() {
     const router = useRouter();
@@ -25,14 +28,18 @@ function PaymentForm() {
     const price = searchParams.get('price');
     const { toast } = useToast();
     const [isLoading, setIsLoading] = useState(false);
-    const [paymentMethod, setPaymentMethod] = useState('credit-card');
     const [currentUser, setCurrentUser] = useState<User | null>(null);
+    const [currentUserProfile, setCurrentUserProfile] = useState<UserProfile | null>(null);
     const auth = getAuth();
 
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (user) => {
+        const unsubscribe = onAuthStateChanged(auth, async (user) => {
             if (user) {
                 setCurrentUser(user);
+                const userDoc = await getDoc(doc(db, 'users', user.uid));
+                if (userDoc.exists()) {
+                    setCurrentUserProfile(userDoc.data() as UserProfile);
+                }
             } else {
                 router.push('/login');
             }
@@ -40,15 +47,96 @@ function PaymentForm() {
         return () => unsubscribe();
     }, [auth, router]);
     
-
-    const handlePayment = async (e: React.FormEvent) => {
+    const makePayment = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!currentUser || !plan) {
+        if (!currentUser || !plan || !price || !currentUserProfile) {
             toast({ variant: 'destructive', title: 'Error', description: 'Could not process payment. User or plan not found.' });
             return;
         }
 
         setIsLoading(true);
+
+        const numericPrice = parseInt(price.replace(/[^0-9]/g, ''), 10);
+
+        try {
+            // 1. Create Order
+            const res = await fetch('/api/razorpay', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ amount: numericPrice }),
+            });
+
+            if (!res.ok) {
+                const error = await res.json();
+                throw new Error(error.error || 'Failed to create Razorpay order.');
+            }
+
+            const { order } = await res.json();
+
+            // 2. Open Razorpay Checkout
+            const options = {
+                key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+                name: "Ultra Jodi Matrimony",
+                description: `Subscription for ${plan} plan`,
+                order_id: order.id,
+                handler: async function (response: any) {
+                    try {
+                        // 3. Verify Payment
+                        const verificationRes = await fetch('/api/razorpay', {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                razorpay_payment_id: response.razorpay_payment_id,
+                                razorpay_order_id: response.razorpay_order_id,
+                                razorpay_signature: response.razorpay_signature,
+                            }),
+                        });
+
+                        if (!verificationRes.ok) {
+                            throw new Error('Payment verification failed.');
+                        }
+
+                        // 4. Update Database on successful verification
+                        await updateUserPlan();
+                        router.push('/browse');
+
+                    } catch (verifyError: any) {
+                        toast({ variant: 'destructive', title: 'Payment Verification Failed', description: verifyError.message });
+                        setIsLoading(false);
+                    }
+                },
+                prefill: {
+                    name: currentUserProfile.fullName,
+                    email: currentUserProfile.email,
+                    contact: currentUserProfile.mobileNo,
+                },
+                theme: {
+                    color: '#000435',
+                },
+            };
+
+            const rzp = new window.Razorpay(options);
+            rzp.on('payment.failed', function (response: any) {
+                toast({
+                    variant: 'destructive',
+                    title: 'Payment Failed',
+                    description: response.error.description,
+                });
+                setIsLoading(false);
+            });
+            rzp.open();
+
+        } catch (error: any) {
+            console.error("Payment error:", error);
+            toast({ variant: 'destructive', title: 'Payment Error', description: error.message });
+            setIsLoading(false);
+        }
+    };
+    
+    const updateUserPlan = async () => {
+         if (!currentUser || !plan) return;
 
         let photoViewLimits: UserProfile['photoViewLimits'] = { basic: 0, silver: 0, gold: 0, diamond: 0 };
         let contactLimit: UserProfile['contactLimit'] = { basic: 0, silver: 0, gold: 0, diamond: 0 };
@@ -78,9 +166,6 @@ function PaymentForm() {
 
         const planStartDate = new Date();
         const planEndDate = add(planStartDate, planDuration);
-
-        // Simulate payment processing
-        await new Promise(resolve => setTimeout(resolve, 2000));
         
         try {
             const userDocRef = doc(db, 'users', currentUser.uid);
@@ -93,12 +178,10 @@ function PaymentForm() {
                 likesLimits: likesLimits,
             });
             
-            setIsLoading(false);
             toast({
                 title: "Payment Successful!",
                 description: `You have successfully subscribed to the ${plan} plan.`,
             });
-            router.push('/browse');
         } catch (error) {
             console.error("Failed to update user plan:", error);
              toast({
@@ -110,87 +193,31 @@ function PaymentForm() {
         }
     }
 
-    const UpiIcon = () => (
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M10.3398 21.9998L8.98977 13.8898L6.48977 15.3198L6.01977 12.4898L12.3898 9.1798L13.5198 9.7798L16.2798 3.9698L19.2798 4.7798L14.7198 16.3298L17.2098 17.7598L16.7498 20.5898L10.3398 21.9998Z" fill="#5F6368"/>
-            <path d="M4.36365 10.3638L3.18188 7.95471L8.45456 5.31836L9.63633 7.72745L4.36365 10.3638Z" fill="#5F6368"/>
-        </svg>
-    )
 
     return (
-        <Card className="w-full max-w-lg">
-            <CardHeader>
-                <CardTitle className="font-headline">Complete Your Purchase</CardTitle>
-                <CardDescription>You are subscribing to the <span className="font-bold text-primary">{plan}</span> plan for <span className="font-bold text-primary">{price}</span>.</CardDescription>
-            </CardHeader>
-            <form onSubmit={handlePayment}>
-                <CardContent className="space-y-6">
-                    <div className="grid gap-4">
-                        <Label>Payment Method</Label>
-                        <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod} className="grid grid-cols-3 gap-4">
-                            <div>
-                                <RadioGroupItem value="credit-card" id="credit-card" className="peer sr-only" />
-                                <Label htmlFor="credit-card" className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary">
-                                    <CreditCard className="mb-3 h-6 w-6" />
-                                    Credit Card
-                                </Label>
-                            </div>
-                             <div>
-                                <RadioGroupItem value="debit-card" id="debit-card" className="peer sr-only" />
-                                <Label htmlFor="debit-card" className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary">
-                                    <CreditCard className="mb-3 h-6 w-6" />
-                                    Debit Card
-                                </Label>
-                            </div>
-                            <div>
-                                <RadioGroupItem value="upi" id="upi" className="peer sr-only" />
-                                <Label htmlFor="upi" className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary">
-                                   <UpiIcon />
-                                    UPI
-                                </Label>
-                            </div>
-                        </RadioGroup>
-                    </div>
-
-                    {paymentMethod === 'credit-card' || paymentMethod === 'debit-card' ? (
-                        <div className="space-y-4 animate-in fade-in-20">
-                            <div className="grid gap-2">
-                                <Label htmlFor="card-name">Name on Card</Label>
-                                <Input id="card-name" placeholder="John Doe" required />
-                            </div>
-                            <div className="grid gap-2">
-                                <Label htmlFor="card-number">Card Number</Label>
-                                <Input id="card-number" placeholder="•••• •••• •••• ••••" required />
-                            </div>
-                            <div className="grid grid-cols-3 gap-4">
-                                <div className="grid gap-2 col-span-2">
-                                    <Label htmlFor="expiry-date">Expiry Date</Label>
-                                    <Input id="expiry-date" placeholder="MM/YY" required />
-                                </div>
-                                <div className="grid gap-2">
-                                    <Label htmlFor="cvc">CVC</Label>
-                                    <Input id="cvc" placeholder="123" required />
-                                </div>
-                            </div>
-                        </div>
-                    ) : (
-                         <div className="space-y-4 animate-in fade-in-20">
-                            <div className="grid gap-2">
-                                <Label htmlFor="upi-id">UPI ID</Label>
-                                <Input id="upi-id" placeholder="yourname@bank" required />
-                            </div>
-                             <p className="text-sm text-muted-foreground">You will receive a payment request on your UPI app.</p>
-                        </div>
-                    )}
-                </CardContent>
-                <CardFooter>
-                    <Button className="w-full" type="submit" disabled={isLoading}>
-                         {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                        {isLoading ? 'Processing...' : `Pay ${price}`}
-                    </Button>
-                </CardFooter>
-            </form>
-        </Card>
+        <>
+            <Script
+                id="razorpay-checkout-js"
+                src="https://checkout.razorpay.com/v1/checkout.js"
+            />
+            <Card className="w-full max-w-lg">
+                <CardHeader>
+                    <CardTitle className="font-headline">Complete Your Purchase</CardTitle>
+                    <CardDescription>You are subscribing to the <span className="font-bold text-primary">{plan}</span> plan for <span className="font-bold text-primary">{price}</span>.</CardDescription>
+                </CardHeader>
+                <form onSubmit={makePayment}>
+                    <CardContent>
+                        <p className='text-sm text-muted-foreground'>You will be redirected to Razorpay's secure payment page to complete your transaction.</p>
+                    </CardContent>
+                    <CardFooter>
+                        <Button className="w-full" type="submit" disabled={isLoading}>
+                            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            {isLoading ? 'Processing...' : `Pay ${price}`}
+                        </Button>
+                    </CardFooter>
+                </form>
+            </Card>
+        </>
     )
 }
 
