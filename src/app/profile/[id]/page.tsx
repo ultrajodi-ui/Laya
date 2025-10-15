@@ -66,7 +66,7 @@ function FullscreenGallery({ images, startIndex, onClose }: { images: string[], 
                 <Carousel
                     setApi={setApi}
                     className="w-full h-full"
-                    opts={{ loop: true }}
+                    opts={{ loop: true, startIndex }}
                 >
                     <CarouselContent>
                         {images.map((url, index) => (
@@ -413,11 +413,8 @@ function ProfileContent({ id }: { id: string }) {
         user.imageUrl,
         ...(user.additionalPhotoUrls || [])
     ].filter(Boolean).map(url => url || `https://picsum.photos/seed/placeholder/800/600`);
-
-    const galleryImages = [
-        user.imageUrl,
-        ...(user.additionalPhotoUrls || [])
-    ].filter(Boolean).map(url => url || `https://picsum.photos/seed/placeholder/400/400`);
+    
+    const hasAdditionalPhotos = user.additionalPhotoUrls && user.additionalPhotoUrls.length > 0;
 
 
     const heightValue = user.heightFeet && user.heightInches 
@@ -481,12 +478,12 @@ function ProfileContent({ id }: { id: string }) {
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-6">
-                             {!showProtectedView && galleryImages.length > 0 && (
+                            {!showProtectedView && hasAdditionalPhotos && (
                                 <div>
                                     <h3 className="text-lg font-semibold font-headline mb-2">Photo Gallery</h3>
-                                     <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2">
-                                        {galleryImages.map((url, index) => (
-                                            <div key={index} className="relative aspect-square cursor-pointer" onClick={() => setFullscreenImageIndex(index + 1)}>
+                                    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2">
+                                        {user.additionalPhotoUrls?.map((url, index) => (
+                                            <div key={index} className="relative aspect-square cursor-pointer" onClick={() => setFullscreenImageIndex(index + 2)}>
                                                 <Image src={url} alt={`Photo ${index + 1}`} fill className="rounded-md object-cover" />
                                             </div>
                                         ))}
