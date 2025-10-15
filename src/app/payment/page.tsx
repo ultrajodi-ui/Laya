@@ -1,7 +1,7 @@
 
 'use client';
 
-import { Suspense, useState, useEffect, use } from 'react';
+import { Suspense, useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Script from 'next/script';
 import { AppLayout } from "@/components/AppLayout";
