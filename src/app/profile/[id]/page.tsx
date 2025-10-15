@@ -45,6 +45,63 @@ const UserTypeIcon = ({ usertype }: { usertype?: string }) => {
     }
 };
 
+function FullscreenGallery({ images, startIndex, onClose }: { images: string[], startIndex: number, onClose: () => void }) {
+    const [api, setApi] = useState<CarouselApi>();
+
+    useEffect(() => {
+        if (api) {
+            api.scrollTo(startIndex, true);
+        }
+    }, [api, startIndex]);
+
+    return (
+        <div
+            className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center animate-in fade-in-50"
+            onClick={onClose}
+        >
+            <div
+                className="relative w-full h-full"
+                onClick={(e) => e.stopPropagation()} // Prevent closing when clicking on the carousel itself
+            >
+                <Carousel
+                    setApi={setApi}
+                    className="w-full h-full"
+                    opts={{ loop: true }}
+                >
+                    <CarouselContent>
+                        {images.map((url, index) => (
+                            <CarouselItem key={index}>
+                                <div className="relative w-full h-full">
+                                    <Image
+                                        src={url}
+                                        alt={`Fullscreen photo ${index + 1}`}
+                                        fill
+                                        className="object-contain"
+                                    />
+                                </div>
+                            </CarouselItem>
+                        ))}
+                    </CarouselContent>
+                    {images.length > 1 && (
+                        <>
+                            <CarouselPrevious className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-black/50 text-white border-none hover:bg-black/70" />
+                            <CarouselNext className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-black/50 text-white border-none hover:bg-black/70" />
+                        </>
+                    )}
+                </Carousel>
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    className="absolute top-4 right-4 z-20 text-white hover:text-white bg-black/50 hover:bg-black/70 rounded-full"
+                    onClick={onClose}
+                >
+                    <X className="w-6 h-6" />
+                </Button>
+            </div>
+        </div>
+    );
+}
+
 function ProfileContent({ id }: { id: string }) {
     const [user, setUser] = useState<UserProfile | null>(null);
     const [loading, setLoading] = useState(true);
@@ -59,12 +116,6 @@ function ProfileContent({ id }: { id: string }) {
     const [showUpgradeAlert, setShowUpgradeAlert] = useState(false);
     
     const [fullscreenImageIndex, setFullscreenImageIndex] = useState<number | null>(null);
-    const [carouselApi, setCarouselApi] = useState<CarouselApi>()
-
-    useEffect(() => {
-        if (!carouselApi || fullscreenImageIndex === null) return;
-        carouselApi.scrollTo(fullscreenImageIndex, true);
-    }, [carouselApi, fullscreenImageIndex]);
 
 
     useEffect(() => {
@@ -535,53 +586,11 @@ function ProfileContent({ id }: { id: string }) {
             </AlertDialog>
 
             {fullscreenImageIndex !== null && (
-                <div 
-                    className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center animate-in fade-in-50"
-                    onClick={() => setFullscreenImageIndex(null)}
-                >
-                    <div 
-                        className="relative w-full h-full"
-                        onClick={(e) => e.stopPropagation()} // Prevent closing when clicking on the carousel itself
-                    >
-                        <Carousel 
-                            setApi={setCarouselApi} 
-                            className="w-full h-full"
-                            opts={{
-                                startIndex: fullscreenImageIndex,
-                                loop: true,
-                            }}
-                        >
-                            <CarouselContent>
-                                {allImages.map((url, index) => (
-                                    <CarouselItem key={index}>
-                                        <div className="relative w-full h-full">
-                                            <Image 
-                                                src={url} 
-                                                alt={`Fullscreen photo ${index + 1}`} 
-                                                fill
-                                                className="object-contain"
-                                            />
-                                        </div>
-                                    </CarouselItem>
-                                ))}
-                            </CarouselContent>
-                            {allImages.length > 1 && (
-                                <>
-                                    <CarouselPrevious className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-black/50 text-white border-none hover:bg-black/70" />
-                                    <CarouselNext className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-black/50 text-white border-none hover:bg-black/70" />
-                                </>
-                            )}
-                        </Carousel>
-                        <Button 
-                            variant="ghost" 
-                            size="icon" 
-                            className="absolute top-4 right-4 z-20 text-white hover:text-white bg-black/50 hover:bg-black/70 rounded-full"
-                            onClick={() => setFullscreenImageIndex(null)}
-                        >
-                            <X className="w-6 h-6" />
-                        </Button>
-                    </div>
-                </div>
+                <FullscreenGallery
+                    images={allImages}
+                    startIndex={fullscreenImageIndex}
+                    onClose={() => setFullscreenImageIndex(null)}
+                />
             )}
         </>
     );
