@@ -303,7 +303,7 @@ export default function BrowsePage() {
 
     return (
         <AppLayout>
-            <div className="flex flex-col gap-4 rounded-lg p-4 bg-blue-50">
+            <div className="flex flex-col gap-4 rounded-lg p-4 bg-blue-50 mx-auto">
                 <div className="flex items-center gap-4 ">
                     <div className="relative flex-1">
                         <Input 
