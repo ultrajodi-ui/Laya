@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { AppLayout } from "@/components/AppLayout";
@@ -303,7 +304,7 @@ export default function BrowsePage() {
 
     return (
         <AppLayout>
-            <div className="flex flex-col gap-4 rounded-lg p-4 bg-blue-50">
+            <div className="flex flex-col gap-4 rounded-lg p-4 bg-blue-50 w-full overflow-x-auto">
                 <div className="flex items-center gap-4 ">
                     <div className="relative flex-1">
                         <Input 
@@ -359,7 +360,7 @@ export default function BrowsePage() {
                     <FilterDropdown placeholder="User Type" options={userTypes} value={selectedUserType} onChange={(v) => setSelectedUserType(v === 'all' ? '' : v)} />
                 </div>
                 {loading ? (
-                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
+                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-7 gap-6">
                         {[...Array(10)].map((_, i) => (
                              <Card key={i} className="overflow-hidden">
                                  <Skeleton className="w-full h-64" />
@@ -375,7 +376,7 @@ export default function BrowsePage() {
                         ))}
                      </div>
                 ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-7 gap-6">
                         {paginatedUsers.map(user => {
                             const isLiked = currentUserProfile?.likes?.includes(user.memberid!);
                             const profileImageUrl = user.photoVisibility === 'Protected' 

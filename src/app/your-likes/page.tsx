@@ -145,7 +145,7 @@ function YourLikesContent() {
         <div className="flex flex-col gap-4 w-full">
             <h1 className="text-2xl font-headline font-bold" style={{ color: '#000435' }}>Profiles You've Liked</h1>
             {loading ? (
-                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
+                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-7 gap-6">
                     {[...Array(5)].map((_, i) => (
                          <Card key={i} className="overflow-hidden">
                              <Skeleton className="w-full h-64" />
@@ -161,7 +161,7 @@ function YourLikesContent() {
                     ))}
                  </div>
             ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-7 gap-6">
                     {likedUsers.map(user => {
                         const profileImageUrl = user.photoVisibility === 'Protected' 
                             ? `https://picsum.photos/seed/default-avatar/400/400`

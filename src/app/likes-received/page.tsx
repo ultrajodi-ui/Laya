@@ -231,7 +231,7 @@ function LikesReceivedContent() {
         <div className="flex flex-col gap-4">
             <h1 className="text-2xl font-headline font-bold" style={{ color: '#000435' }}>Who Liked Your Profile</h1>
             {loading ? (
-                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
+                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-7 gap-6">
                     {[...Array(5)].map((_, i) => (
                          <Card key={i} className="overflow-hidden">
                              <Skeleton className="w-full h-64" />
@@ -247,7 +247,7 @@ function LikesReceivedContent() {
                     ))}
                  </div>
             ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-7 gap-6">
                     {likedByUsers.map(user => {
                         const isLiked = currentUserProfile?.likes?.includes(user.memberid!);
                         const profileImageUrl = user.photoVisibility === 'Protected' 

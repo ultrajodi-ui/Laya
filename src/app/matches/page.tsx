@@ -209,7 +209,7 @@ export default function MatchesPage() {
                 </Card>
 
                 {isLoading && (
-                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
+                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-7 gap-6">
                         {[...Array(5)].map((_, i) => (
                              <Card key={i} className="animate-pulse">
                                  <Skeleton className="w-full h-64 bg-muted rounded-t-lg" />
@@ -229,7 +229,7 @@ export default function MatchesPage() {
                 {suggestedMatches.length > 0 && (
                     <div>
                         <h2 className="text-2xl font-headline mb-4">Your Top AI-Powered Matches</h2>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-7 gap-6">
                             {suggestedMatches.map((user) => {
                                 const hasPhotoAccess = currentUserProfile?.role === 'admin' || (currentUserProfile?.viewedPhotos || []).includes(user.memberid!);
                                 const showProtectedView = user.photoVisibility === 'Protected' && !hasPhotoAccess;
