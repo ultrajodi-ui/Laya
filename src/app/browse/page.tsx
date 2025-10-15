@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/componentsui/select";
 import { Heart, ListFilter, MapPin, Search as SearchIcon, Star, Shield, Gem, Briefcase, IndianRupee } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -303,7 +303,7 @@ export default function BrowsePage() {
 
     return (
         <AppLayout>
-            <div className="flex flex-col gap-4 rounded-lg p-4 bg-blue-50 mx-auto">
+            <div className="flex flex-col gap-4 rounded-lg p-4 bg-blue-50 w-full overflow-x-auto">
                 <div className="flex items-center gap-4 ">
                     <div className="relative flex-1">
                         <Input 
@@ -359,8 +359,8 @@ export default function BrowsePage() {
                     <FilterDropdown placeholder="User Type" options={userTypes} value={selectedUserType} onChange={(v) => setSelectedUserType(v === 'all' ? '' : v)} />
                 </div>
                 {loading ? (
-                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                        {[...Array(8)].map((_, i) => (
+                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
+                        {[...Array(10)].map((_, i) => (
                              <Card key={i} className="overflow-hidden">
                                  <Skeleton className="w-full h-64" />
                                 <CardContent className="p-4 space-y-2">
@@ -375,7 +375,7 @@ export default function BrowsePage() {
                         ))}
                      </div>
                 ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
                         {paginatedUsers.map(user => {
                             const isLiked = currentUserProfile?.likes?.includes(user.memberid!);
                             const profileImageUrl = user.photoVisibility === 'Protected' 
@@ -385,14 +385,16 @@ export default function BrowsePage() {
                             <Card key={user.id} className="overflow-hidden transition-transform transform hover:scale-105 hover:shadow-lg duration-300 ease-in-out">
                                  <CardHeader className="p-0">
                                     <Link href={`/profile/${user.id}`}>
-                                        <Image
-                                            src={profileImageUrl}
-                                            alt={user.fullName || 'User'}
-                                            width={400}
-                                            height={400}
-                                            data-ai-hint="person portrait"
-                                            className="w-full h-64 object-cover"
-                                        />
+                                        <div className="w-full h-64 bg-muted flex items-center justify-center">
+                                            <Image
+                                                src={profileImageUrl}
+                                                alt={user.fullName || 'User'}
+                                                width={400}
+                                                height={400}
+                                                data-ai-hint="person portrait"
+                                                className="w-full h-full object-contain"
+                                            />
+                                        </div>
                                     </Link>
                                 </CardHeader>
                                 <CardContent className="p-4 space-y-2">

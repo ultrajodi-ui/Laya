@@ -209,8 +209,8 @@ export default function MatchesPage() {
                 </Card>
 
                 {isLoading && (
-                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {[...Array(3)].map((_, i) => (
+                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
+                        {[...Array(5)].map((_, i) => (
                              <Card key={i} className="animate-pulse">
                                  <Skeleton className="w-full h-64 bg-muted rounded-t-lg" />
                                 <CardContent className="p-4 space-y-2">
@@ -229,7 +229,7 @@ export default function MatchesPage() {
                 {suggestedMatches.length > 0 && (
                     <div>
                         <h2 className="text-2xl font-headline mb-4">Your Top AI-Powered Matches</h2>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
                             {suggestedMatches.map((user) => {
                                 const hasPhotoAccess = currentUserProfile?.role === 'admin' || (currentUserProfile?.viewedPhotos || []).includes(user.memberid!);
                                 const showProtectedView = user.photoVisibility === 'Protected' && !hasPhotoAccess;
@@ -241,14 +241,16 @@ export default function MatchesPage() {
                                 <Card key={user.id} className="overflow-hidden transition-transform transform hover:scale-105 hover:shadow-lg duration-300 ease-in-out">
                                     <CardHeader className="p-0 relative">
                                         <Link href={`/profile/${user.id}`}>
-                                            <Image
-                                                src={profileImageUrl}
-                                                alt={user.fullName || 'User'}
-                                                width={400}
-                                                height={400}
-                                                data-ai-hint="person portrait"
-                                                className="w-full h-64 object-cover"
-                                            />
+                                            <div className="w-full h-64 bg-muted flex items-center justify-center">
+                                                <Image
+                                                    src={profileImageUrl}
+                                                    alt={user.fullName || 'User'}
+                                                    width={400}
+                                                    height={400}
+                                                    data-ai-hint="person portrait"
+                                                    className="w-full h-full object-contain"
+                                                />
+                                            </div>
                                         </Link>
                                         <Badge variant="default" className="absolute top-2 right-2 bg-primary/80 backdrop-blur-sm">
                                             {user.compatibilityScore}% Match
