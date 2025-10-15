@@ -1,6 +1,7 @@
 
 
 
+
 export type UserProfile = {
   id: string;
   name: string;
@@ -106,5 +107,16 @@ export type SupportQuery = {
     contactNo?: string;
     query?: string;
     submittedAt?: Date;
-    status?: 'Pending' | 'Process' | 'Finished';
+    status?: 'new' | 'Pending' | 'Process' | 'Finished';
+};
+
+export type Invoice = {
+    id?: string;
+    userId: string;
+    plan: UserProfile['usertype'];
+    amount: number;
+    razorpayOrderId: string;
+    razorpayPaymentId: string;
+    status: 'success' | 'failure';
+    createdAt: any;
 };

@@ -70,7 +70,7 @@ export default function HelpSupportPage() {
                 contactNo: userProfile.mobileNo,
                 query: query,
                 submittedAt: serverTimestamp(),
-                status: 'new'
+                status: 'New'
             });
 
             toast({

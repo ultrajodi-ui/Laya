@@ -2,6 +2,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Razorpay from 'razorpay';
 import crypto from 'crypto';
+import { db } from '@/lib/firebase';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
 export const runtime = 'nodejs'; // Force Node.js runtime
 
@@ -38,10 +40,10 @@ export async function POST(req: NextRequest) {
 
 export async function PUT(req: NextRequest) {
      try {
-        const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = await req.json();
+        const { razorpay_order_id, razorpay_payment_id, razorpay_signature, userId, plan, amount } = await req.json();
 
-        if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
-             return NextResponse.json({ error: 'Missing payment verification details.' }, { status: 400 });
+        if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature || !userId || !plan || !amount) {
+             return NextResponse.json({ error: 'Missing payment verification or user details.' }, { status: 400 });
         }
 
         const body = razorpay_order_id + "|" + razorpay_payment_id;
@@ -54,15 +56,24 @@ export async function PUT(req: NextRequest) {
         const isAuthentic = expectedSignature === razorpay_signature;
 
         if (isAuthentic) {
-            // Here you would typically find the order in your database and update its status.
-            // For now, we just confirm verification.
-             return NextResponse.json({ success: true, message: "Payment verified successfully" }, { status: 200 });
+            // Payment is authentic, create invoice in Firestore
+            await addDoc(collection(db, "invoices"), {
+                userId: userId,
+                plan: plan,
+                amount: amount,
+                razorpayOrderId: razorpay_order_id,
+                razorpayPaymentId: razorpay_payment_id,
+                status: 'success',
+                createdAt: serverTimestamp(),
+            });
+
+            return NextResponse.json({ success: true, message: "Payment verified and invoice created successfully" }, { status: 200 });
         } else {
              return NextResponse.json({ error: "Payment verification failed. Signature mismatch." }, { status: 400 });
         }
 
     } catch (error: any) {
-        console.error('Razorpay verification error:', error);
+        console.error('Razorpay verification or Firestore error:', error);
         return NextResponse.json({ error: error.message || 'Verification failed' }, { status: 500 });
     }
 }
