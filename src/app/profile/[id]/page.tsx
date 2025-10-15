@@ -45,60 +45,31 @@ const UserTypeIcon = ({ usertype }: { usertype?: string }) => {
     }
 };
 
-function FullscreenGallery({ images, startIndex, onClose }: { images: string[], startIndex: number, onClose: () => void }) {
-    const [api, setApi] = useState<CarouselApi>();
-
-    useEffect(() => {
-        if (api) {
-            api.scrollTo(startIndex, true);
-        }
-    }, [api, startIndex]);
-
+function FullscreenGallery({ imageUrl, onClose }: { imageUrl: string; onClose: () => void }) {
+    if (!imageUrl) return null;
+  
     return (
-        <div
-            className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center animate-in fade-in-50"
+      <div
+        className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center animate-in fade-in-50"
+        onClick={onClose}
+      >
+        <div className="relative w-full h-full max-w-4xl max-h-4xl">
+            <Image
+                src={imageUrl}
+                alt="Fullscreen profile photo"
+                fill
+                className="object-contain"
+            />
+        </div>
+        <Button
+            variant="ghost"
+            size="icon"
+            className="absolute top-4 right-4 z-20 text-white hover:text-white bg-black/50 hover:bg-black/70 rounded-full"
             onClick={onClose}
         >
-            <div
-                className="relative w-full h-full"
-                onClick={(e) => e.stopPropagation()} // Prevent closing when clicking on the carousel itself
-            >
-                <Carousel
-                    setApi={setApi}
-                    className="w-full h-full"
-                    opts={{ loop: true, startIndex }}
-                >
-                    <CarouselContent>
-                        {images.map((url, index) => (
-                            <CarouselItem key={index}>
-                                <div className="relative w-full h-full">
-                                    <Image
-                                        src={url}
-                                        alt={`Fullscreen photo ${index + 1}`}
-                                        fill
-                                        className="object-contain"
-                                    />
-                                </div>
-                            </CarouselItem>
-                        ))}
-                    </CarouselContent>
-                    {images.length > 1 && (
-                        <>
-                            <CarouselPrevious className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-black/50 text-white border-none hover:bg-black/70" />
-                            <CarouselNext className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-black/50 text-white border-none hover:bg-black/70" />
-                        </>
-                    )}
-                </Carousel>
-                <Button
-                    variant="ghost"
-                    size="icon"
-                    className="absolute top-4 right-4 z-20 text-white hover:text-white bg-black/50 hover:bg-black/70 rounded-full"
-                    onClick={onClose}
-                >
-                    <X className="w-6 h-6" />
-                </Button>
-            </div>
-        </div>
+            <X className="w-6 h-6" />
+        </Button>
+      </div>
     );
 }
 
@@ -115,7 +86,7 @@ function ProfileContent({ id }: { id: string }) {
     const [arePhotosVisible, setArePhotosVisible] = useState(false);
     const [showUpgradeAlert, setShowUpgradeAlert] = useState(false);
     
-    const [fullscreenImageIndex, setFullscreenImageIndex] = useState<number | null>(null);
+    const [isProfilePhotoFullscreen, setIsProfilePhotoFullscreen] = useState(false);
 
 
     useEffect(() => {
@@ -407,15 +378,8 @@ function ProfileContent({ id }: { id: string }) {
     const protectedProfileImageUrl = `https://picsum.photos/seed/default-avatar/100/100`;
 
     const coverImageUrl = user.coverUrl || `https://picsum.photos/seed/${user.id}-cover/1200/400`;
-
-    const allImages = [
-        user.coverUrl,
-        user.imageUrl,
-        ...(user.additionalPhotoUrls || [])
-    ].filter(Boolean).map(url => url || `https://picsum.photos/seed/placeholder/800/600`);
     
     const hasAdditionalPhotos = user.additionalPhotoUrls && user.additionalPhotoUrls.length > 0;
-
 
     const heightValue = user.heightFeet && user.heightInches 
         ? `${user.heightFeet}' ${user.heightInches}"` 
@@ -431,15 +395,14 @@ function ProfileContent({ id }: { id: string }) {
                                 src={coverImageUrl}
                                 alt={`${user.fullName}'s cover photo`} 
                                 fill 
-                                className={cn("object-cover", !showProtectedView && "cursor-pointer")}
+                                className="object-cover"
                                 data-ai-hint="romantic landscape" 
-                                onClick={() => !showProtectedView && allImages.length > 0 && setFullscreenImageIndex(0)}
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                             <div className="absolute bottom-4 left-6">
                                 <Avatar 
                                     className={cn("w-24 h-24 md:w-32 md:h-32 border-4 border-background", !showProtectedView && "cursor-pointer")}
-                                    onClick={() => !showProtectedView && allImages.length > 0 && setFullscreenImageIndex(1)}
+                                    onClick={() => !showProtectedView && setIsProfilePhotoFullscreen(true)}
                                 >
                                     <AvatarImage src={showProtectedView ? protectedProfileImageUrl : profileImageUrl} alt={user.fullName} />
                                     <AvatarFallback>{user.fullName?.charAt(0)}</AvatarFallback>
@@ -483,7 +446,7 @@ function ProfileContent({ id }: { id: string }) {
                                     <h3 className="text-lg font-semibold font-headline mb-2">Photo Gallery</h3>
                                     <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2">
                                         {user.additionalPhotoUrls?.map((url, index) => (
-                                            <div key={index} className="relative aspect-square cursor-pointer" onClick={() => setFullscreenImageIndex(index + 2)}>
+                                            <div key={index} className="relative aspect-square">
                                                 <Image src={url} alt={`Photo ${index + 1}`} fill className="rounded-md object-cover" />
                                             </div>
                                         ))}
@@ -582,11 +545,10 @@ function ProfileContent({ id }: { id: string }) {
                 </AlertDialogContent>
             </AlertDialog>
 
-            {fullscreenImageIndex !== null && (
+            {isProfilePhotoFullscreen && !showProtectedView && (
                 <FullscreenGallery
-                    images={allImages}
-                    startIndex={fullscreenImageIndex}
-                    onClose={() => setFullscreenImageIndex(null)}
+                    imageUrl={profileImageUrl}
+                    onClose={() => setIsProfilePhotoFullscreen(false)}
                 />
             )}
         </>
