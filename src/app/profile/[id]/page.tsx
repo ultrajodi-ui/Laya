@@ -26,8 +26,8 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
+  type CarouselApi,
 } from "@/components/ui/carousel"
-import type { CarouselApi } from "@/components/ui/carousel"
 
 
 const calculateAge = (dob: any) => {
@@ -548,6 +548,7 @@ function ProfileContent({ id }: { id: string }) {
                             className="w-full h-full"
                             opts={{
                                 startIndex: fullscreenImageIndex,
+                                loop: true,
                             }}
                         >
                             <CarouselContent>
