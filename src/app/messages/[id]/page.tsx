@@ -1,3 +1,6 @@
+
+'use client';
+
 import { AppLayout } from "@/components/AppLayout";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
