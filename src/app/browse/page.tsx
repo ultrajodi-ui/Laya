@@ -381,7 +381,7 @@ export default function BrowsePage() {
                                 ? `https://picsum.photos/seed/default-avatar/400/400`
                                 : user.imageUrl || `https://picsum.photos/seed/${user.id}/400/400`;
                             return (
-                            <Card key={user.id} className="overflow-hidden transition-transform transform hover:scale-105 hover:shadow-lg duration-300 ease-in-out">
+                            <Card key={user.id} className="overflow-hidden transition-transform transform hover:scale-105 shadow-md hover:shadow-lg duration-300 ease-in-out">
                                  <CardHeader className="p-0">
                                     <Link href={`/profile/${user.id}`}>
                                         <div className="w-full h-64 bg-muted flex items-center justify-center">
@@ -414,11 +414,9 @@ export default function BrowsePage() {
                                         <Briefcase className="w-4 h-4 mr-1" />
                                         <span>{user.occupation}</span>
                                     </div>
-                                    {(user.caste || user.subCaste) && (
-                                        <div className="flex items-center text-sm text-muted-foreground">
-                                            <Badge variant="secondary">{user.caste ? user.caste : user.subCaste}</Badge>
-                                        </div>
-                                    )}
+                                    <div className="flex items-center text-sm text-muted-foreground">
+                                        <Badge variant="secondary">{user.caste || user.subCaste}</Badge>
+                                    </div>
                                     <div className="flex items-center text-sm text-muted-foreground">
                                         <IndianRupee className="w-4 h-4 mr-1" />
                                         <span>{user.salary}</span>
