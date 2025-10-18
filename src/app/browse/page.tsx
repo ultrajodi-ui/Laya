@@ -22,9 +22,7 @@ import { cn } from "@/lib/utils";
 import { useToast } from '@/hooks/use-toast';
 
 // Mock data for filters
-const allInterests = ["Reading", "Traveling", "Cooking", "Foodie", "Music", "Movies", "Hiking", "Fitness", "Yoga", "Sports", "Dancing", "Singing", "Acting", "Photography", "Painting", "Writing", "Pets", "Fashion", "Meditation", "Shopping", "cycling", "Swimming", "Gaming", "Volunteering", "Family Time", "Temple Visit", "Prayers", "Gardening", "Storytelling", "Helping Others", "Celebrations"];
-const allLocations = ["Mumbai, India", "Delhi, India", "Bangalore, India", "Pune, India", "Hyderabad, India", "Chennai, India"];
-
+const allInterests = ["Reading", "Traveling", "Cooking", "Music", "Hiking", "Fitness", "Dancing", "Photography", "Painting", "Pets", "Fashion", "Meditation", "Shopping", "cycling", "Swimming", "Temple Visit", "Gardening", "Helping Others", "Celebrations"];
 // Data for new dropdowns
 const maritalStatuses = ["Never Married", "Divorced", "Widow", "Widower"];
 const states = ["Andaman and Nicobar Islands", "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chandigarh", "Chhattisgarh", "Dadra and Nagar Haveli and Daman and Diu", "Delhi", "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jammu and Kashmir", "Jharkhand", "Karnataka", "Kerala", "Ladakh", "Lakshadweep", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Puducherry", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal"];
@@ -416,9 +414,11 @@ export default function BrowsePage() {
                                         <Briefcase className="w-4 h-4 mr-1" />
                                         <span>{user.occupation}</span>
                                     </div>
-                                    <div className="flex items-center text-sm text-muted-foreground">
-                                    <Badge variant="secondary">{user.caste}</Badge><Badge variant="secondary">{user.subCaste}</Badge>
-                                    </div>
+                                    {(user.caste || user.subCaste) && (
+                                        <div className="flex items-center text-sm text-muted-foreground">
+                                            <Badge variant="secondary">{user.caste ? user.caste : user.subCaste}</Badge>
+                                        </div>
+                                    )}
                                     <div className="flex items-center text-sm text-muted-foreground">
                                         <IndianRupee className="w-4 h-4 mr-1" />
                                         <span>{user.salary}</span>

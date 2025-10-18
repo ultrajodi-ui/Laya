@@ -275,9 +275,11 @@ export default function MatchesPage() {
                                                 <Briefcase className="w-4 h-4 mr-1" />
                                                 <span>{user.occupation}</span>
                                             </div>
-                                            <div className="flex items-center">
-                                                 <Badge variant="secondary">{user.subCaste}</Badge>
-                                            </div>
+                                            {(user.caste || user.subCaste) && (
+                                                <div className="flex items-center">
+                                                    <Badge variant="secondary">{user.caste ? user.caste : user.subCaste}</Badge>
+                                                </div>
+                                            )}
                                         </div>
 
                                     </CardContent>

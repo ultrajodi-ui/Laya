@@ -439,11 +439,8 @@ export default function ProfileEditPage() {
         }
     };
 
-      const nakshatras = [
-    "Ashwini", "Bharani", "Krittika", "Rohini", "Mrigashira", "Ardra", "Punarvasu", "Pushya", "Ashlesha", "Magha", "Purva Phalguni", "Uttara Phalguni", "Hasta", "Chitra", "Swati", "Vishakha", "Anuradha", "Jyeshtha", "Mula", "Purva Ashadha", "Uttara Ashadha", "Shravana", "Dhanishta", "Shatabhisha", "Purva Bhadrapada", "Uttara Bhadrapada", "Revati"
-  ];
-  
-  const zodiacSigns = [
+    const nakshatras = ["Ashwini", "Bharani", "Krittika(1)","Krittika(2)", "Krittika(3)","Krittika(4)", "Rohini", "Mirugaseeridam(1)", "Mirugaseeridam(2)", "Mirugaseeridam(3)", "Mirugaseeridam(4)", "Thiruvathirai(Ardra)", "Punarpoosam(1)(Punarvasu)", "Punarpoosam(2)(Punarvasu)", "Punarpoosam(3)(Punarvasu)", "Punarpoosam(4)(Punarvasu)", "Pusham(Pushya)", "Ayilyam(Ashlesha)", "Magham(Magha)", "Puram(Purva Phalguni)", "Uthiram(1)(Uttara Phalguni)", "Uthiram(2)(Uttara Phalguni)", "Uthiram(3)(Uttara Phalguni)", "Uthiram(4)(Uttara Phalguni)", "Hastam(Hasta)", "Chitra(1)", "Chitra(2)", "Chitra(3)", "Chitra(4)", "Swati", "Vishakham-1(Vishakha)", "Vishakham-2(Vishakha)", "Vishakham-3(Vishakha)", "Vishakham-4(Vishakha)", "Anusham(Anuradha)", "Kettai(Jyeshtha)", "Mulam(Mula)", "Pooradam(Purva Ashadha)", "Uthradam-1(Uttara Ashadha)", "Uthradam-2(Uttara Ashadha)", "Uthradam-3(Uttara Ashadha)", "Uthradam-4(Uttara Ashadha)", "Thiruvonam(Shravana)", "Avittam-1(Dhanishta)", "Avittam-2(Dhanishta)", "Avittam-3(Dhanishta)", "Avittam-4(Dhanishta)", "Sadhayam(Shatabhisha)", "Poorattathi-1(Purva Bhadrapada)", "Poorattathi-2(Purva Bhadrapada)", "Poorattathi-3(Purva Bhadrapada)", "Poorattathi-4(Purva Bhadrapada)", "Uthirattathi(Uttara Bhadrapada)", "Revati"];
+    const zodiacSigns = [
     "Mesha (Aries)",
     "Vrishabha (Taurus)",
     "Mithuna (Gemini)",
@@ -458,14 +455,13 @@ export default function ProfileEditPage() {
     "Meena (Pisces)"
   ];
 
-  const motherTongues = ["Assamese", "Bengali", "Bodo", "Dogri", "English", "Gujarati", "Hindi", "Kannada", "Kashmiri", "Konkani", "Maithili", "Malayalam", "Manipuri", "Marathi", "Nepali", "Odia", "Punjabi", "Sanskrit", "Santali", "Sindhi", "Tamil", "Telugu", "Urdu", "Other"];
-    
-    const educationLevels = ["SSLC", "HSC", "ITI", "Diploma", "Bachelors", "PG", "Engineering", "MBBS"];
+    const motherTongues = ["Assamese", "Bengali", "Bodo", "Dogri", "English", "Gujarati", "Hindi", "Kannada", "Kashmiri", "Konkani", "Maithili", "Malayalam", "Manipuri", "Marathi", "Nepali", "Odia", "Punjabi", "Sanskrit", "Santali", "Sindhi", "Tamil", "Telugu", "Urdu", "Other"];
+    const educationLevels = ["SSLC", "HSC", "ITI", "Diploma", "Bachelors", "Post Graduate", "Engineering", "MBBS"];
     const religions = ["Hindu", "Christian", "Muslim - Shia", "Muslim - Sunni", "Muslim - Other", "Sikh", "Jain - Digambar", "Jain - Shwetamber", "Jain - Others", "Parsi", "Buddhist", "Jewish", "Inter - Religion", "No Religious Belief"];
     const communities = ["FC", "MBC", "BC", "SC", "ST", "Other"];
     const castes = ["Adi Dravidar", "Adi Karnataka", "Agamudayar", "Ajila", "Alwar/ Azhavar / Alavar", "Ambalakarar", "Andipandaram", "Ansar", "Arayar", "Arunthathiyar", "Ayira Vaisyar", "Baira", "Balija", "Bandi", "Bellara", "Bestha", "Bhatraju", "Boyar", "Brahmin Iyengar", "Brahmin Iyer", "Chakkiliyar", "Chettiar", "Chowdry", "Dasari", "Dekkani Muslims", "Devar", "Devangar", "Devendrakula Velalar", "Donga Dasaris", "Dudekula", "Ezhava", "Gavara", "Golla", "Goud", "Gounder", "Gowda", "Irular", "Isai Vellalar", "Kadar", "Kaikolar", "Kallar", "Kallar Kula Thondaman", "Kallarakarar", "Kammalar", "Kamma", "Kander", "Kannada Saineegar", "Kannadiya Naidu", "Kannadiyar", "Kapu", "Karpoora Chettiar", "Kasukkara Chettiar", "Kattunayakan", "Kerala Mudali", "Konar", "Kongu Chettiar", "Kongu Gounder", "Kongu Vaishnava", "Kongu Vellalar", "Kongu Vellalar Gounder", "Kulalar", "Kurumba", "Kurumba Gounder", "Kurumans", "Malai Arayan", "Mangala", "Maniagar", "Mapilla", "Maravar", "Maruthuvar", "Moopanar", "Mudaliar", "Mudiraj", "Mukkulaththor", "Muthuraja", "Nadar", "Naicker", "Naidu", "Nainar", "Nair", "Namboodiri", "Nangudi Vellalar", "Nattukottai Chettiar", "Navithar", "Nagarathar", "Oddar", "Padayachi", "Pagadai", "Pallar", "Palliyar", "Paniyan", "Panisaivan / Panisivan", "Pannayar", "Paraiyar", "Parkavakulam", "Pillai", "Potter", "Punnan Vettuva Gounder", "Rajaka", "Reddy", "Sengunthar", "Sengunthar Mudaliar", "Servai / Servar", "Sheik", "Siviar", "Sozhia Chetty", "Syed", "Telugupatty Chetty", "Telugu Naidus", "Thevar", "Thondaiman", "Thondaimandala Mudaliar", "Thoti", "Tiruvalluvar", "Udayar", "Urali Gounder", "Valluvan", "Vannan", "Vannia Gounder", "Vanniyar", "Vanniya Kula Kshatriya", "Vanniya", "Vathiriyan", "Veduvar and Vedar", "Velan", "Velar / Kulalar", "Vellala Gounder", "Vellalar", "Vettiyan", "Vettuva Gounder", "Vettuvan", "Viswakarma", "Vokkaligar", "Yadava", "Yogeeswarar"].sort();
     const states = ["Andaman and Nicobar Islands", "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chandigarh", "Chhattisgarh", "Dadra and Nagar Haveli and Daman and Diu", "Delhi", "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jammu and Kashmir", "Jharkhand", "Karnataka", "Kerala", "Ladakh", "Lakshadweep", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Puducherry", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal"];
-    const interests = ["Reading", "Traveling", "Cooking", "Foodie", "Music", "Movies", "Hiking", "Fitness", "Yoga", "Sports", "Dancing", "Singing", "Acting", "Photography", "Painting", "Writing", "Pets", "Fashion", "Meditation", "Shopping", "cycling", "Swimming", "Gaming", "Volunteering", "Family Time", "Temple Visit", "Prayers", "Gardening", "Storytelling", "Helping Others", "Celebrations"];
+    const interests = ["Reading", "Traveling", "Cooking", "Music", "Hiking", "Fitness", "Dancing", "Photography", "Painting", "Pets", "Fashion", "Meditation", "Shopping", "cycling", "Swimming", "Temple Visit", "Gardening", "Helping Others", "Celebrations"];
     const profileByOptions = ["Self", "Parents", "Sibling", "Guardian", "Friends", "Relatives"];
 
 

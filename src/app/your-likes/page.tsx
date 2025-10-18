@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { AppLayout } from "@/components/AppLayout";
@@ -197,9 +198,11 @@ function YourLikesContent() {
                                     <Briefcase className="w-4 h-4 mr-1" />
                                     <span>{user.occupation}</span>
                                 </div>
-                                <div className="flex items-center text-sm text-muted-foreground">
-                                    <Badge variant="secondary">{user.subCaste}</Badge>
-                                </div>
+                                {(user.caste || user.subCaste) && (
+                                    <div className="flex items-center text-sm text-muted-foreground">
+                                        <Badge variant="secondary">{user.caste ? user.caste : user.subCaste}</Badge>
+                                    </div>
+                                )}
                                 <div className="flex items-center text-sm text-muted-foreground">
                                     <IndianRupee className="w-4 h-4 mr-1" />
                                     <span>{user.salary}</span>
