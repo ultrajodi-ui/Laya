@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, use } from 'react';
+import { useState, useEffect } from 'react';
 import { collection, doc, getDoc, updateDoc, arrayUnion, arrayRemove, onSnapshot, writeBatch, increment, setDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { AppLayout } from "@/components/AppLayout";
@@ -419,7 +419,7 @@ function ProfileContent({ id }: { id: string }) {
                             <div className="absolute bottom-4 left-6">
                                 <Avatar 
                                     className={cn("w-24 h-24 md:w-32 md:h-32 border-4 border-background", !showProtectedView && "cursor-pointer")}
-                                    onClick={() => !showProtectedView && setFullscreenImageIndex(0)}
+                                    onClick={() => !showProtectedView && allImages.length > 0 && setFullscreenImageIndex(0)}
                                 >
                                     <AvatarImage src={showProtectedView ? protectedProfileImageUrl : profileImageUrl} alt={user.fullName} />
                                     <AvatarFallback>{user.fullName?.charAt(0)}</AvatarFallback>
@@ -462,7 +462,7 @@ function ProfileContent({ id }: { id: string }) {
                                 <div>
                                     <h3 className="text-lg font-semibold font-headline mb-2">Photo Gallery</h3>
                                     <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2">
-                                        {user.additionalPhotoUrls?.map((url, index) => (
+                                        {allImages.slice(1).map((url, index) => (
                                             <div 
                                                 key={index} 
                                                 className="relative aspect-square cursor-pointer"
@@ -578,7 +578,7 @@ function ProfileContent({ id }: { id: string }) {
 }
 
 export default function ProfileDetailPage({ params }: { params: { id: string } }) {
-    const { id } = use(params);
+    const { id } = params;
 
     if (!id) {
         return (
@@ -597,3 +597,5 @@ export default function ProfileDetailPage({ params }: { params: { id: string } }
         </AppLayout>
     );
 }
+
+    

@@ -355,7 +355,7 @@ export default function BrowsePage() {
                     <FilterDropdown placeholder="Age Range" options={ageRanges} value={selectedAgeRange} onChange={(v) => setSelectedAgeRange(v === 'all' ? '' : v)} />
                     <FilterDropdown placeholder="Salary" options={salaryRanges} value={selectedSalary} onChange={(v) => setSelectedSalary(v === 'all' ? '' : v)} />
                     <FilterDropdown placeholder="Employed" options={employedOptions} value={selectedEmployed} onChange={(v) => setSelectedEmployed(v === 'all' ? '' : v)} />
-                    <FilterDropdown placeholder="User Type" options={userTypes} value={selectedUserType} onChange={(v) => setSelectedUserType(v === 'all' ? '' : v)} />
+                    <FilterDropdown placeholder="Member Type" options={userTypes} value={selectedUserType} onChange={(v) => setSelectedUserType(v === 'all' ? '' : v)} />
                 </div>
                 {loading ? (
                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-7 gap-6">
