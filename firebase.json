@@ -41,42 +41,19 @@
       ]
     }
   ],
-  "apphosting": [
-    {
-      "backendId": "my-ultra-jodi",
-      "rootDir": "/",
-      "ignore": [
-        "node_modules",
-        ".git",
-        "firebase-debug.log",
-        "firebase-debug.*.log",
-        "functions"
-      ],
-      "alwaysDeployFromSource": true
-    },
-    {
-      "backendId": "my-web-app",
-      "rootDir": "/",
-      "ignore": [
-        "node_modules",
-        ".git",
-        "firebase-debug.log",
-        "firebase-debug.*.log",
-        "functions"
-      ]
-    }
-  ],
-  "hosting": {
-    "public": "public",
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
+  "apphosting": {
+    "backends": [
+      {
+        "id": "app",
+        "region": "us-central1"
+      }
     ],
     "rewrites": [
       {
         "source": "**",
-        "destination": "/index.html"
+        "backend": {
+          "id": "app"
+        }
       }
     ]
   }
