@@ -40,21 +40,5 @@
         "npm --prefix \"$RESOURCE_DIR\" run build"
       ]
     }
-  ],
-  "apphosting": {
-    "backends": [
-      {
-        "id": "app",
-        "region": "us-central1"
-      }
-    ],
-    "rewrites": [
-      {
-        "source": "**",
-        "backend": {
-          "id": "app"
-        }
-      }
-    ]
-  }
+  ]
 }
