@@ -1,12 +1,9 @@
 # Settings for the App Hosting backend.
 # See https://firebase.google.com/docs/app-hosting/configure-backend
-#
-# The following settings are recommended for Next.js frameworks.
 runConfig:
   minInstances: 0
-
 # Static assets should be deployed to Firebase Hosting.
 # See https://firebase.google.com/docs/app-hosting/configure-backend#static-assets
 staticAssets:
-  - "/public"
-  - "/.next/static"
+  - /public
+  - /.next/static
