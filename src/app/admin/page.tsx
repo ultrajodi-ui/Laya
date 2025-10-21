@@ -7,9 +7,9 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { db } from "@/lib/firebase";
-import { UserProfile, SupportQuery } from "@/lib/types";
+import { UserProfile, SupportQuery, Invoice } from "@/lib/types";
 import { collection, getDocs, query, doc, getDoc, orderBy, updateDoc, deleteDoc, addDoc } from "firebase/firestore";
-import { Users, Star, Shield, Gem, User as UserIcon, Loader2, MessageSquare, Trash2, Search } from "lucide-react";
+import { Users, Star, Shield, Gem, User as UserIcon, Loader2, MessageSquare, Trash2, Search, Receipt } from "lucide-react";
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getAuth, onAuthStateChanged, User, deleteUser } from "firebase/auth";
@@ -46,9 +46,11 @@ export default function AdminDashboardPage() {
     });
     const [users, setUsers] = useState<UserProfile[]>([]);
     const [queries, setQueries] = useState<SupportQuery[]>([]);
+    const [invoices, setInvoices] = useState<Invoice[]>([]);
     const [loading, setLoading] = useState(true);
     const [loadingData, setLoadingData] = useState(false);
     const [loadingQueries, setLoadingQueries] = useState(true);
+    const [loadingInvoices, setLoadingInvoices] = useState(true);
     const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
     const [showUsers, setShowUsers] = useState(false);
     const [genderFilter, setGenderFilter] = useState('all');
@@ -94,8 +96,15 @@ export default function AdminDashboardPage() {
         try {
             const usersCollection = collection(db, "users");
             const usersTableSnapshot = await getDocs(query(usersCollection));
-            const fetchedUsers = usersTableSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as UserProfile));
-            setUsers(fetchedUsers.filter(user => user.usertype !== 'admin'));
+            const fetchedUsers = await Promise.all(usersTableSnapshot.docs.map(async (docRef) => {
+                const user = { id: docRef.id, ...docRef.data() } as UserProfile;
+                if (user.usertype !== 'admin') {
+                    // Fetch memberid from user's own profile data
+                    return user;
+                }
+                return null;
+            }));
+            setUsers(fetchedUsers.filter((user): user is UserProfile => user !== null));
         } catch (error) {
             console.error("Error fetching users data:", error);
         } finally {
@@ -122,6 +131,43 @@ export default function AdminDashboardPage() {
             console.error("Error fetching support queries:", error);
         } finally {
             setLoadingQueries(false);
+        }
+    }, []);
+
+    const fetchInvoices = useCallback(async () => {
+        setLoadingInvoices(true);
+        try {
+            const invoicesCollection = collection(db, "invoices");
+            const invoicesQuery = query(invoicesCollection, orderBy("createdAt", "desc"));
+            const invoicesSnapshot = await getDocs(invoicesQuery);
+
+            const userCache = new Map<string, UserProfile>();
+
+            const fetchedInvoices = await Promise.all(invoicesSnapshot.docs.map(async (docRef) => {
+                const invoiceData = docRef.data();
+                let userProfile: UserProfile | undefined = userCache.get(invoiceData.userId);
+
+                if (!userProfile) {
+                    const userDoc = await getDoc(doc(db, 'users', invoiceData.userId));
+                    if (userDoc.exists()) {
+                        userProfile = userDoc.data() as UserProfile;
+                        userCache.set(invoiceData.userId, userProfile);
+                    }
+                }
+                
+                return {
+                    id: docRef.id,
+                    ...invoiceData,
+                    createdAt: invoiceData.createdAt?.toDate(),
+                    memberid: userProfile?.memberid || 'N/A'
+                } as Invoice;
+            }));
+
+            setInvoices(fetchedInvoices);
+        } catch (error) {
+            console.error("Error fetching invoices:", error);
+        } finally {
+            setLoadingInvoices(false);
         }
     }, []);
     
@@ -239,13 +285,13 @@ export default function AdminDashboardPage() {
     
     useEffect(() => {
         if (isAdmin === true) {
-            Promise.all([fetchAdminStats(), fetchSupportQueries()])
+            Promise.all([fetchAdminStats(), fetchSupportQueries(), fetchInvoices()])
                 .finally(() => setLoading(false));
         }
         if (isAdmin === false) {
             setLoading(false);
         }
-    }, [isAdmin, fetchAdminStats, fetchSupportQueries]);
+    }, [isAdmin, fetchAdminStats, fetchSupportQueries, fetchInvoices]);
 
     if (loading) {
          return (
@@ -464,6 +510,56 @@ export default function AdminDashboardPage() {
                         </CardContent>
                     </Card>
 
+                     <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2"><Receipt /> Invoices</CardTitle>
+                            <CardDescription>A log of all successful transactions.</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>Member ID</TableHead>
+                                        <TableHead>Plan</TableHead>
+                                        <TableHead>Amount</TableHead>
+                                        <TableHead>Status</TableHead>
+                                        <TableHead>Date</TableHead>
+                                        <TableHead>Payment ID</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {loadingInvoices ? (
+                                        <TableRow>
+                                            <TableCell colSpan={6} className="text-center">
+                                                <Loader2 className="mx-auto h-6 w-6 animate-spin" />
+                                            </TableCell>
+                                        </TableRow>
+                                    ) : invoices.length === 0 ? (
+                                        <TableRow>
+                                            <TableCell colSpan={6} className="text-center">No invoices found.</TableCell>
+                                        </TableRow>
+                                    ) : (
+                                        invoices.map(invoice => (
+                                            <TableRow key={invoice.id}>
+                                                <TableCell>{invoice.memberid}</TableCell>
+                                                <TableCell><Badge variant={invoice.plan !== 'Basic' ? 'default' : 'secondary'}>{invoice.plan}</Badge></TableCell>
+                                                <TableCell>₹{invoice.amount}</TableCell>
+                                                <TableCell>
+                                                    <Badge variant={invoice.status === 'success' ? 'default' : 'destructive'}  
+                                                        className={invoice.status === 'success' ? 'bg-green-600' : ''}>
+                                                        {invoice.status}
+                                                    </Badge>
+                                                </TableCell>
+                                                <TableCell>{invoice.createdAt ? format(invoice.createdAt, 'PPp') : 'N/A'}</TableCell>
+                                                <TableCell className="font-mono text-xs">{invoice.razorpayPaymentId}</TableCell>
+                                            </TableRow>
+                                        ))
+                                    )}
+                                </TableBody>
+                            </Table>
+                        </CardContent>
+                    </Card>
+
                     <Card>
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2"><MessageSquare /> Queries</CardTitle>
@@ -544,3 +640,5 @@ export default function AdminDashboardPage() {
         </AppLayout>
     );
 }
+
+    

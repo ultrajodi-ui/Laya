@@ -84,7 +84,7 @@ export default function Home() {
           </Button>
         </nav>
       </header>
-      <main className="flex-1">
+      <main className="flex-1 w-full">
         <section className="relative w-full h-[80vh] min-h-[600px] flex items-center justify-center pt-16">
           <div className="absolute inset-0 bg-black/50 z-0">
             <Image
