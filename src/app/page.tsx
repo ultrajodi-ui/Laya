@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -89,7 +88,7 @@ export default function Home() {
         <section className="relative w-full h-[80vh] min-h-[600px] flex items-center justify-center pt-16">
           <div className="absolute inset-0 bg-black/50 z-0">
             <Image
-              src="https://picsum.photos/seed/couple-hands/1200/800"
+              src="https://images.unsplash.com/photo-1506014299253-3725319c0f69?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxjb3VwbGV8ZW58MHx8fHwxNzYxMDM5MzE3fDA&ixlib=rb-4.1.0&q=80&w=1080"
               alt="Couple holding hands"
               data-ai-hint="couple hands"
               fill
