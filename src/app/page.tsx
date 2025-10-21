@@ -1,14 +1,11 @@
-
 'use client';
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Skeleton } from '@/components/ui/skeleton';
-import { app } from '@/lib/firebase';
 import { BadgeCheck, Lock, HeartHandshake } from 'lucide-react';
 
 export default function Home() {
@@ -16,19 +13,49 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const auth = getAuth(app);
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        // User is signed in, redirect to browse page.
-        router.push('/browse');
-      } else {
-        // No user is signed in, show the landing page.
-        setLoading(false);
-      }
-    });
+    let unsubscribe: (() => void) | undefined;
+    let mounted = true;
 
-    // Cleanup subscription on unmount
-    return () => unsubscribe();
+    (async () => {
+      try {
+        // Lazy import so build/SSR doesn't break if firebase config or env is missing.
+        const [{ getAuth, onAuthStateChanged }, firebaseModule] = await Promise.all([
+          import('firebase/auth'),
+          import('@/lib/firebase').catch((err) => {
+            // If firebase module is not present or fails, continue and show landing page.
+            console.warn('Failed to load firebase module:', err);
+            return null;
+          }),
+        ]);
+
+        if (!firebaseModule) {
+          if (mounted) setLoading(false);
+          return;
+        }
+
+        const auth = getAuth((firebaseModule as any).app);
+        unsubscribe = onAuthStateChanged(auth, (user) => {
+          if (!mounted) return;
+          if (user) {
+            router.push('/browse');
+          } else {
+            setLoading(false);
+          }
+        });
+      } catch (err) {
+        // Any unexpected errors -> log and show landing page.
+        console.error('Auth initialization error:', err);
+        if (mounted) setLoading(false);
+      }
+    })();
+
+    // cleanup
+    return () => {
+      mounted = false;
+      try {
+        if (typeof unsubscribe === 'function') unsubscribe();
+      } catch (_) {}
+    };
   }, [router]);
 
   if (loading) {
@@ -89,7 +116,7 @@ export default function Home() {
         <section className="relative w-full h-[80vh] min-h-[600px] flex items-center justify-center pt-16">
           <div className="absolute inset-0 bg-black/50 z-0">
             <Image
-              src="https://images.unsplash.com/photo-1491582990992-68ec88e070a3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxOXx8Y291cGxlfGVufDB8fHx8MTc1ODI4MTAwMXww&ixlib=rb-4.1.0&q=80&w=1080"
+              src="https://images.unsplash.com/photo-1491582990992-68ec88e070a3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg"
               alt="Couple holding hands"
               data-ai-hint="couple hands"
               fill
@@ -134,7 +161,7 @@ export default function Home() {
                 </div>
               </div>
               <Image
-                src="https://images.unsplash.com/photo-1541679368093-5c967ac6de11?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxpbmRpYW4lMjBjb3VwbGV8ZW58MHx8fHwxNzU4MjgxMTk5fDA&ixlib=rb-4.1.0&q=80&w=1080"
+                src="https://images.unsplash.com/photo-1541679368093-5c967ac6de11?crop=entropy&cs=tinysrgb&fit=max&fm=jpg"
                 width="310"
                 height="550"
                 alt="AI matchmaking illustration"
@@ -160,12 +187,10 @@ export default function Home() {
         </section>
       </main>
       <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 md:px-6 border-t" style={{ backgroundColor: '#def9ff' }}>
-        <p className="text-xs text-muted-foreground text-center">Ultra Jodi Matrimony is a trusted matrimonial service designed for those seeking a lifelong marriage. This is not a dating website. All profiles should reflect genuine marriage intentions. Copyright © 2025 Ultra Jodi Matrimony. All rights reserved.</p>
+        <p className="text-xs text-muted-foreground text-center">Ultra Jodi Matrimony is a trusted matrimonial service designed for those seeking a lifelong marriage. This is not a dating website.
         <nav className="sm:ml-auto flex gap-4 sm:gap-6">
         </nav>
       </footer>
     </div>
   );
 }
-
-    
