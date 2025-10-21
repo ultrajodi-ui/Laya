@@ -89,7 +89,7 @@ export default function Home() {
         <section className="relative w-full h-[80vh] min-h-[600px] flex items-center justify-center pt-16">
           <div className="absolute inset-0 bg-black/50 z-0">
             <Image
-              src="https://images.unsplash.com/photo-1491582990992-68ec88e070a3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxOXx8Y291cGxlfGVufDB8fHx8MTc1ODI4MTAwMXww&ixlib=rb-4.1.0&q=80&w=1080"
+              src="https://picsum.photos/seed/couple-hands/1200/800"
               alt="Couple holding hands"
               data-ai-hint="couple hands"
               fill
@@ -134,9 +134,9 @@ export default function Home() {
                 </div>
               </div>
               <Image
-                src="https://images.unsplash.com/photo-1541679368093-5c967ac6de11?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxpbmRpYW4lMjBjb3VwbGV8ZW58MHx8fHwxNzU4MjgxMTk5fDA&ixlib=rb-4.1.0&q=80&w=1080"
-                width="310"
-                height="550"
+                src="https://picsum.photos/seed/indian-couple/550/310"
+                width={550}
+                height={310}
                 alt="AI matchmaking illustration"
                 data-ai-hint="indian couple"
                 className="mx-auto aspect-video overflow-hidden rounded-xl object-cover object-center sm:w-full"
@@ -167,5 +167,3 @@ export default function Home() {
     </div>
   );
 }
-
-    
