@@ -1,7 +1,10 @@
 # Settings for the App Hosting backend.
 # See https://firebase.google.com/docs/app-hosting/configure-backend
 runConfig:
+  cpu: 1
+  memoryMiB: 512
   minInstances: 0
+  runtime: nodejs22
 # Static assets should be deployed to Firebase Hosting.
 # See https://firebase.google.com/docs/app-hosting/configure-backend#static-assets
 staticAssets:
