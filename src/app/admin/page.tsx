@@ -60,6 +60,7 @@ export default function AdminDashboardPage() {
     const router = useRouter();
     const { toast } = useToast();
     const [userToDelete, setUserToDelete] = useState<UserProfile | null>(null);
+    const [queryToDelete, setQueryToDelete] = useState<SupportQuery | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
 
      const fetchAdminStats = useCallback(async () => {
@@ -248,6 +249,30 @@ export default function AdminDashboardPage() {
             setUserToDelete(null);
         }
     };
+    
+    const handleDeleteQuery = async () => {
+        if (!queryToDelete) return;
+        setIsDeleting(true);
+        try {
+            await deleteDoc(doc(db, "supportQueries", queryToDelete.id));
+            setQueries(prevQueries => prevQueries.filter(q => q.id !== queryToDelete.id));
+            toast({
+                title: "Query Deleted",
+                description: "The support query has been successfully deleted.",
+            });
+        } catch (error) {
+            console.error("Error deleting query:", error);
+            toast({
+                variant: "destructive",
+                title: "Deletion Failed",
+                description: "Could not delete the support query.",
+            });
+        } finally {
+            setIsDeleting(false);
+            setQueryToDelete(null);
+        }
+    };
+
 
     const filteredUsers = useMemo(() => {
         const lowercasedQuery = searchQuery.toLowerCase();
@@ -331,7 +356,12 @@ export default function AdminDashboardPage() {
 
     return (
         <AppLayout>
-            <AlertDialog onOpenChange={(open) => !open && setUserToDelete(null)}>
+            <AlertDialog onOpenChange={(open) => {
+                if (!open) {
+                    setUserToDelete(null);
+                    setQueryToDelete(null);
+                }
+            }}>
                 <div className="space-y-8">
                     <div className="flex flex-col gap-4">
                         <h1 className="text-3xl font-headline font-bold">Admin Dashboard</h1>
@@ -576,18 +606,19 @@ export default function AdminDashboardPage() {
                                         <TableHead>Query</TableHead>
                                         <TableHead>Submitted At</TableHead>
                                         <TableHead>Status</TableHead>
+                                        <TableHead>Actions</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
                                     {loadingQueries ? (
                                         <TableRow>
-                                            <TableCell colSpan={7} className="text-center">
+                                            <TableCell colSpan={8} className="text-center">
                                                 <Loader2 className="mx-auto h-6 w-6 animate-spin" />
                                             </TableCell>
                                         </TableRow>
                                     ) : queries.length === 0 ? (
                                         <TableRow>
-                                            <TableCell colSpan={7} className="text-center">No queries found.</TableCell>
+                                            <TableCell colSpan={8} className="text-center">No queries found.</TableCell>
                                         </TableRow>
                                     ) : (
                                         queries.map(q => (
@@ -613,6 +644,18 @@ export default function AdminDashboardPage() {
                                                         </SelectContent>
                                                     </Select>
                                                 </TableCell>
+                                                <TableCell>
+                                                    <AlertDialogTrigger asChild>
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            onClick={() => setQueryToDelete(q)}
+                                                            disabled={(q.status || 'Pending') !== 'Finished'}
+                                                        >
+                                                            <Trash2 className="h-4 w-4 text-destructive" />
+                                                        </Button>
+                                                    </AlertDialogTrigger>
+                                                </TableCell>
                                             </TableRow>
                                         ))
                                     )}
@@ -622,23 +665,42 @@ export default function AdminDashboardPage() {
                     </Card>
                 </div>
                 <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                            This action cannot be undone. This will permanently delete the user account for <span className="font-bold">{userToDelete?.fullName}</span> and remove their data from our servers.
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleDeleteUser} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90">
-                             {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                             {isDeleting ? 'Deleting...' : 'Yes, delete user'}
-                        </AlertDialogAction>
-                    </AlertDialogFooter>
+                    {userToDelete && (
+                        <>
+                            <AlertDialogHeader>
+                                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                    This action cannot be undone. This will permanently delete the user account for <span className="font-bold">{userToDelete?.fullName}</span> and remove their data from our servers.
+                                </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                                <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+                                <AlertDialogAction onClick={handleDeleteUser} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90">
+                                     {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                     {isDeleting ? 'Deleting...' : 'Yes, delete user'}
+                                </AlertDialogAction>
+                            </AlertDialogFooter>
+                        </>
+                    )}
+                    {queryToDelete && (
+                        <>
+                            <AlertDialogHeader>
+                                <AlertDialogTitle>Are you sure you want to delete this query?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                    This action cannot be undone. This will permanently delete the support query.
+                                </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                                <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+                                <AlertDialogAction onClick={handleDeleteQuery} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90">
+                                     {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                     {isDeleting ? 'Deleting...' : 'Yes, delete query'}
+                                </AlertDialogAction>
+                            </AlertDialogFooter>
+                        </>
+                    )}
                 </AlertDialogContent>
             </AlertDialog>
         </AppLayout>
     );
 }
-
-    
