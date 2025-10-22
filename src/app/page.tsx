@@ -55,7 +55,7 @@ export default function Home() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen w-full">
       <header className="px-4 lg:px-6 h-16 flex items-center bg-background/80 backdrop-blur-sm fixed top-0 w-full z-10" style={{ backgroundColor: '#000435' }}>
         <Link href="/" className="flex items-center justify-center">
           <svg

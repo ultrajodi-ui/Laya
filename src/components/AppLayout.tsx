@@ -254,7 +254,7 @@ function AppLayoutContent({ children }: { children: ReactNode }) {
 
   return (
     <SidebarProvider defaultOpen={true}>
-      <div className="flex min-h-screen">
+      <div className="flex min-h-screen w-full">
         <Sidebar>
           <SidebarHeader>
             <div className="flex items-center gap-2">
@@ -382,7 +382,7 @@ function AppLayoutContent({ children }: { children: ReactNode }) {
                     </div>
                 </div>
             </header>
-            <main className="flex flex-col flex-1 overflow-x-hidden p-4 sm:p-6" style={{ background: '#EFF6FF' }}>{children}</main>
+            <main className="flex flex-col flex-1 overflow-x-hidden p-4 sm:p-6 w-full" style={{ background: '#EFF6FF' }}>{children}</main>
         </div>
       </div>
     </SidebarProvider>

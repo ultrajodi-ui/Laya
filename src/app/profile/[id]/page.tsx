@@ -577,9 +577,7 @@ function ProfileContent({ id }: { id: string }) {
     );
 }
 
-export default function ProfileDetailPage({ params }: { params: { id: string } }) {
-    const { id } = params;
-
+export default function ProfileDetailPage({ params: { id } }: { params: { id: string } }) {
     if (!id) {
         return (
             <AppLayout>
@@ -597,4 +595,5 @@ export default function ProfileDetailPage({ params }: { params: { id: string } }
         </AppLayout>
     );
 }
- 
+
+  
